@@ -1,0 +1,471 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		6F05EE291EC44B1C006FC1BF /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F05EE281EC44B1C006FC1BF /* main.m */; };
+		6F05EE2C1EC44B1C006FC1BF /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F05EE2B1EC44B1C006FC1BF /* AppDelegate.m */; };
+		6F05EE2F1EC44B1C006FC1BF /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F05EE2E1EC44B1C006FC1BF /* ViewController.m */; };
+		6F05EE321EC44B1C006FC1BF /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6F05EE301EC44B1C006FC1BF /* Main.storyboard */; };
+		6F05EE341EC44B1C006FC1BF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6F05EE331EC44B1C006FC1BF /* Assets.xcassets */; };
+		6F05EE371EC44B1C006FC1BF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6F05EE351EC44B1C006FC1BF /* LaunchScreen.storyboard */; };
+		6F05EE491EC44BA5006FC1BF /* LFRecordButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F05EE461EC44BA5006FC1BF /* LFRecordButton.m */; };
+		6F05EE501EC44BFD006FC1BF /* LFCameraPickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F05EE4E1EC44BFD006FC1BF /* LFCameraPickerController.m */; };
+		6F05EE531EC44C11006FC1BF /* LFCameraPickerController.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 6F05EE521EC44C11006FC1BF /* LFCameraPickerController.bundle */; };
+		6F05EE5A1EC44D7C006FC1BF /* LFCameraPlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F05EE591EC44D7C006FC1BF /* LFCameraPlayerViewController.m */; };
+		6F05EE5D1EC44E52006FC1BF /* LFCameraTakeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F05EE5C1EC44E52006FC1BF /* LFCameraTakeViewController.m */; };
+		6F05EE601EC4527A006FC1BF /* LFCameraBaseController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F05EE5F1EC4527A006FC1BF /* LFCameraBaseController.m */; };
+		6F05EE631EC4612E006FC1BF /* LFCameraHeader.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F05EE621EC4612E006FC1BF /* LFCameraHeader.m */; };
+		A229248F3E5DC6DA40F9347F /* libPods-LFCameraPickerControllerDEMO.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A6A91C38ED318A2C9956E69 /* libPods-LFCameraPickerControllerDEMO.a */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		1A6A91C38ED318A2C9956E69 /* libPods-LFCameraPickerControllerDEMO.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-LFCameraPickerControllerDEMO.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		424631D3E6B6637347970A73 /* Pods-LFCameraPickerControllerDEMO.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LFCameraPickerControllerDEMO.debug.xcconfig"; path = "../Pods/Target Support Files/Pods-LFCameraPickerControllerDEMO/Pods-LFCameraPickerControllerDEMO.debug.xcconfig"; sourceTree = "<group>"; };
+		6F05EE241EC44B1C006FC1BF /* LFCameraPickerControllerDEMO.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LFCameraPickerControllerDEMO.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		6F05EE281EC44B1C006FC1BF /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		6F05EE2A1EC44B1C006FC1BF /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		6F05EE2B1EC44B1C006FC1BF /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		6F05EE2D1EC44B1C006FC1BF /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
+		6F05EE2E1EC44B1C006FC1BF /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		6F05EE311EC44B1C006FC1BF /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		6F05EE331EC44B1C006FC1BF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		6F05EE361EC44B1C006FC1BF /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		6F05EE381EC44B1C006FC1BF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		6F05EE451EC44BA5006FC1BF /* LFRecordButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LFRecordButton.h; sourceTree = "<group>"; };
+		6F05EE461EC44BA5006FC1BF /* LFRecordButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LFRecordButton.m; sourceTree = "<group>"; };
+		6F05EE4D1EC44BFD006FC1BF /* LFCameraPickerController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LFCameraPickerController.h; sourceTree = "<group>"; };
+		6F05EE4E1EC44BFD006FC1BF /* LFCameraPickerController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LFCameraPickerController.m; sourceTree = "<group>"; };
+		6F05EE521EC44C11006FC1BF /* LFCameraPickerController.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = LFCameraPickerController.bundle; sourceTree = "<group>"; };
+		6F05EE581EC44D7C006FC1BF /* LFCameraPlayerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LFCameraPlayerViewController.h; sourceTree = "<group>"; };
+		6F05EE591EC44D7C006FC1BF /* LFCameraPlayerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LFCameraPlayerViewController.m; sourceTree = "<group>"; };
+		6F05EE5B1EC44E52006FC1BF /* LFCameraTakeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LFCameraTakeViewController.h; sourceTree = "<group>"; };
+		6F05EE5C1EC44E52006FC1BF /* LFCameraTakeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LFCameraTakeViewController.m; sourceTree = "<group>"; };
+		6F05EE5E1EC45279006FC1BF /* LFCameraBaseController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LFCameraBaseController.h; sourceTree = "<group>"; };
+		6F05EE5F1EC4527A006FC1BF /* LFCameraBaseController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LFCameraBaseController.m; sourceTree = "<group>"; };
+		6F05EE611EC4612E006FC1BF /* LFCameraHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LFCameraHeader.h; sourceTree = "<group>"; };
+		6F05EE621EC4612E006FC1BF /* LFCameraHeader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LFCameraHeader.m; sourceTree = "<group>"; };
+		E97422819F266C96A19D894D /* Pods-LFCameraPickerControllerDEMO.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LFCameraPickerControllerDEMO.release.xcconfig"; path = "../Pods/Target Support Files/Pods-LFCameraPickerControllerDEMO/Pods-LFCameraPickerControllerDEMO.release.xcconfig"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		6F05EE211EC44B1C006FC1BF /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A229248F3E5DC6DA40F9347F /* libPods-LFCameraPickerControllerDEMO.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		054096A4440BD09A88A81769 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				424631D3E6B6637347970A73 /* Pods-LFCameraPickerControllerDEMO.debug.xcconfig */,
+				E97422819F266C96A19D894D /* Pods-LFCameraPickerControllerDEMO.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
+		6F05EE1B1EC44B1C006FC1BF = {
+			isa = PBXGroup;
+			children = (
+				6F05EE261EC44B1C006FC1BF /* LFCameraPickerControllerDEMO */,
+				6F05EE251EC44B1C006FC1BF /* Products */,
+				054096A4440BD09A88A81769 /* Pods */,
+				EDFF8E57D503DF84E85D4D0D /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		6F05EE251EC44B1C006FC1BF /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				6F05EE241EC44B1C006FC1BF /* LFCameraPickerControllerDEMO.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		6F05EE261EC44B1C006FC1BF /* LFCameraPickerControllerDEMO */ = {
+			isa = PBXGroup;
+			children = (
+				6F05EE4A1EC44BFD006FC1BF /* LFCameraPickerController */,
+				6F05EE441EC44BA5006FC1BF /* LFRecordButton */,
+				6F05EE2A1EC44B1C006FC1BF /* AppDelegate.h */,
+				6F05EE2B1EC44B1C006FC1BF /* AppDelegate.m */,
+				6F05EE2D1EC44B1C006FC1BF /* ViewController.h */,
+				6F05EE2E1EC44B1C006FC1BF /* ViewController.m */,
+				6F05EE301EC44B1C006FC1BF /* Main.storyboard */,
+				6F05EE331EC44B1C006FC1BF /* Assets.xcassets */,
+				6F05EE351EC44B1C006FC1BF /* LaunchScreen.storyboard */,
+				6F05EE381EC44B1C006FC1BF /* Info.plist */,
+				6F05EE271EC44B1C006FC1BF /* Supporting Files */,
+			);
+			path = LFCameraPickerControllerDEMO;
+			sourceTree = "<group>";
+		};
+		6F05EE271EC44B1C006FC1BF /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				6F05EE281EC44B1C006FC1BF /* main.m */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		6F05EE441EC44BA5006FC1BF /* LFRecordButton */ = {
+			isa = PBXGroup;
+			children = (
+				6F05EE451EC44BA5006FC1BF /* LFRecordButton.h */,
+				6F05EE461EC44BA5006FC1BF /* LFRecordButton.m */,
+			);
+			path = LFRecordButton;
+			sourceTree = "<group>";
+		};
+		6F05EE4A1EC44BFD006FC1BF /* LFCameraPickerController */ = {
+			isa = PBXGroup;
+			children = (
+				6F05EE4B1EC44BFD006FC1BF /* Header */,
+				6F05EE541EC44CA8006FC1BF /* Controller */,
+				6F05EE4D1EC44BFD006FC1BF /* LFCameraPickerController.h */,
+				6F05EE4E1EC44BFD006FC1BF /* LFCameraPickerController.m */,
+				6F05EE521EC44C11006FC1BF /* LFCameraPickerController.bundle */,
+			);
+			path = LFCameraPickerController;
+			sourceTree = "<group>";
+		};
+		6F05EE4B1EC44BFD006FC1BF /* Header */ = {
+			isa = PBXGroup;
+			children = (
+				6F05EE611EC4612E006FC1BF /* LFCameraHeader.h */,
+				6F05EE621EC4612E006FC1BF /* LFCameraHeader.m */,
+			);
+			path = Header;
+			sourceTree = "<group>";
+		};
+		6F05EE541EC44CA8006FC1BF /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+				6F05EE5E1EC45279006FC1BF /* LFCameraBaseController.h */,
+				6F05EE5F1EC4527A006FC1BF /* LFCameraBaseController.m */,
+				6F05EE5B1EC44E52006FC1BF /* LFCameraTakeViewController.h */,
+				6F05EE5C1EC44E52006FC1BF /* LFCameraTakeViewController.m */,
+				6F05EE581EC44D7C006FC1BF /* LFCameraPlayerViewController.h */,
+				6F05EE591EC44D7C006FC1BF /* LFCameraPlayerViewController.m */,
+			);
+			path = Controller;
+			sourceTree = "<group>";
+		};
+		EDFF8E57D503DF84E85D4D0D /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				1A6A91C38ED318A2C9956E69 /* libPods-LFCameraPickerControllerDEMO.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		6F05EE231EC44B1C006FC1BF /* LFCameraPickerControllerDEMO */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6F05EE3B1EC44B1C006FC1BF /* Build configuration list for PBXNativeTarget "LFCameraPickerControllerDEMO" */;
+			buildPhases = (
+				19C92E7D169C33B50A21D435 /* [CP] Check Pods Manifest.lock */,
+				6F05EE201EC44B1C006FC1BF /* Sources */,
+				6F05EE211EC44B1C006FC1BF /* Frameworks */,
+				6F05EE221EC44B1C006FC1BF /* Resources */,
+				807BC0F7D074A42382BF2C20 /* [CP] Embed Pods Frameworks */,
+				6571A2CE59540B92807006CD /* [CP] Copy Pods Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = LFCameraPickerControllerDEMO;
+			productName = LFCameraPickerControllerDEMO;
+			productReference = 6F05EE241EC44B1C006FC1BF /* LFCameraPickerControllerDEMO.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		6F05EE1C1EC44B1C006FC1BF /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0830;
+				ORGANIZATIONNAME = LamTsanFeng;
+				TargetAttributes = {
+					6F05EE231EC44B1C006FC1BF = {
+						CreatedOnToolsVersion = 8.3.2;
+						DevelopmentTeam = 3VDRUN62M8;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 6F05EE1F1EC44B1C006FC1BF /* Build configuration list for PBXProject "LFCameraPickerControllerDEMO" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 6F05EE1B1EC44B1C006FC1BF;
+			productRefGroup = 6F05EE251EC44B1C006FC1BF /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				6F05EE231EC44B1C006FC1BF /* LFCameraPickerControllerDEMO */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		6F05EE221EC44B1C006FC1BF /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6F05EE531EC44C11006FC1BF /* LFCameraPickerController.bundle in Resources */,
+				6F05EE371EC44B1C006FC1BF /* LaunchScreen.storyboard in Resources */,
+				6F05EE341EC44B1C006FC1BF /* Assets.xcassets in Resources */,
+				6F05EE321EC44B1C006FC1BF /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		19C92E7D169C33B50A21D435 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		6571A2CE59540B92807006CD /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/../Pods/Target Support Files/Pods-LFCameraPickerControllerDEMO/Pods-LFCameraPickerControllerDEMO-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		807BC0F7D074A42382BF2C20 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/../Pods/Target Support Files/Pods-LFCameraPickerControllerDEMO/Pods-LFCameraPickerControllerDEMO-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		6F05EE201EC44B1C006FC1BF /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6F05EE5A1EC44D7C006FC1BF /* LFCameraPlayerViewController.m in Sources */,
+				6F05EE491EC44BA5006FC1BF /* LFRecordButton.m in Sources */,
+				6F05EE631EC4612E006FC1BF /* LFCameraHeader.m in Sources */,
+				6F05EE2F1EC44B1C006FC1BF /* ViewController.m in Sources */,
+				6F05EE501EC44BFD006FC1BF /* LFCameraPickerController.m in Sources */,
+				6F05EE5D1EC44E52006FC1BF /* LFCameraTakeViewController.m in Sources */,
+				6F05EE601EC4527A006FC1BF /* LFCameraBaseController.m in Sources */,
+				6F05EE2C1EC44B1C006FC1BF /* AppDelegate.m in Sources */,
+				6F05EE291EC44B1C006FC1BF /* main.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		6F05EE301EC44B1C006FC1BF /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				6F05EE311EC44B1C006FC1BF /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		6F05EE351EC44B1C006FC1BF /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				6F05EE361EC44B1C006FC1BF /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		6F05EE391EC44B1C006FC1BF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		6F05EE3A1EC44B1C006FC1BF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		6F05EE3C1EC44B1C006FC1BF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 424631D3E6B6637347970A73 /* Pods-LFCameraPickerControllerDEMO.debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = 3VDRUN62M8;
+				INFOPLIST_FILE = LFCameraPickerControllerDEMO/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.lincf0912.LFCameraPickerControllerDEMO;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		6F05EE3D1EC44B1C006FC1BF /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = E97422819F266C96A19D894D /* Pods-LFCameraPickerControllerDEMO.release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = 3VDRUN62M8;
+				INFOPLIST_FILE = LFCameraPickerControllerDEMO/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.lincf0912.LFCameraPickerControllerDEMO;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		6F05EE1F1EC44B1C006FC1BF /* Build configuration list for PBXProject "LFCameraPickerControllerDEMO" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6F05EE391EC44B1C006FC1BF /* Debug */,
+				6F05EE3A1EC44B1C006FC1BF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		6F05EE3B1EC44B1C006FC1BF /* Build configuration list for PBXNativeTarget "LFCameraPickerControllerDEMO" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6F05EE3C1EC44B1C006FC1BF /* Debug */,
+				6F05EE3D1EC44B1C006FC1BF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 6F05EE1C1EC44B1C006FC1BF /* Project object */;
+}
