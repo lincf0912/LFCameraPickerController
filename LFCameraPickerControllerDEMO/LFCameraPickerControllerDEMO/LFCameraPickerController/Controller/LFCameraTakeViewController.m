@@ -185,10 +185,16 @@
 
 - (void)saveAndShowSession:(SCRecordSession *)recordSession {
     
-    [self showVideoView];
-    
+    LFCameraPickerController *cameraPicker = (LFCameraPickerController *)self.navigationController;
+    /** 最小限制 */
+    if (CMTimeGetSeconds(_recorder.session.duration) < cameraPicker.minRecordSeconds) {
+        [self takePhoto];
+    } else {
+        [self showVideoView];
+    }
     /** 重置录制按钮 */
     [self.recordButton reset];
+    
 }
 
 - (void)retakeRecordSession {
@@ -203,6 +209,19 @@
     }
     
     [self prepareSession];
+}
+
+- (void)takePhoto
+{
+    __weak typeof(self) weakSelf = self;
+    [self.recorder capturePhoto:^(NSError *error, UIImage *image) {
+        if (image != nil) {
+            weakSelf.photo = [image easyFixDeviceOrientation];
+            [weakSelf showImageView];
+        } else {
+            [weakSelf showAlertViewWithTitle:@"Failed to capture photo" message:error.localizedDescription];
+        }
+    }];
 }
 
 
@@ -337,14 +356,7 @@
     recordButton.special = cameraPicker.canPause;
     /** 单击 */
     recordButton.didTouchSingle = ^{
-        [weakSelf.recorder capturePhoto:^(NSError *error, UIImage *image) {
-            if (image != nil) {
-                weakSelf.photo = [image easyFixDeviceOrientation];
-                [weakSelf showImageView];
-            } else {
-                [weakSelf showAlertViewWithTitle:@"Failed to capture photo" message:error.localizedDescription];
-            }
-        }];
+        [weakSelf takePhoto];
     };
     /** 长按开始 */
     recordButton.didTouchLongBegan = ^{

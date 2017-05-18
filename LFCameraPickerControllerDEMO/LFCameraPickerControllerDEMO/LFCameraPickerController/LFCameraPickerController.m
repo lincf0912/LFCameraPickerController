@@ -94,6 +94,7 @@
     _frontCamera = YES;
     _flash = NO;
     _canPause = NO;
+    _minRecordSeconds = 1.f;
     _maxRecordSeconds = 7.f;
     _framerate = 30;
     _videoType = AVFileTypeMPEG4;
@@ -102,6 +103,13 @@
     _autoSavePhotoAlbum = YES;
     _stopButtonTitle = @"stop";
     _processHintStr = @"正在处理...";
+}
+
+- (void)setMaxRecordSeconds:(NSUInteger)maxRecordSeconds
+{
+    if (maxRecordSeconds > _minRecordSeconds) {
+        _maxRecordSeconds = maxRecordSeconds;
+    }
 }
 
 - (void)showProgressHUDText:(NSString *)text isTop:(BOOL)isTop
