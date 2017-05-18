@@ -20,6 +20,8 @@ typedef void(^didTouchLongEnd)();
 @property (nonatomic, strong) UIColor *backColor;
 /** 进度条颜色，default greenColor */
 @property (nonatomic, strong) UIColor *progressColor;
+/** 随机进度条颜色，default NO, set YES progressColor will be invalid */
+@property (nonatomic, assign) BOOL randomProgressColor;
 /** 进度宽度，default 4.0 */
 @property (nonatomic, assign) CGFloat progressWidth;
 /** 长按点击放大倍数,default 1.5 (>1) */
@@ -29,9 +31,19 @@ typedef void(^didTouchLongEnd)();
 
 /** 特别模式 defautl NO :当progress>0时，长按结束不会恢复原来状态，并且不会再触发单击事件，直到progress=1时，恢复原来状态；progress=0时才能触发单击事件 */
 @property (nonatomic, assign) BOOL special;
+/** 进度分割线 default YES,it work when special is YES */
+@property (nonatomic, assign) BOOL progressSeparator;
+/** 进度分隔符颜色 default grayColor */
+@property (nonatomic, strong) UIColor *progressSeparatorColor;
+/** 选中进度的颜色 defalut readColor */
+@property (nonatomic, strong) UIColor *selectedProgressColor;
 
 /** 重置 */
 - (void)reset;
+/** 选中上一段进度 */
+- (void)selectedLastProgress;
+/** 删除选中的进度部分 */
+- (void)deleteSelectedProgress;
 
 /** 回调 */
 

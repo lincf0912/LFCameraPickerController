@@ -9,31 +9,31 @@
 #import "LFCameraTakeViewController.h"
 #import "LFCameraHeader.h"
 #import "LFCameraPickerController.h"
-#import "LFCameraPlayerViewController.h"
+#import "LFCameraDisplayController.h"
+
+#import "UIImage+LFCamera_Orientation.h"
 
 #import "LFRecordButton.h"
 #import "SCRecorder.h"
 
-@interface LFCameraTakeViewController () <SCRecorderDelegate, LFCameraPlayerDelegate>
+@interface LFCameraTakeViewController () <SCRecorderDelegate, LFCameraDisplayDelegate>
 
 /** 录制神器 */
 @property (strong, nonatomic) SCRecorder *recorder;
 /** 拍照图片 */
 @property (strong, nonatomic) UIImage *photo;
-/** 录制视频 */
-@property (strong, nonatomic) SCRecordSession *recordSession;
 /** 预览视图 */
 @property (weak, nonatomic) UIView *previewView;
 /** 录制视图 */
 @property (strong, nonatomic) SCRecorderToolsView *focusView;
 
-/** 录制按钮 */
-@property (weak, nonatomic) LFRecordButton *recordButton;
-
 /** 闪光灯 */
 @property (weak, nonatomic) UIButton *flashButton;
 /** 摄像头切换 */
 @property (weak, nonatomic) UIButton *flipCameraButton;
+
+/** 录制按钮 */
+@property (weak, nonatomic) LFRecordButton *recordButton;
 
 @end
 
@@ -65,6 +65,10 @@
     switch (orientation) {
         case UIDeviceOrientationPortrait:
         {
+            if (self.recorder.session.segments.count == 0 && self.recorder.isRecording == NO) {
+                self.recorder.videoConfiguration.affineTransform = CGAffineTransformIdentity;
+                [self retakeRecordSession];
+            }
             [UIView animateWithDuration:0.25f animations:^{
                 self.flashButton.transform = CGAffineTransformMakeRotation(0);
                 self.flipCameraButton.transform = CGAffineTransformMakeRotation(0);
@@ -73,6 +77,10 @@
             break;
         case UIDeviceOrientationLandscapeLeft:
         {
+            if (self.recorder.session.segments.count == 0 && self.recorder.isRecording == NO) {
+                self.recorder.videoConfiguration.affineTransform = CGAffineTransformMakeRotation(-M_PI_2);
+                [self retakeRecordSession];
+            }
             [UIView animateWithDuration:0.25f animations:^{
                 self.flashButton.transform = CGAffineTransformMakeRotation(M_PI_2);
                 self.flipCameraButton.transform = CGAffineTransformMakeRotation(M_PI_2);
@@ -81,9 +89,25 @@
             break;
         case UIDeviceOrientationLandscapeRight:
         {
+            if (self.recorder.session.segments.count == 0 && self.recorder.isRecording == NO) {
+                self.recorder.videoConfiguration.affineTransform = CGAffineTransformMakeRotation(M_PI_2);
+                [self retakeRecordSession];
+            }
             [UIView animateWithDuration:0.25f animations:^{
                 self.flashButton.transform = CGAffineTransformMakeRotation(-M_PI_2);
                 self.flipCameraButton.transform = CGAffineTransformMakeRotation(-M_PI_2);
+            }];
+        }
+            break;
+        case UIDeviceOrientationPortraitUpsideDown:
+        {
+            if (self.recorder.session.segments.count == 0 && self.recorder.isRecording == NO) {
+                self.recorder.videoConfiguration.affineTransform = CGAffineTransformMakeRotation(M_PI);
+                [self retakeRecordSession];
+            }
+            [UIView animateWithDuration:0.25f animations:^{
+                self.flashButton.transform = CGAffineTransformMakeRotation(M_PI);
+                self.flipCameraButton.transform = CGAffineTransformMakeRotation(M_PI);
             }];
         }
             break;
@@ -114,11 +138,19 @@
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     
-    [_recorder stopRunning];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
+    
+    /** 还原缩放 */
+    _recorder.videoZoomFactor = 1;
+    /** 拍照系统需要播放声音，马上关闭录制会导致声音卡顿 */
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        if (self.navigationController.topViewController != self) {
+            [_recorder stopRunning];
+        }
+    });
 }
 
 - (void)dealloc {
@@ -128,10 +160,10 @@
 
 #pragma mark - SCRecorder 操作
 - (void)prepareSession {
+    
     if (_recorder.session == nil) {
-        LFCameraPickerController *cameraPicker = (LFCameraPickerController *)self.navigationController;
         SCRecordSession *session = [SCRecordSession recordSession];
-        session.fileType = cameraPicker.videoType;
+        session.fileType = AVFileTypeQuickTimeMovie;
         
         _recorder.session = session;
     }
@@ -153,18 +185,15 @@
 
 - (void)saveAndShowSession:(SCRecordSession *)recordSession {
     
-    _recordSession = recordSession;
-    
-    LFCameraPlayerViewController *cameraPlayer = [[LFCameraPlayerViewController alloc] init];
-    cameraPlayer.delegate = self;
-    cameraPlayer.recordSession = recordSession;
-    [self.navigationController pushViewController:cameraPlayer animated:NO];
+    [self showVideoView];
     
     /** 重置录制按钮 */
     [self.recordButton reset];
 }
 
 - (void)retakeRecordSession {
+
+    self.photo = nil;
     
     SCRecordSession *recordSession = _recorder.session;
     
@@ -223,14 +252,22 @@
     [self updateTimeRecorded];
 }
 
-#pragma mark - LFCameraPlayerDelegate
-- (void)lf_cameraPlayerDidCancel:(LFCameraPlayerViewController *)cameraPlayer
+#pragma mark - LFCameraDisplayDelegate
+- (void)lf_cameraDisplayDidCancel:(LFCameraDisplayController *)cameraDisplay
 {
     [self retakeRecordSession];
     [self.navigationController popViewControllerAnimated:NO];
 }
-- (void)lf_cameraPlayer:(LFCameraPlayerViewController *)cameraPlayer didFinishVideo:(NSURL *)videoURL
+- (void)lf_cameraDisplay:(LFCameraDisplayController *)cameraDisplay didFinishVideo:(NSURL *)videoURL
 {
+    /** 代理回调 */
+    
+    [self closeAction];
+}
+- (void)lf_cameraDisplay:(LFCameraDisplayController *)cameraDisplay didFinishImage:(UIImage *)image
+{
+    /** 代理回调 */
+    
     [self closeAction];
 }
 
@@ -241,7 +278,7 @@
     [cameraPicker dismissViewControllerAnimated:YES completion:nil];
 }
 
-- (void)finishAction
+- (void)stopAction
 {
     __weak typeof(self) weakSelf = self;
     [self.recorder pause:^{
@@ -302,8 +339,8 @@
     recordButton.didTouchSingle = ^{
         [weakSelf.recorder capturePhoto:^(NSError *error, UIImage *image) {
             if (image != nil) {
-                weakSelf.photo = image;
-                //                [self showPhoto:image];
+                weakSelf.photo = [image easyFixDeviceOrientation];
+                [weakSelf showImageView];
             } else {
                 [weakSelf showAlertViewWithTitle:@"Failed to capture photo" message:error.localizedDescription];
             }
@@ -311,7 +348,6 @@
     };
     /** 长按开始 */
     recordButton.didTouchLongBegan = ^{
-//        weakSelf.recorder.videoConfiguration.affineTransform = CGAffineTransformMakeRotation(M_PI_2);
         [weakSelf.recorder record];
     };
     /** 长按结束 */
@@ -320,7 +356,7 @@
         if (weakCameraPicker.canPause) {
             [weakSelf.recorder pause];
         } else {
-            [weakSelf finishAction];
+            [weakSelf stopAction];
         }
     };
     
@@ -359,17 +395,15 @@
         //        [selectedButton addTarget:self action:@selector(selectedAction) forControlEvents:UIControlEventTouchUpInside];
         //        [boomView addSubview:selectedButton];
         /** 底部工具栏 - 完成按钮 */
-        UIButton *finishButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        finishButton.frame = CGRectMake((CGRectGetWidth(boomView.frame)-LFCamera_buttonHeight)/2+CGRectGetWidth(recordButton.frame)/2+CGRectGetWidth(boomView.frame)/4, (CGRectGetHeight(boomView.frame)-LFCamera_buttonHeight)/2, LFCamera_buttonHeight, LFCamera_buttonHeight);
-        [finishButton setTitle:cameraPicker.stopButtonTitle forState:UIControlStateNormal];
-        [finishButton addTarget:self action:@selector(finishAction) forControlEvents:UIControlEventTouchUpInside];
-        [boomView addSubview:finishButton];
+        UIButton *stopButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        stopButton.frame = CGRectMake((CGRectGetWidth(boomView.frame)-LFCamera_buttonHeight)/2+CGRectGetWidth(recordButton.frame)/2+CGRectGetWidth(boomView.frame)/4, (CGRectGetHeight(boomView.frame)-LFCamera_buttonHeight)/2, LFCamera_buttonHeight, LFCamera_buttonHeight);
+        [stopButton setTitle:cameraPicker.stopButtonTitle forState:UIControlStateNormal];
+        [stopButton addTarget:self action:@selector(stopAction) forControlEvents:UIControlEventTouchUpInside];
+        [boomView addSubview:stopButton];
     }
     
-    
-    
     /** 顶部栏 */
-    UIView *topView = [[UIView alloc] initWithFrame:CGRectMake(0, 20, width, LFCamera_topViewHeight)];
+    UIView *topView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, width, LFCamera_topViewHeight)];
     [self.view addSubview:topView];
     
     /** 顶部栏 - 关闭按钮 */
@@ -413,6 +447,7 @@
     _recorder = [SCRecorder recorder];
     _recorder.captureSessionPreset = [SCRecorderTools bestCaptureSessionPresetCompatibleWithAllDevices];
     _recorder.maxRecordDuration = CMTimeMake(cameraPicker.framerate * cameraPicker.maxRecordSeconds, (int32_t)cameraPicker.framerate);
+    
     //    _recorder.fastRecordMethodEnabled = YES;
     if (!cameraPicker.frontCamera) {
         _recorder.device = AVCaptureDevicePositionFront;
@@ -451,5 +486,23 @@
     }
 }
 
+#pragma mark - 显示拍照图片
+- (void)showImageView
+{
+    LFCameraDisplayController *cameraDisplay = [[LFCameraDisplayController alloc] init];
+    cameraDisplay.delegate = self;
+    cameraDisplay.photo = self.photo;
+    [self.navigationController pushViewController:cameraDisplay animated:NO];
+}
+
+#pragma mark - 显示录制视频
+- (void)showVideoView
+{
+    LFCameraDisplayController *cameraDisplay = [[LFCameraDisplayController alloc] init];
+    cameraDisplay.delegate = self;
+    cameraDisplay.photo = ((SCRecordSessionSegment *)self.recorder.session.segments.lastObject).thumbnail;
+    cameraDisplay.recordSession = self.recorder.session;
+    [self.navigationController pushViewController:cameraDisplay animated:NO];
+}
 
 @end

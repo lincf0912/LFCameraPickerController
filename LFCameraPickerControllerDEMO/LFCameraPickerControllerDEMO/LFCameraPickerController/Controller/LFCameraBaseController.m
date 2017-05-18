@@ -35,7 +35,7 @@
 
 
 - (void)showAlertViewWithTitle:(NSString*)title message:(NSString*) message {
-    UIAlertView * alertView = [[UIAlertView alloc] initWithTitle:title message:message delegate:nil cancelButtonTitle:nil otherButtonTitles:@"OK", nil];
+    UIAlertView * alertView = [[UIAlertView alloc] initWithTitle:title message:message delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
     [alertView show];
 }
 

@@ -28,6 +28,7 @@
 
 - (IBAction)basicAction:(id)sender {
     LFCameraPickerController *camera = [[LFCameraPickerController alloc] init];
+    camera.autoSavePhotoAlbum = NO;
     [self presentViewController:camera animated:YES completion:nil];
 }
 

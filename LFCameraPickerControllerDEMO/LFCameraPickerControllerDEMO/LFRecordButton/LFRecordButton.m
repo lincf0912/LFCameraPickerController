@@ -8,15 +8,21 @@
 
 #import "LFRecordButton.h"
 
+NSString *const LFRB_progressAnimations = @"LFRB_progressAnimations";
+NSString *const LFRB_backCircleAnimations = @"LFRB_backCircleAnimations";
+NSString *const LFRB_foreCircleAnimations = @"LFRB_foreCircleAnimations";
+NSString *const LFRB_progressStrokeAnimation = @"LFRB_progressStrokeAnimation";
+
 @interface LFRecordButton ()
 
 @property (nonatomic, strong) CALayer *foreLayer;
 @property (nonatomic, strong) CALayer *backLayer;
-@property (nonatomic, strong) CAShapeLayer *progressLayer;
-@property (nonatomic, strong) CAGradientLayer *gradientMaskLayer;
+@property (nonatomic, strong) CALayer *progressLayer;
+@property (nonatomic, strong) NSMutableArray <CAShapeLayer *>*progressLayers;
+@property (nonatomic, strong) NSMutableArray <CAShapeLayer *>*progressSeparatorLayers;
 
-/** 移动定点 */
-@property (nonatomic, assign) CGPoint originPoint;
+/** 被选中的layer */
+@property (nonatomic, strong) NSMutableArray <CAShapeLayer *>*selectedProgressLayers;
 
 @end
 
@@ -42,13 +48,15 @@
 
 - (void)layoutSubviews {
     
+    [super layoutSubviews];
     _foreLayer.anchorPoint = CGPointMake(0.5, 0.5);
     _foreLayer.position = (CGPoint){CGRectGetMidX(self.bounds), CGRectGetMidY(self.bounds)};
     
     _backLayer.anchorPoint = CGPointMake(0.5, 0.5);
     _backLayer.position = (CGPoint){CGRectGetMidX(self.bounds), CGRectGetMidY(self.bounds)};
-    
-    [super layoutSubviews];
+
+    _progressLayer.anchorPoint = CGPointMake(0.5, 0.5);
+    _progressLayer.position = (CGPoint){CGRectGetMidX(self.bounds), CGRectGetMidY(self.bounds)};
 }
 
 - (void)customInit
@@ -59,12 +67,20 @@
     [self addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(LFRB_tapAction:)]];
     [self addGestureRecognizer:[[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(LFRB_longAction:)]];
     
+    _progressLayers = [@[] mutableCopy];
+    _progressSeparatorLayers = [@[] mutableCopy];
+    _selectedProgressLayers = [@[] mutableCopy];
+    
     _foreColor = [UIColor whiteColor];
     _backColor = [UIColor colorWithWhite:0.9 alpha:9.f];
     _progressColor = [UIColor colorWithRed:(26/255.0) green:(178/255.0) blue:(10/255.0) alpha:1.0];
+    _randomProgressColor = NO;
     _zoomInScale = 1.5f;
     _progressWidth = 4.0f;
     _special = NO;
+    _progressSeparator = YES;
+    _progressSeparatorColor = [UIColor grayColor];
+    _selectedProgressColor = [UIColor redColor];
     
     [self drawButton];
 }
@@ -105,41 +121,49 @@
     
     if (!_progressLayer) {
         
-        CGFloat startAngle = M_PI + M_PI_2;
-        CGFloat endAngle = M_PI * 3 + M_PI_2;
-        
-        
-        _gradientMaskLayer = [self gradientMask];
-        CGPoint centerPoint = CGPointMake(_gradientMaskLayer.frame.size.width/2, _gradientMaskLayer.frame.size.height/2);
-        _progressLayer = [CAShapeLayer layer];
-        _progressLayer.path = [UIBezierPath bezierPathWithArcCenter:centerPoint radius:(self.frame.size.width*self.zoomInScale-self.progressWidth)/2 startAngle:startAngle endAngle:endAngle clockwise:YES].CGPath;
+        _progressLayer = [CALayer layer];
         _progressLayer.backgroundColor = [UIColor clearColor].CGColor;
-        _progressLayer.fillColor = nil;
-        _progressLayer.strokeColor = [UIColor blackColor].CGColor;
-        _progressLayer.lineWidth = self.progressWidth;
-        _progressLayer.strokeStart = 0.0;
-        _progressLayer.strokeEnd = 0.0;
-        
-        _gradientMaskLayer.mask = _progressLayer;
-        [layer addSublayer:_gradientMaskLayer];
+        _progressLayer.bounds = CGRectMake(0, 0, self.bounds.size.width, self.bounds.size.height);
+        _progressLayer.anchorPoint = CGPointMake(0.5, 0.5);
+        _progressLayer.position = (CGPoint){CGRectGetMidX(self.bounds), CGRectGetMidY(self.bounds)};
+        _progressLayer.opacity = 0.0;
+        [layer addSublayer:_progressLayer];
     }
 }
 
-- (CAGradientLayer *)gradientMask {
+- (void)createPrgoressLayer
+{
+    CGFloat startAngle = M_PI + M_PI_2;
+    CGFloat endAngle = M_PI * 3 + M_PI_2;
     
-    CAGradientLayer *gradientLayer = [CAGradientLayer layer];
-    gradientLayer.backgroundColor = [UIColor redColor].CGColor;
-    CGSize size = CGSizeMake(self.bounds.size.width * self.zoomInScale, self.bounds.size.height * self.zoomInScale);
-    CGRect bounds = (CGRect){{(self.bounds.size.width - size.width)/2, (self.bounds.size.height - size.height)/2}, size};
-    gradientLayer.frame = bounds;
-    gradientLayer.locations = @[@0.0, @1.0];
+    CGPoint centerPoint = CGPointMake(self.progressLayer.bounds.size.width/2, self.progressLayer.bounds.size.height/2);
     
-    UIColor *topColor = self.progressColor;
-    UIColor *bottomColor = self.progressColor;
+    /** 创建分隔符 */
+    if (self.progressSeparator && self.progressLayers.count) {
+        CGFloat lineWidth = self.progressWidth+3;
+        CAShapeLayer *separator = [CAShapeLayer layer];
+        separator.path = [UIBezierPath bezierPathWithArcCenter:centerPoint radius:(self.frame.size.width*self.zoomInScale-lineWidth)/2 startAngle:startAngle endAngle:endAngle clockwise:YES].CGPath;
+        separator.backgroundColor = [UIColor clearColor].CGColor;
+        separator.fillColor = nil;
+        separator.strokeColor = self.progressSeparatorColor.CGColor;
+        separator.lineWidth = lineWidth;
+        separator.strokeStart = self.progress-0.005;
+        separator.strokeEnd = self.progress;
+        [self.progressLayer addSublayer:separator];
+        [self.progressSeparatorLayers addObject:separator];
+    }
     
-    gradientLayer.colors = @[(id)topColor.CGColor, (id)bottomColor.CGColor];
+    CAShapeLayer *subProgressLayer = [CAShapeLayer layer];
+    subProgressLayer.path = [UIBezierPath bezierPathWithArcCenter:centerPoint radius:(self.frame.size.width*self.zoomInScale-self.progressWidth)/2 startAngle:startAngle endAngle:endAngle clockwise:YES].CGPath;
+    subProgressLayer.backgroundColor = [UIColor clearColor].CGColor;
+    subProgressLayer.fillColor = nil;
+    subProgressLayer.strokeColor = self.progressColor.CGColor;
+    subProgressLayer.lineWidth = self.progressWidth;
+    subProgressLayer.strokeStart = self.progress;
+    subProgressLayer.strokeEnd = self.progress;
     
-    return gradientLayer;
+    [self.progressLayer addSublayer:subProgressLayer];
+    [self.progressLayers addObject:subProgressLayer];
 }
 
 #pragma mark - setter
@@ -155,29 +179,10 @@
     _backLayer.backgroundColor = backColor.CGColor;
 }
 
-- (void)setProgressColor:(UIColor *)progressColor
-{
-    _progressColor = progressColor;
-    _progressLayer.backgroundColor = progressColor.CGColor;
-}
-
-- (void)setProgressWidth:(CGFloat)progressWidth
-{
-    _progressWidth = progressWidth;
-    /** 重新绘制进度部分 */
-    [_gradientMaskLayer removeFromSuperlayer];
-    _progressLayer = nil;
-    [self drawButton];
-}
-
 - (void)setZoomInScale:(CGFloat)zoomInScale
 {
     if (zoomInScale >= 1.f) {
         _zoomInScale = zoomInScale;
-        /** 重新绘制进度部分 */
-        [_gradientMaskLayer removeFromSuperlayer];
-        _progressLayer = nil;
-        [self drawButton];
     }
 }
 
@@ -200,7 +205,28 @@
     switch (gesture.state) {
         case UIGestureRecognizerStateBegan:
         {
-            self.originPoint = point;
+            /** 恢复选中的进度条颜色 */
+            if (self.selectedProgressLayers.count) {
+                for (CAShapeLayer *subProgressLayer in self.selectedProgressLayers) {
+                    [subProgressLayer removeAnimationForKey:LFRB_progressAnimations];
+                }
+                [self.selectedProgressLayers removeAllObjects];
+            }
+            /** 开启随机颜色 */
+            if (self.randomProgressColor) {
+                int R = (arc4random() % 256) ;
+                int G = (arc4random() % 256) ;
+                int B = (arc4random() % 256) ;
+                
+                self.progressColor = [UIColor colorWithRed:R/255.0 green:G/255.0 blue:B/255.0 alpha:1];
+            }
+            /** 创建进度条 */
+            if (self.special && self.progress < 1.f) {
+                [self createPrgoressLayer];
+            } else if (self.progressLayers.count == 0) {
+                [self createPrgoressLayer];
+            }
+            
             [self didTouchDown];
             if (self.didTouchLongBegan) {
                 self.didTouchLongBegan();
@@ -264,15 +290,16 @@
     
     // Animate progress
     CABasicAnimation *fadeIn = [CABasicAnimation animationWithKeyPath:@"opacity"];
-    fadeIn.fromValue = @(_progressLayer.opacity);
+    /** 特别模式时 解决闪烁问题 */
+    fadeIn.fromValue = (self.special && self.progress > 0.f && self.progress < 1.f) ? @1.0 : @(_progressLayer.opacity);
     fadeIn.toValue = @1.0;
     fadeIn.duration = duration;
     fadeIn.fillMode = kCAFillModeForwards;
     fadeIn.removedOnCompletion = NO;
     
-    [_progressLayer addAnimation:fadeIn forKey:@"LFRB_progressAnimations"];
-    [_backLayer addAnimation:backScale forKey:@"LFRB_backCircleAnimations"];
-    [_foreLayer addAnimation:foreScale forKey:@"LFRB_foreCircleAnimations"];
+    [_progressLayer addAnimation:fadeIn forKey:LFRB_progressAnimations];
+    [_backLayer addAnimation:backScale forKey:LFRB_backCircleAnimations];
+    [_foreLayer addAnimation:foreScale forKey:LFRB_foreCircleAnimations];
 }
 
 
@@ -304,29 +331,77 @@
     fadeOut.fillMode = kCAFillModeForwards;
     fadeOut.removedOnCompletion = NO;
     
-    [_progressLayer addAnimation:fadeOut forKey:@"LFRB_progressAnimations"];
-    [_backLayer addAnimation:backScale forKey:@"LFRB_backCircleAnimations"];
-    [_foreLayer addAnimation:foreScale forKey:@"LFRB_foreCircleAnimations"];
+    [_progressLayer addAnimation:fadeOut forKey:LFRB_progressAnimations];
+    [_backLayer addAnimation:backScale forKey:LFRB_backCircleAnimations];
+    [_foreLayer addAnimation:foreScale forKey:LFRB_foreCircleAnimations];
 }
 
 - (void)removeAnimation
 {
-    [_progressLayer removeAnimationForKey:@"LFRB_progressAnimations"];
-    [_backLayer removeAnimationForKey:@"LFRB_backCircleAnimations"];
-    [_foreLayer removeAnimationForKey:@"LFRB_foreCircleAnimations"];
+    [_progressLayer removeAnimationForKey:LFRB_progressAnimations];
+    [_backLayer removeAnimationForKey:LFRB_backCircleAnimations];
+    [_foreLayer removeAnimationForKey:LFRB_foreCircleAnimations];
 }
 
 - (void)setProgress:(CGFloat)progress
 {
     _progress = MIN(MAX(progress, 0), 1);
-    _progressLayer.strokeEnd = _progress;
+    CAShapeLayer *subProgressLayer = self.progressLayers.lastObject;
+    subProgressLayer.strokeEnd = _progress;
 }
 
 /** 重置 */
 - (void)reset
 {
     [self removeAnimation];
+    [[self.progressLayer sublayers] makeObjectsPerformSelector:@selector(removeFromSuperlayer)];
+    [self.progressLayers removeAllObjects];
+    [self.progressSeparatorLayers removeAllObjects];
+    [self.selectedProgressLayers removeAllObjects];
     self.progress = 0.f;
 }
 
+/** 选中上一段进度 */
+- (void)selectedLastProgress
+{
+    NSInteger index = self.progressLayers.count - self.selectedProgressLayers.count - 1;
+    if (index >= 0) {
+        CAShapeLayer *subProgressLayer = [self.progressLayers objectAtIndex:index];
+//        subProgressLayer.strokeColor = self.selectedProgressColor.CGColor;
+        CABasicAnimation *strokeAnimation = [CABasicAnimation animationWithKeyPath:@"strokeColor"];
+        strokeAnimation.fromValue = (__bridge id _Nullable)(subProgressLayer.strokeColor);
+        strokeAnimation.toValue = (__bridge id _Nullable)(self.selectedProgressColor.CGColor);
+        strokeAnimation.duration = 0.15f;
+        strokeAnimation.fillMode = kCAFillModeForwards;
+        strokeAnimation.removedOnCompletion = NO;
+        [subProgressLayer addAnimation:strokeAnimation forKey:LFRB_progressAnimations];
+        [self.selectedProgressLayers addObject:subProgressLayer];
+    }
+}
+
+/** 删除选中的进度部分 */
+- (void)deleteSelectedProgress
+{
+    if (self.selectedProgressLayers.count) {
+        for (CAShapeLayer *subProgressLayer in self.selectedProgressLayers) {
+            NSInteger index = [self.progressLayers indexOfObject:subProgressLayer];
+            index--; /** 分隔符会比实际进度少一个 */
+            [self.progressLayers removeObject:subProgressLayer];
+            [subProgressLayer removeFromSuperlayer];
+            if (index < 0 || index > self.progressSeparatorLayers.count-1) {
+                continue;
+            }
+            CAShapeLayer *separatorLayer = [self.progressSeparatorLayers objectAtIndex:index];
+            [self.progressSeparatorLayers removeObject:separatorLayer];
+            [separatorLayer removeFromSuperlayer];
+        }
+        [self.selectedProgressLayers removeAllObjects];
+        /** 更新进度 */
+        CAShapeLayer *progressLayer = self.progressLayers.lastObject;
+        _progress = progressLayer.strokeEnd;
+        if (_progress == 0) {
+            [self reset];
+        }
+    }
+}
 @end

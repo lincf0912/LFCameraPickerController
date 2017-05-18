@@ -18,6 +18,15 @@ typedef NS_ENUM(NSUInteger, LFCameraType) {
     LFCameraType_Both = ~0UL,
 };
 
+typedef NS_ENUM(NSUInteger, LFCameraPresetQuality) {
+    /** 低 */
+    LFCameraPresetQuality_Low,
+    /** 中 */
+    LFCameraPresetQuality_Medium,
+    /** 高 */
+    LFCameraPresetQuality_Highest,
+};
+
 @protocol LFCameraPickerDelegate;
 
 @interface LFCameraPickerController : UINavigationController
@@ -36,22 +45,34 @@ typedef NS_ENUM(NSUInteger, LFCameraType) {
 
 /** =====以下属性仅cameraType 包含 LFCameraType_Video时有效===== */
 
+/** 视频保存的地址 */
+@property (nonatomic, strong) NSURL *videoUrl;
 /** 是否可暂停，默认NO */
 @property (nonatomic, assign) BOOL canPause;
 /** 最长录制时间，默认7s (>0s) */
 @property (nonatomic, assign) NSUInteger maxRecordSeconds;
-/** 每秒帧数，默认30 （>0） */
-@property (nonatomic, assign) NSUInteger framerate;
 /** 视频类型(AVFileTypeQuickTimeMovie、AVFileTypeMPEG4（默认）、AVFileTypeAppleM4V、AVFileTypeAppleM4A、AVFileType3GPP)*/
 @property (nonatomic, copy) NSString *videoType;
+/** 每秒帧数，默认30 （>0） */
+@property (nonatomic, assign) NSUInteger framerate;
+/** 视频、音频质量，默认LFCameraPresetQuality_Medium */
+@property (nonatomic, assign) LFCameraPresetQuality presetQuality;
 
 /** =====以上属性仅cameraType 包含 LFCameraType_Video时有效===== */
 
 /** 个性化配置 */
 
+/** 拍照与录制视频是否保存到系统相册，默认YES */
+@property (nonatomic, assign) BOOL autoSavePhotoAlbum;
 /** 停止录制按钮名称 it work when canPause is YES  */
 @property (nonatomic, copy) NSString *stopButtonTitle;
+/** 默认显示等待的文字 */
+@property (nonatomic, copy) NSString *processHintStr;
 
+- (void)showProgressHUDText:(NSString *)text isTop:(BOOL)isTop;
+- (void)showProgressHUDText:(NSString *)text;
+- (void)showProgressHUD;
+- (void)hideProgressHUD;
 @end
 
 @protocol LFCameraPickerDelegate <NSObject>
