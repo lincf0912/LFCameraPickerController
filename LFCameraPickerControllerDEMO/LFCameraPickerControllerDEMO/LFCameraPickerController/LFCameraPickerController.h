@@ -49,8 +49,8 @@ typedef NS_ENUM(NSUInteger, LFCameraPresetQuality) {
 @property (nonatomic, strong) NSURL *videoUrl;
 /** 是否可暂停，默认NO */
 @property (nonatomic, assign) BOOL canPause;
-/** 最短录制时间，默认1s （>=0s） */
-@property (nonatomic, assign) NSUInteger minRecordSeconds;
+/** 最短录制时间，默认0.3s （>=0s）canPause is YES，Invalid */
+@property (nonatomic, assign) float minRecordSeconds;
 /** 最长录制时间，默认7s (>minRecordSeconds) */
 @property (nonatomic, assign) NSUInteger maxRecordSeconds;
 /** 视频类型(AVFileTypeQuickTimeMovie、AVFileTypeMPEG4（默认）、AVFileTypeAppleM4V、AVFileTypeAppleM4A、AVFileType3GPP)*/

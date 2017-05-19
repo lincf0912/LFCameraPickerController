@@ -362,7 +362,7 @@ NSString *const LFRB_progressStrokeAnimation = @"LFRB_progressStrokeAnimation";
 }
 
 /** 选中上一段进度 */
-- (void)selectedLastProgress
+- (BOOL)selectedLastProgress
 {
     NSInteger index = self.progressLayers.count - self.selectedProgressLayers.count - 1;
     if (index >= 0) {
@@ -376,11 +376,15 @@ NSString *const LFRB_progressStrokeAnimation = @"LFRB_progressStrokeAnimation";
         strokeAnimation.removedOnCompletion = NO;
         [subProgressLayer addAnimation:strokeAnimation forKey:LFRB_progressAnimations];
         [self.selectedProgressLayers addObject:subProgressLayer];
+        
+        return YES;
     }
+    
+    return NO;
 }
 
 /** 删除选中的进度部分 */
-- (void)deleteSelectedProgress
+- (BOOL)deleteSelectedProgress
 {
     if (self.selectedProgressLayers.count) {
         for (CAShapeLayer *subProgressLayer in self.selectedProgressLayers) {
@@ -402,6 +406,9 @@ NSString *const LFRB_progressStrokeAnimation = @"LFRB_progressStrokeAnimation";
         if (_progress == 0) {
             [self reset];
         }
+        return YES;
     }
+    
+    return NO;
 }
 @end

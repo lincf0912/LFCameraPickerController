@@ -41,9 +41,9 @@ typedef void(^didTouchLongEnd)();
 /** 重置 */
 - (void)reset;
 /** 选中上一段进度 */
-- (void)selectedLastProgress;
+- (BOOL)selectedLastProgress;
 /** 删除选中的进度部分 */
-- (void)deleteSelectedProgress;
+- (BOOL)deleteSelectedProgress;
 
 /** 回调 */
 

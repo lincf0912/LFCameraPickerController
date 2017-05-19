@@ -31,6 +31,10 @@
 @property (weak, nonatomic) UIButton *flashButton;
 /** 摄像头切换 */
 @property (weak, nonatomic) UIButton *flipCameraButton;
+/** 回制按钮 */
+@property (weak, nonatomic) UIButton *backToRecord;
+/** 停止按钮 */
+@property (weak, nonatomic) UIButton *stopButton;
 
 /** 录制按钮 */
 @property (weak, nonatomic) LFRecordButton *recordButton;
@@ -186,8 +190,8 @@
 - (void)saveAndShowSession:(SCRecordSession *)recordSession {
     
     LFCameraPickerController *cameraPicker = (LFCameraPickerController *)self.navigationController;
-    /** 最小限制 */
-    if (CMTimeGetSeconds(_recorder.session.duration) < cameraPicker.minRecordSeconds) {
+    /** 非暂停模式才启用最小限制 */
+    if (!cameraPicker.canPause && CMTimeGetSeconds(recordSession.duration) < cameraPicker.minRecordSeconds) {
         [self takePhoto];
     } else {
         [self showVideoView];
@@ -200,6 +204,9 @@
 - (void)retakeRecordSession {
 
     self.photo = nil;
+    self.backToRecord.selected = NO;
+    self.backToRecord.enabled = NO;
+    self.stopButton.enabled = NO;
     
     SCRecordSession *recordSession = _recorder.session;
     
@@ -265,6 +272,8 @@
 
 - (void)recorder:(SCRecorder *)recorder didCompleteSegment:(SCRecordSessionSegment *)segment inSession:(SCRecordSession *)recordSession error:(NSError *)error {
     NSLog(@"Completed record segment at %@: %@ (frameRate: %f)", segment.url, error, segment.frameRate);
+    self.backToRecord.enabled = YES;
+    self.stopButton.enabled = YES;
 }
 
 - (void)recorder:(SCRecorder *)recorder didAppendVideoSampleBufferInSession:(SCRecordSession *)recordSession {
@@ -310,24 +319,45 @@
     [_recorder switchCaptureDevices];
 }
 
-- (void)flashAction
+- (void)flashAction:(UIButton *)button
 {
     switch (_recorder.flashMode) {
         case SCFlashModeOff:
             _recorder.flashMode = SCFlashModeAuto;
+            [button setImage:LFCamera_bundleImageNamed(@"LFCamera_flashlight_auto") forState:UIControlStateNormal];
             break;
         case SCFlashModeAuto:
             _recorder.flashMode = SCFlashModeOn;
+            [button setImage:LFCamera_bundleImageNamed(@"LFCamera_flashlight_on") forState:UIControlStateNormal];
             break;
         case SCFlashModeOn:
             _recorder.flashMode = SCFlashModeLight;
+            [button setImage:LFCamera_bundleImageNamed(@"LFCamera_flashlight_light") forState:UIControlStateNormal];
             break;
         case SCFlashModeLight:
             _recorder.flashMode = SCFlashModeOff;
+            [button setImage:LFCamera_bundleImageNamed(@"LFCamera_flashlight_off") forState:UIControlStateNormal];
             break;
         default:
             break;
     }
+}
+
+- (void)selectedOrDeleteLastProgress:(UIButton *)button
+{
+    if (button.isSelected) {
+        [self.recordButton deleteSelectedProgress];
+        [self.recorder.session removeLastSegment];
+        button.selected = NO;
+        /** 删除后，进度被重置，关闭按钮 */
+        if (self.recordButton.progress == 0) {
+            self.backToRecord.enabled = NO;
+            self.stopButton.enabled = NO;
+        }
+    } else {
+        button.selected = [self.recordButton selectedLastProgress];
+    }
+    
 }
 
 #pragma mark - previte
@@ -360,6 +390,7 @@
     };
     /** 长按开始 */
     recordButton.didTouchLongBegan = ^{
+        weakSelf.backToRecord.selected = NO;
         [weakSelf.recorder record];
     };
     /** 长按结束 */
@@ -401,17 +432,22 @@
         [boomView addSubview:closeButton];
     } else {
         /** 底部工具栏 - 选择／删除按钮 */
-        //        UIButton *selectedButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        //        selectedButton.frame = CGRectMake((CGRectGetMinX(recordButton.frame)-LFCamera_buttonHeight)/2, (CGRectGetHeight(boomView.frame)-LFCamera_buttonHeight)/2, LFCamera_buttonHeight, LFCamera_buttonHeight);
-        //        [selectedButton setImage:LFCamera_bundleImageNamed(@"LFCamera_back") forState:UIControlStateNormal];
-        //        [selectedButton addTarget:self action:@selector(selectedAction) forControlEvents:UIControlEventTouchUpInside];
-        //        [boomView addSubview:selectedButton];
+        UIButton *backToRecord = [UIButton buttonWithType:UIButtonTypeCustom];
+        backToRecord.frame = CGRectMake((CGRectGetMinX(recordButton.frame)-LFCamera_buttonHeight)/2, (CGRectGetHeight(boomView.frame)-LFCamera_buttonHeight)/2, LFCamera_buttonHeight, LFCamera_buttonHeight);
+        [backToRecord setImage:LFCamera_bundleImageNamed(@"LFCamera_backTo") forState:UIControlStateNormal];
+        [backToRecord setImage:LFCamera_bundleImageNamed(@"LFCamera_DeleteBtn") forState:UIControlStateSelected];
+        [backToRecord addTarget:self action:@selector(selectedOrDeleteLastProgress:) forControlEvents:UIControlEventTouchUpInside];
+        backToRecord.enabled = NO;
+        [boomView addSubview:backToRecord];
+        self.backToRecord = backToRecord;
         /** 底部工具栏 - 完成按钮 */
         UIButton *stopButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        stopButton.frame = CGRectMake((CGRectGetWidth(boomView.frame)-LFCamera_buttonHeight)/2+CGRectGetWidth(recordButton.frame)/2+CGRectGetWidth(boomView.frame)/4, (CGRectGetHeight(boomView.frame)-LFCamera_buttonHeight)/2, LFCamera_buttonHeight, LFCamera_buttonHeight);
-        [stopButton setTitle:cameraPicker.stopButtonTitle forState:UIControlStateNormal];
+        stopButton.frame = CGRectMake((CGRectGetWidth(boomView.frame)-CGRectGetMaxX(recordButton.frame)-LFCamera_buttonHeight)/2+CGRectGetMaxX(recordButton.frame), (CGRectGetHeight(boomView.frame)-LFCamera_buttonHeight)/2, LFCamera_buttonHeight, LFCamera_buttonHeight);
+        [stopButton setImage:LFCamera_bundleImageNamed(@"LFCamera_stop") forState:UIControlStateNormal];
         [stopButton addTarget:self action:@selector(stopAction) forControlEvents:UIControlEventTouchUpInside];
+        stopButton.enabled = NO;
         [boomView addSubview:stopButton];
+        self.stopButton = stopButton;
     }
     
     /** 顶部栏 */
@@ -421,8 +457,8 @@
     /** 顶部栏 - 关闭按钮 */
     if (cameraPicker.canPause) {
         UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        closeButton.frame = CGRectMake(10, 0, CGRectGetHeight(topView.frame), CGRectGetHeight(topView.frame));
-        [closeButton setImage:LFCamera_bundleImageNamed(@"LFCamera_back") forState:UIControlStateNormal];
+        closeButton.frame = CGRectMake(10, 5, CGRectGetHeight(topView.frame) - 10, CGRectGetHeight(topView.frame) - 10);
+        [closeButton setImage:LFCamera_bundleImageNamed(@"LFCamera_close") forState:UIControlStateNormal];
         [closeButton addTarget:self action:@selector(closeAction) forControlEvents:UIControlEventTouchUpInside];
         [topView addSubview:closeButton];
     }
@@ -443,8 +479,8 @@
         UIButton *flashButton = [UIButton buttonWithType:UIButtonTypeCustom];
         CGFloat tmpWidth = flipCameraButton ? CGRectGetMinX(flipCameraButton.frame) : width;
         flashButton.frame = CGRectMake(tmpWidth - CGRectGetHeight(topView.frame) - 10, 5, CGRectGetHeight(topView.frame)-10, CGRectGetHeight(topView.frame)-10);
-        [flashButton setImage:LFCamera_bundleImageNamed(@"LFCamera_flip_camera") forState:UIControlStateNormal];
-        [flashButton addTarget:self action:@selector(flashAction) forControlEvents:UIControlEventTouchUpInside];
+        [flashButton setImage:LFCamera_bundleImageNamed(@"LFCamera_flashlight_auto") forState:UIControlStateNormal];
+        [flashButton addTarget:self action:@selector(flashAction:) forControlEvents:UIControlEventTouchUpInside];
         [topView addSubview:flashButton];
         self.flashButton = flashButton;
     }
