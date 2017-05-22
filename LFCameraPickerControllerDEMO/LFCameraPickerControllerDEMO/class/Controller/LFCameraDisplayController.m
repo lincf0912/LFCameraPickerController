@@ -11,7 +11,7 @@
 #import "LFCameraHeader.h"
 #import "SCRecorder.h"
 
-@interface LFCameraDisplayController ()
+@interface LFCameraDisplayController () <SCPlayerDelegate>
 
 @property (strong, nonatomic) SCAssetExportSession *exportSession;
 @property (strong, nonatomic) SCPlayer *player;
@@ -173,15 +173,19 @@
     [self.view addSubview:toolsView];
     
     UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    cancelButton.backgroundColor = [UIColor lightGrayColor];
     cancelButton.frame = CGRectMake((CGRectGetMidX(toolsView.frame)-LFCamera_buttonHeight)/2, (CGRectGetHeight(toolsView.frame)-LFCamera_buttonHeight)/2, LFCamera_buttonHeight, LFCamera_buttonHeight);
-    [cancelButton setImage:LFCamera_bundleImageNamed(@"LFCamera_back") forState:UIControlStateNormal];
+    [cancelButton setImage:LFCamera_bundleImageNamed(@"LFCamera_cancel") forState:UIControlStateNormal];
     [cancelButton addTarget:self action:@selector(cancelAction) forControlEvents:UIControlEventTouchUpInside];
+    [self cornerButton:cancelButton];
     [toolsView addSubview:cancelButton];
     
     UIButton *finishButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    finishButton.backgroundColor = [UIColor whiteColor];
     finishButton.frame = CGRectMake((CGRectGetWidth(toolsView.frame)-LFCamera_buttonHeight)/2+CGRectGetWidth(toolsView.frame)/4, (CGRectGetHeight(toolsView.frame)-LFCamera_buttonHeight)/2, LFCamera_buttonHeight, LFCamera_buttonHeight);
-    [finishButton setImage:LFCamera_bundleImageNamed(@"LFCamera_back") forState:UIControlStateNormal];
+    [finishButton setImage:LFCamera_bundleImageNamed(@"LFCamera_finish") forState:UIControlStateNormal];
     [finishButton addTarget:self action:@selector(finishAction) forControlEvents:UIControlEventTouchUpInside];
+    [self cornerButton:finishButton];
     [toolsView addSubview:finishButton];
     
     CGPoint center = CGPointMake(CGRectGetMidX(toolsView.bounds), CGRectGetMidY(toolsView.bounds));
@@ -197,11 +201,23 @@
     } completion:nil];
 }
 
+- (void)cornerButton:(UIButton *)button
+{
+    button.contentMode = UIViewContentModeScaleAspectFit;
+    button.layer.cornerRadius = CGRectGetWidth(button.frame)/2;
+    button.layer.masksToBounds = YES;
+    button.layer.shadowColor = [UIColor blackColor].CGColor;
+    button.layer.shadowOffset = CGSizeMake(1, 1);
+    button.layer.shadowOpacity = 0.5f;
+    button.layer.shadowRadius = 2.f;
+}
+
 #pragma mark - 初始化播放控件
 - (void)initPlayerView
 {
     _player = [SCPlayer player];
     _player.loopEnabled = YES;
+    _player.delegate = self;
     
     SCVideoPlayerView *playerView = [[SCVideoPlayerView alloc] initWithPlayer:_player];
     playerView.playerLayer.videoGravity = AVLayerVideoGravityResizeAspect;

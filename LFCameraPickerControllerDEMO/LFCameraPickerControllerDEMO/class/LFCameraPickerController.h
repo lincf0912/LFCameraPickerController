@@ -38,7 +38,7 @@ typedef NS_ENUM(NSUInteger, LFCameraPresetQuality) {
 @property (nonatomic, assign) LFCameraType cameraType;
 /** 是否允许翻转摄像头，默认YES */
 @property (nonatomic, assign) BOOL flipCamera;
-/** 默认摄像头方向，默认YES，后摄像头，反之为前摄像头 */
+/** 默认摄像头方向，默认NO，后摄像头，反之为前摄像头 */
 @property (nonatomic, assign) BOOL frontCamera;
 /** 是否支持闪光灯，默认NO */
 @property (nonatomic, assign) BOOL flash;
@@ -81,7 +81,10 @@ typedef NS_ENUM(NSUInteger, LFCameraPresetQuality) {
 
 @optional
 /** 拍照回调 */
-
+- (void)lf_cameraPickerController:(LFCameraPickerController *)picker didFinishPickingImage:(UIImage *)image;
 /** 视频回调 */
+- (void)lf_cameraPickerController:(LFCameraPickerController *)picker didFinishPickingVideo:(NSURL *)videoUrl;
+/** 取消 */
+- (void)lf_cameraPickerDidCancel:(LFCameraPickerController *)picker;
 
 @end

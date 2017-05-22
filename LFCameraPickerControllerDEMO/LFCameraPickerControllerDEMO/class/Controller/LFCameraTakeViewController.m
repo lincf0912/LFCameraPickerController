@@ -160,6 +160,7 @@
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     _recorder.previewView = nil;
+    [_recorder.session removeAllSegments];
 }
 
 #pragma mark - SCRecorder 操作
@@ -288,21 +289,31 @@
 }
 - (void)lf_cameraDisplay:(LFCameraDisplayController *)cameraDisplay didFinishVideo:(NSURL *)videoURL
 {
+    LFCameraPickerController *cameraPicker = (LFCameraPickerController *)self.navigationController;
     /** 代理回调 */
-    
-    [self closeAction];
+    if ([cameraPicker.pickerDelegate respondsToSelector:@selector(lf_cameraPickerController:didFinishPickingVideo:)]) {
+        [cameraPicker.pickerDelegate lf_cameraPickerController:cameraPicker didFinishPickingVideo:videoURL];
+    }
+    [cameraPicker dismissViewControllerAnimated:YES completion:nil];
 }
 - (void)lf_cameraDisplay:(LFCameraDisplayController *)cameraDisplay didFinishImage:(UIImage *)image
 {
+    LFCameraPickerController *cameraPicker = (LFCameraPickerController *)self.navigationController;
     /** 代理回调 */
-    
-    [self closeAction];
+    if ([cameraPicker.pickerDelegate respondsToSelector:@selector(lf_cameraPickerController:didFinishPickingImage:)]) {
+        [cameraPicker.pickerDelegate lf_cameraPickerController:cameraPicker didFinishPickingImage:image];
+    }
+    [cameraPicker dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma mark - 点击事件操作
 - (void)closeAction
 {
     LFCameraPickerController *cameraPicker = (LFCameraPickerController *)self.navigationController;
+    /** 代理回调 */
+    if ([cameraPicker.pickerDelegate respondsToSelector:@selector(lf_cameraPickerDidCancel:)]) {
+        [cameraPicker.pickerDelegate lf_cameraPickerDidCancel:cameraPicker];
+    }
     [cameraPicker dismissViewControllerAnimated:YES completion:nil];
 }
 
@@ -383,7 +394,9 @@
     
     /** 底部工具栏 - 开始按钮 */
     LFRecordButton *recordButton = [[LFRecordButton alloc] initWithFrame:CGRectMake((CGRectGetWidth(boomView.frame)-LFCamera_recordButtonHeight)/2, (CGRectGetHeight(boomView.frame)-LFCamera_recordButtonHeight)/2, LFCamera_recordButtonHeight, LFCamera_recordButtonHeight)];
-    recordButton.special = cameraPicker.canPause;
+    recordButton.onlySingleTap = (cameraPicker.cameraType == LFCameraType_Photo);
+    recordButton.onlyLongTap = (cameraPicker.cameraType == LFCameraType_Video);
+    recordButton.special = (cameraPicker.cameraType&LFCameraType_Video && cameraPicker.canPause);
     /** 单击 */
     recordButton.didTouchSingle = ^{
         [weakSelf takePhoto];
@@ -396,7 +409,7 @@
     /** 长按结束 */
     recordButton.didTouchLongEnd = ^{
         
-        if (weakCameraPicker.canPause) {
+        if (weakCameraPicker.canPause) { /** 拍摄暂停模式 */
             [weakSelf.recorder pause];
         } else {
             [weakSelf stopAction];
@@ -423,14 +436,7 @@
     [boomView addSubview:recordButton];
     self.recordButton = recordButton;
     
-    /** 底部工具栏 - 关闭按钮 */
-    if (!cameraPicker.canPause) {
-        UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        closeButton.frame = CGRectMake((CGRectGetMinX(recordButton.frame)-LFCamera_buttonHeight)/2, (CGRectGetHeight(boomView.frame)-LFCamera_buttonHeight)/2, LFCamera_buttonHeight, LFCamera_buttonHeight);
-        [closeButton setImage:LFCamera_bundleImageNamed(@"LFCamera_back") forState:UIControlStateNormal];
-        [closeButton addTarget:self action:@selector(closeAction) forControlEvents:UIControlEventTouchUpInside];
-        [boomView addSubview:closeButton];
-    } else {
+    if (cameraPicker.cameraType&LFCameraType_Video && cameraPicker.canPause) {
         /** 底部工具栏 - 选择／删除按钮 */
         UIButton *backToRecord = [UIButton buttonWithType:UIButtonTypeCustom];
         backToRecord.frame = CGRectMake((CGRectGetMinX(recordButton.frame)-LFCamera_buttonHeight)/2, (CGRectGetHeight(boomView.frame)-LFCamera_buttonHeight)/2, LFCamera_buttonHeight, LFCamera_buttonHeight);
@@ -448,6 +454,13 @@
         stopButton.enabled = NO;
         [boomView addSubview:stopButton];
         self.stopButton = stopButton;
+    } else {
+        /** 底部工具栏 - 关闭按钮 */
+        UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        closeButton.frame = CGRectMake((CGRectGetMinX(recordButton.frame)-LFCamera_buttonHeight)/2, (CGRectGetHeight(boomView.frame)-LFCamera_buttonHeight)/2, LFCamera_buttonHeight, LFCamera_buttonHeight);
+        [closeButton setImage:LFCamera_bundleImageNamed(@"LFCamera_back") forState:UIControlStateNormal];
+        [closeButton addTarget:self action:@selector(closeAction) forControlEvents:UIControlEventTouchUpInside];
+        [boomView addSubview:closeButton];
     }
     
     /** 顶部栏 */
@@ -455,7 +468,7 @@
     [self.view addSubview:topView];
     
     /** 顶部栏 - 关闭按钮 */
-    if (cameraPicker.canPause) {
+    if (cameraPicker.cameraType&LFCameraType_Video && cameraPicker.canPause) {
         UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
         closeButton.frame = CGRectMake(10, 5, CGRectGetHeight(topView.frame) - 10, CGRectGetHeight(topView.frame) - 10);
         [closeButton setImage:LFCamera_bundleImageNamed(@"LFCamera_close") forState:UIControlStateNormal];
@@ -465,7 +478,7 @@
     
     /** 顶部栏 - 摄像头切换按钮 */
     UIButton *flipCameraButton = nil;
-    {
+    if (cameraPicker.flipCamera) {
         flipCameraButton = [UIButton buttonWithType:UIButtonTypeCustom];
         flipCameraButton.frame = CGRectMake(width - CGRectGetHeight(topView.frame) - 10, 5, CGRectGetHeight(topView.frame)-10, CGRectGetHeight(topView.frame)-10);
         [flipCameraButton setImage:LFCamera_bundleImageNamed(@"LFCamera_flip_camera") forState:UIControlStateNormal];
@@ -497,7 +510,7 @@
     _recorder.maxRecordDuration = CMTimeMake(cameraPicker.framerate * cameraPicker.maxRecordSeconds, (int32_t)cameraPicker.framerate);
     
     //    _recorder.fastRecordMethodEnabled = YES;
-    if (!cameraPicker.frontCamera) {
+    if (cameraPicker.frontCamera) {
         _recorder.device = AVCaptureDevicePositionFront;
     }
     if (cameraPicker.flash) {

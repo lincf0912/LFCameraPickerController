@@ -14,7 +14,9 @@ NSString *const LFRB_foreCircleAnimations = @"LFRB_foreCircleAnimations";
 NSString *const LFRB_progressStrokeAnimation = @"LFRB_progressStrokeAnimation";
 
 @interface LFRecordButton ()
-
+{
+    UILongPressGestureRecognizer *_longPressGR;
+}
 @property (nonatomic, strong) CALayer *foreLayer;
 @property (nonatomic, strong) CALayer *backLayer;
 @property (nonatomic, strong) CALayer *progressLayer;
@@ -65,7 +67,8 @@ NSString *const LFRB_progressStrokeAnimation = @"LFRB_progressStrokeAnimation";
     self.backgroundColor = [UIColor clearColor];
     /** 添加手势 */
     [self addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(LFRB_tapAction:)]];
-    [self addGestureRecognizer:[[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(LFRB_longAction:)]];
+    _longPressGR = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(LFRB_longAction:)];
+    [self addGestureRecognizer:_longPressGR];
     
     _progressLayers = [@[] mutableCopy];
     _progressSeparatorLayers = [@[] mutableCopy];
@@ -189,6 +192,9 @@ NSString *const LFRB_progressStrokeAnimation = @"LFRB_progressStrokeAnimation";
 #pragma mark - 点击事件
 - (void)LFRB_tapAction:(UITapGestureRecognizer *)gesture
 {
+    if (self.onlyLongTap) {
+        return;
+    }
     if (gesture.state == UIGestureRecognizerStateEnded) {
         if (!_special || _progress == 0) {
             [self didTouchDownInSingle];
@@ -201,6 +207,18 @@ NSString *const LFRB_progressStrokeAnimation = @"LFRB_progressStrokeAnimation";
 
 - (void)LFRB_longAction:(UILongPressGestureRecognizer *)gesture
 {
+    if (self.onlySingleTap) {
+        if (gesture.state == UIGestureRecognizerStateBegan) {
+            if (!_special || _progress == 0) {
+                [self didTouchDownInSingle];
+                if (self.didTouchSingle) {
+                    self.didTouchSingle();
+                }
+            }
+        }
+        return;
+    }
+    
     CGPoint point = [gesture locationInView:[UIApplication sharedApplication].keyWindow];
     switch (gesture.state) {
         case UIGestureRecognizerStateBegan:

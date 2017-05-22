@@ -29,6 +29,10 @@ typedef void(^didTouchLongEnd)();
 /** 更新进度 0~1 */
 @property (nonatomic, assign) CGFloat progress;
 
+/** 仅使用单击效果 defautl NO (关闭长按效果) */
+@property (nonatomic, assign) BOOL onlySingleTap;
+/** 仅使用长按效果 defautl NO （关闭单击效果） */
+@property (nonatomic, assign) BOOL onlyLongTap;
 /** 特别模式 defautl NO :当progress>0时，长按结束不会恢复原来状态，并且不会再触发单击事件，直到progress=1时，恢复原来状态；progress=0时才能触发单击事件 */
 @property (nonatomic, assign) BOOL special;
 /** 进度分割线 default YES,it work when special is YES */

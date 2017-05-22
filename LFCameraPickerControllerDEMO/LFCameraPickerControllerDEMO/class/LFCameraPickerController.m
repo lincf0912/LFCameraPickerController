@@ -91,7 +91,7 @@
 {
     _cameraType = LFCameraType_Both;
     _flipCamera = YES;
-    _frontCamera = YES;
+    _frontCamera = NO;
     _flash = NO;
     _canPause = NO;
     _minRecordSeconds = .3f;
@@ -179,7 +179,7 @@
     return YES;
 }
 
-//phone只支持正方向，pad只支持左右横屏 （个别UI需要支持横屏，重写此方法即可）
+//只支持正方向
 -(UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
     return UIInterfaceOrientationMaskPortrait;
