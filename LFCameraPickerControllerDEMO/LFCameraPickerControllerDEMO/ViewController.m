@@ -33,6 +33,8 @@
 
 - (IBAction)basicAction:(id)sender {
     LFCameraPickerController *camera = [[LFCameraPickerController alloc] init];
+    NSString *documentPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,NSUserDomainMask,YES) objectAtIndex:0];
+    camera.videoUrl = [NSURL fileURLWithPath:[documentPath stringByAppendingPathComponent:@"video1.mp4"]];
     /** 模式 */
     LFCameraType type = LFCameraType_Both;
     switch (self.type_segment.selectedSegmentIndex) {

@@ -237,4 +237,10 @@
     self.imageView = imageView;
 }
 
+#pragma mark - SCPlayerDelegate
+- (void)player:(SCPlayer *__nonnull)player itemReadyToPlay:(AVPlayerItem *__nonnull)item
+{
+    [self.imageView removeFromSuperview];
+}
+
 @end
