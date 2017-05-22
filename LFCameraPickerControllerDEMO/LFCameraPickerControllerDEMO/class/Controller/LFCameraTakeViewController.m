@@ -291,8 +291,8 @@
 {
     LFCameraPickerController *cameraPicker = (LFCameraPickerController *)self.navigationController;
     /** 代理回调 */
-    if ([cameraPicker.pickerDelegate respondsToSelector:@selector(lf_cameraPickerController:didFinishPickingVideo:)]) {
-        [cameraPicker.pickerDelegate lf_cameraPickerController:cameraPicker didFinishPickingVideo:videoURL];
+    if ([cameraPicker.pickerDelegate respondsToSelector:@selector(lf_cameraPickerController:didFinishPickingVideo:duration:)]) {
+        [cameraPicker.pickerDelegate lf_cameraPickerController:cameraPicker didFinishPickingVideo:videoURL duration:CMTimeGetSeconds(self.recorder.session.duration)];
     }
     [cameraPicker dismissViewControllerAnimated:YES completion:nil];
 }

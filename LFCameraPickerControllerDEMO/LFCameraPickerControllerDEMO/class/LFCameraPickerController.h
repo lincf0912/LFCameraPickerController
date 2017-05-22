@@ -83,7 +83,7 @@ typedef NS_ENUM(NSUInteger, LFCameraPresetQuality) {
 /** 拍照回调 */
 - (void)lf_cameraPickerController:(LFCameraPickerController *)picker didFinishPickingImage:(UIImage *)image;
 /** 视频回调 */
-- (void)lf_cameraPickerController:(LFCameraPickerController *)picker didFinishPickingVideo:(NSURL *)videoUrl;
+- (void)lf_cameraPickerController:(LFCameraPickerController *)picker didFinishPickingVideo:(NSURL *)videoUrl duration:(NSTimeInterval)duration;
 /** 取消 */
 - (void)lf_cameraPickerDidCancel:(LFCameraPickerController *)picker;
 

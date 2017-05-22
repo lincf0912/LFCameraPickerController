@@ -13,7 +13,6 @@
 		6F05EE321EC44B1C006FC1BF /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6F05EE301EC44B1C006FC1BF /* Main.storyboard */; };
 		6F05EE341EC44B1C006FC1BF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6F05EE331EC44B1C006FC1BF /* Assets.xcassets */; };
 		6F05EE371EC44B1C006FC1BF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6F05EE351EC44B1C006FC1BF /* LaunchScreen.storyboard */; };
-		6F05EE491EC44BA5006FC1BF /* LFRecordButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F05EE461EC44BA5006FC1BF /* LFRecordButton.m */; };
 		6FAA506B1ED2BB30002D88A2 /* UIImage+LFCamera_Orientation.m in Sources */ = {isa = PBXBuildFile; fileRef = 6FAA505D1ED2BB30002D88A2 /* UIImage+LFCamera_Orientation.m */; };
 		6FAA506C1ED2BB30002D88A2 /* LFCameraBaseController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6FAA50601ED2BB30002D88A2 /* LFCameraBaseController.m */; };
 		6FAA506D1ED2BB30002D88A2 /* LFCameraDisplayController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6FAA50621ED2BB30002D88A2 /* LFCameraDisplayController.m */; };
@@ -21,6 +20,7 @@
 		6FAA506F1ED2BB30002D88A2 /* LFCameraHeader.m in Sources */ = {isa = PBXBuildFile; fileRef = 6FAA50671ED2BB30002D88A2 /* LFCameraHeader.m */; };
 		6FAA50701ED2BB30002D88A2 /* LFCameraPickerController.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 6FAA50681ED2BB30002D88A2 /* LFCameraPickerController.bundle */; };
 		6FAA50711ED2BB30002D88A2 /* LFCameraPickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6FAA506A1ED2BB30002D88A2 /* LFCameraPickerController.m */; };
+		6FAA50761ED2CC3F002D88A2 /* LFRecordButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 6FAA50751ED2CC3F002D88A2 /* LFRecordButton.m */; };
 		A229248F3E5DC6DA40F9347F /* libPods-LFCameraPickerControllerDEMO.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A6A91C38ED318A2C9956E69 /* libPods-LFCameraPickerControllerDEMO.a */; };
 /* End PBXBuildFile section */
 
@@ -37,8 +37,6 @@
 		6F05EE331EC44B1C006FC1BF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		6F05EE361EC44B1C006FC1BF /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		6F05EE381EC44B1C006FC1BF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		6F05EE451EC44BA5006FC1BF /* LFRecordButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LFRecordButton.h; sourceTree = "<group>"; };
-		6F05EE461EC44BA5006FC1BF /* LFRecordButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LFRecordButton.m; sourceTree = "<group>"; };
 		6FAA505C1ED2BB30002D88A2 /* UIImage+LFCamera_Orientation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+LFCamera_Orientation.h"; sourceTree = "<group>"; };
 		6FAA505D1ED2BB30002D88A2 /* UIImage+LFCamera_Orientation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+LFCamera_Orientation.m"; sourceTree = "<group>"; };
 		6FAA505F1ED2BB30002D88A2 /* LFCameraBaseController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LFCameraBaseController.h; sourceTree = "<group>"; };
@@ -52,6 +50,8 @@
 		6FAA50681ED2BB30002D88A2 /* LFCameraPickerController.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = LFCameraPickerController.bundle; sourceTree = "<group>"; };
 		6FAA50691ED2BB30002D88A2 /* LFCameraPickerController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LFCameraPickerController.h; sourceTree = "<group>"; };
 		6FAA506A1ED2BB30002D88A2 /* LFCameraPickerController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LFCameraPickerController.m; sourceTree = "<group>"; };
+		6FAA50741ED2CC3F002D88A2 /* LFRecordButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LFRecordButton.h; sourceTree = "<group>"; };
+		6FAA50751ED2CC3F002D88A2 /* LFRecordButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LFRecordButton.m; sourceTree = "<group>"; };
 		E97422819F266C96A19D894D /* Pods-LFCameraPickerControllerDEMO.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LFCameraPickerControllerDEMO.release.xcconfig"; path = "../Pods/Target Support Files/Pods-LFCameraPickerControllerDEMO/Pods-LFCameraPickerControllerDEMO.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -97,8 +97,8 @@
 		6F05EE261EC44B1C006FC1BF /* LFCameraPickerControllerDEMO */ = {
 			isa = PBXGroup;
 			children = (
+				6FAA50721ED2CC3F002D88A2 /* vendors */,
 				6FAA50591ED2BB30002D88A2 /* class */,
-				6F05EE441EC44BA5006FC1BF /* LFRecordButton */,
 				6F05EE2A1EC44B1C006FC1BF /* AppDelegate.h */,
 				6F05EE2B1EC44B1C006FC1BF /* AppDelegate.m */,
 				6F05EE2D1EC44B1C006FC1BF /* ViewController.h */,
@@ -118,15 +118,6 @@
 				6F05EE281EC44B1C006FC1BF /* main.m */,
 			);
 			name = "Supporting Files";
-			sourceTree = "<group>";
-		};
-		6F05EE441EC44BA5006FC1BF /* LFRecordButton */ = {
-			isa = PBXGroup;
-			children = (
-				6F05EE451EC44BA5006FC1BF /* LFRecordButton.h */,
-				6F05EE461EC44BA5006FC1BF /* LFRecordButton.m */,
-			);
-			path = LFRecordButton;
 			sourceTree = "<group>";
 		};
 		6FAA50591ED2BB30002D88A2 /* class */ = {
@@ -179,6 +170,23 @@
 				6FAA50671ED2BB30002D88A2 /* LFCameraHeader.m */,
 			);
 			path = Header;
+			sourceTree = "<group>";
+		};
+		6FAA50721ED2CC3F002D88A2 /* vendors */ = {
+			isa = PBXGroup;
+			children = (
+				6FAA50731ED2CC3F002D88A2 /* LFRecordButton */,
+			);
+			path = vendors;
+			sourceTree = "<group>";
+		};
+		6FAA50731ED2CC3F002D88A2 /* LFRecordButton */ = {
+			isa = PBXGroup;
+			children = (
+				6FAA50741ED2CC3F002D88A2 /* LFRecordButton.h */,
+				6FAA50751ED2CC3F002D88A2 /* LFRecordButton.m */,
+			);
+			path = LFRecordButton;
 			sourceTree = "<group>";
 		};
 		EDFF8E57D503DF84E85D4D0D /* Frameworks */ = {
@@ -313,7 +321,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6F05EE491EC44BA5006FC1BF /* LFRecordButton.m in Sources */,
+				6FAA50761ED2CC3F002D88A2 /* LFRecordButton.m in Sources */,
 				6FAA50711ED2BB30002D88A2 /* LFCameraPickerController.m in Sources */,
 				6F05EE2F1EC44B1C006FC1BF /* ViewController.m in Sources */,
 				6FAA506E1ED2BB30002D88A2 /* LFCameraTakeViewController.m in Sources */,
