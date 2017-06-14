@@ -123,8 +123,6 @@
         __weak typeof(self) weakSelf = self;
         [exportSession exportAsynchronouslyWithCompletionHandler:^{
             
-            [cameraPicker hideProgressHUD];
-            
             if (!exportSession.cancelled) {
                 NSLog(@"Completed compression in %fs", CACurrentMediaTime() - time);
             }
@@ -132,6 +130,7 @@
             NSError *error = exportSession.error;
             if (exportSession.cancelled) {
                 NSLog(@"Export was cancelled");
+                [cameraPicker hideProgressHUD];
                 [weakSelf cancelAction];
             } else if (error == nil) {
                 if (cameraPicker.autoSavePhotoAlbum) {
@@ -142,27 +141,43 @@
                     }];
                 }
                 
+                [cameraPicker hideProgressHUD];
                 if ([weakSelf.delegate respondsToSelector:@selector(lf_cameraDisplay:didFinishVideo:)]) {
                     [weakSelf.delegate lf_cameraDisplay:weakSelf didFinishVideo:exportSession.outputUrl];
                 }
             } else {
                 if (!exportSession.cancelled) {
-                    [weakSelf showAlertViewWithTitle:@"Failed to export" message:error.localizedDescription];
+                    [cameraPicker showProgressHUDText:error.localizedDescription];
+                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3.f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                        [cameraPicker hideProgressHUD];
+                        if ([weakSelf.delegate respondsToSelector:@selector(lf_cameraDisplay:didFinishVideo:)]) {
+                            [weakSelf.delegate lf_cameraDisplay:weakSelf didFinishVideo:nil];
+                        }
+                    });
                 }
             }
             
         }];
     } else {
         if (cameraPicker.autoSavePhotoAlbum) {
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                [self.imageView.image saveToCameraRollWithCompletion:^(NSError * _Nullable error) {
+                    if (error) {
+                        NSLog(@"Failed to save %@", error.localizedDescription);
+                    }
+                }];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [cameraPicker hideProgressHUD];
+                    if ([self.delegate respondsToSelector:@selector(lf_cameraDisplay:didFinishImage:)]) {
+                        [self.delegate lf_cameraDisplay:self didFinishImage:self.imageView.image];
+                    }
+                });
+            });
+        } else {
             [cameraPicker hideProgressHUD];
-            [self.imageView.image saveToCameraRollWithCompletion:^(NSError * _Nullable error) {
-                if (error) {
-                    NSLog(@"Failed to save %@", error.localizedDescription);
-                }
-            }];
-        }
-        if ([self.delegate respondsToSelector:@selector(lf_cameraDisplay:didFinishImage:)]) {
-            [self.delegate lf_cameraDisplay:self didFinishImage:self.imageView.image];
+            if ([self.delegate respondsToSelector:@selector(lf_cameraDisplay:didFinishImage:)]) {
+                [self.delegate lf_cameraDisplay:self didFinishImage:self.imageView.image];
+            }
         }
     }
 }
