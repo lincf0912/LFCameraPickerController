@@ -36,6 +36,9 @@
 /** 停止按钮 */
 @property (weak, nonatomic) UIButton *stopButton;
 
+/** 提示消息 */
+@property (weak, nonatomic) UILabel *tipsLabel;
+
 /** 录制按钮 */
 @property (weak, nonatomic) LFRecordButton *recordButton;
 
@@ -137,6 +140,15 @@
     [super viewDidAppear:animated];
     
     [_recorder startRunning];
+    [UIView animateWithDuration:0.25f delay:.5f options:UIViewAnimationOptionCurveEaseIn animations:^{
+        self.tipsLabel.alpha = 1.f;
+    } completion:^(BOOL finished) {
+        [UIView animateWithDuration:0.25f delay:4.5f options:UIViewAnimationOptionCurveEaseOut animations:^{
+            self.tipsLabel.alpha = 0.f;
+        } completion:^(BOOL finished) {
+            
+        }];
+    }];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -146,7 +158,7 @@
 
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
-    
+    self.tipsLabel.alpha = 0.f;
     /** 还原缩放 */
     _recorder.videoZoomFactor = 1;
     /** 拍照系统需要播放声音，马上关闭录制会导致声音卡顿 */
@@ -497,6 +509,23 @@
         [topView addSubview:flashButton];
         self.flashButton = flashButton;
     }
+    
+    /** 提示消息 */
+    UILabel *tipsLabel = [[UILabel alloc] init];
+    tipsLabel.text = @"轻触拍照，按住摄像";
+    tipsLabel.font = [UIFont boldSystemFontOfSize:13.f];
+    tipsLabel.textColor = [UIColor whiteColor];
+    tipsLabel.highlighted = YES;
+    tipsLabel.highlightedTextColor = [UIColor whiteColor];
+    tipsLabel.layer.shadowColor = [UIColor blackColor].CGColor;
+    tipsLabel.layer.shadowOpacity = 1.f;
+    tipsLabel.layer.shadowOffset = CGSizeMake(0, 0);
+    tipsLabel.layer.shadowRadius = 8;
+    CGSize tipsTextSize = [tipsLabel.text sizeWithAttributes:@{NSFontAttributeName:tipsLabel.font, NSForegroundColorAttributeName:tipsLabel.textColor}];
+    tipsLabel.frame = CGRectMake((CGRectGetWidth(self.view.frame)-tipsTextSize.width)/2, CGRectGetMinY(boomView.frame)-tipsTextSize.height-5, tipsTextSize.width, tipsTextSize.height);
+    tipsLabel.alpha = 0.f;
+    [self.view insertSubview:tipsLabel belowSubview:boomView];
+    self.tipsLabel = tipsLabel;
 }
 
 #pragma mark - 初始化Recorder

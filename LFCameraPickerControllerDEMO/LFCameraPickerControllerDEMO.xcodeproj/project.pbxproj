@@ -155,10 +155,10 @@
 			children = (
 				6FAA505F1ED2BB30002D88A2 /* LFCameraBaseController.h */,
 				6FAA50601ED2BB30002D88A2 /* LFCameraBaseController.m */,
-				6FAA50611ED2BB30002D88A2 /* LFCameraDisplayController.h */,
-				6FAA50621ED2BB30002D88A2 /* LFCameraDisplayController.m */,
 				6FAA50631ED2BB30002D88A2 /* LFCameraTakeViewController.h */,
 				6FAA50641ED2BB30002D88A2 /* LFCameraTakeViewController.m */,
+				6FAA50611ED2BB30002D88A2 /* LFCameraDisplayController.h */,
+				6FAA50621ED2BB30002D88A2 /* LFCameraDisplayController.m */,
 			);
 			path = Controller;
 			sourceTree = "<group>";

@@ -19,9 +19,6 @@
 /** 视频预览 */
 @property (strong, nonatomic) SCRecordSession *recordSession;
 
-/** 动画起始点 */
-@property (assign, nonatomic) CGPoint startPoint;
-
 @property (weak, nonatomic) id<LFCameraDisplayDelegate> delegate;
 
 @end
