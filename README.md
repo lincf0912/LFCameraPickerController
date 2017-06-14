@@ -2,6 +2,7 @@
 
 * 依赖SCRecorder库
 * 支持拍照、录制视频（断点录制）
+* 媒体编辑（依赖LFMediaEditingController）
 * 详细使用见LFCameraPickerController.h 的初始化方法
 
 ## Installation 安装
