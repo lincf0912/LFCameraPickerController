@@ -9,15 +9,20 @@
 #import "LFCameraDisplayController.h"
 #import "LFCameraPickerController.h"
 #import "LFCameraHeader.h"
-#import "SCRecorder.h"
 
-@interface LFCameraDisplayController () <SCPlayerDelegate>
+#import "SCRecorder.h"
+#import "LFPhotoEditingController.h"
+
+@interface LFCameraDisplayController () <SCPlayerDelegate, LFPhotoEditingControllerDelegate>
 
 @property (strong, nonatomic) SCAssetExportSession *exportSession;
 @property (strong, nonatomic) SCPlayer *player;
 
 @property (weak, nonatomic) UIImageView *imageView;
 @property (weak, nonatomic) SCVideoPlayerView *playerView;
+
+/** 图片编辑对象 */
+@property (strong, nonatomic) LFPhotoEdit *photoEdit;
 
 /** 取消 */
 @property (weak, nonatomic) UIButton *cancelButton;
@@ -150,14 +155,14 @@
     } else {
         if (cameraPicker.autoSavePhotoAlbum) {
             [cameraPicker hideProgressHUD];
-            [self.photo saveToCameraRollWithCompletion:^(NSError * _Nullable error) {
+            [self.imageView.image saveToCameraRollWithCompletion:^(NSError * _Nullable error) {
                 if (error) {
                     NSLog(@"Failed to save %@", error.localizedDescription);
                 }
             }];
         }
         if ([self.delegate respondsToSelector:@selector(lf_cameraDisplay:didFinishImage:)]) {
-            [self.delegate lf_cameraDisplay:self didFinishImage:self.photo];
+            [self.delegate lf_cameraDisplay:self didFinishImage:self.imageView.image];
         }
     }
 }
@@ -235,12 +240,50 @@
     imageView.image = self.photo;
     [self.view addSubview:imageView];
     self.imageView = imageView;
+    
+    if (self.recordSession == nil) {        
+        UIButton *editButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        CGFloat editWH = 40.f, editMargin = 20.f;
+        editButton.frame = CGRectMake(CGRectGetWidth(self.view.frame)-editWH-editMargin, editMargin, editWH, editWH);
+        [editButton setImage:LFCamera_bundleImageNamed(@"LFCamera_iconEdit") forState:UIControlStateNormal];
+        [editButton addTarget:self action:@selector(photoEditAction) forControlEvents:UIControlEventTouchUpInside];
+        [self.view addSubview:editButton];
+    }
+}
+
+- (void)photoEditAction
+{
+    LFPhotoEditingController *photoEdittingVC = [[LFPhotoEditingController alloc] init];
+    /** 当前显示的图片 */
+    if (self.photoEdit) {
+        photoEdittingVC.photoEdit = self.photoEdit;
+    } else {
+        photoEdittingVC.editImage = self.imageView.image;
+    }
+    photoEdittingVC.delegate = self;
+    [self.navigationController pushViewController:photoEdittingVC animated:NO];
 }
 
 #pragma mark - SCPlayerDelegate
 - (void)player:(SCPlayer *__nonnull)player itemReadyToPlay:(AVPlayerItem *__nonnull)item
 {
     [self.imageView removeFromSuperview];
+}
+
+#pragma mark - LFPhotoEditingControllerDelegate
+- (void)lf_PhotoEditingController:(LFPhotoEditingController *)photoEdittingVC didCancelPhotoEdit:(LFPhotoEdit *)photoEdit
+{
+    [self.navigationController popViewControllerAnimated:NO];
+}
+- (void)lf_PhotoEditingController:(LFPhotoEditingController *)photoEdittingVC didFinishPhotoEdit:(LFPhotoEdit *)photoEdit
+{
+    if (photoEdit) {
+        self.imageView.image = photoEdit.editPreviewImage;
+    } else {
+        self.imageView.image = self.photo;
+    }
+    self.photoEdit = photoEdit;
+    [self.navigationController popViewControllerAnimated:NO];
 }
 
 @end

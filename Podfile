@@ -1,4 +1,4 @@
-project './LFCameraPickerController/LFCameraPickerControllerDEMO.xcodeproj'
+project './LFCameraPickerControllerDEMO/LFCameraPickerControllerDEMO.xcodeproj'
 
 source 'https://github.com/CocoaPods/Specs.git'
 
@@ -9,5 +9,7 @@ inhibit_all_warnings!
 target 'LFCameraPickerControllerDEMO' do
 
 pod 'SCRecorder'
+
+pod 'LFMediaEditingController'
 
 end
