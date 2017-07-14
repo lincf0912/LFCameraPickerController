@@ -24,6 +24,8 @@
 /** 图片编辑对象 */
 @property (strong, nonatomic) LFPhotoEdit *photoEdit;
 
+/** 底部栏 */
+@property (weak, nonatomic) UIView *toolsView;
 /** 取消 */
 @property (weak, nonatomic) UIButton *cancelButton;
 /** 完成 */
@@ -37,16 +39,18 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     self.view.backgroundColor = [UIColor clearColor];
+    
+    /** 控制视图 */
+    [self initView];
+    
     /** 初始化控件 */
     if (self.recordSession == nil) {
         [self initImageView];
+        [self startAmination];
     } else {
         [self initImageView];
         [self initPlayerView];
     }
-    
-    /** 控制视图 */
-    [self initView];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -191,34 +195,27 @@
     /** 工具栏 */
     UIView *toolsView = [[UIView alloc] initWithFrame:CGRectMake(0, height-LFCamera_boomViewHeight-LFCamera_boomMargin, width, LFCamera_boomViewHeight)];
     [self.view addSubview:toolsView];
+    self.toolsView = toolsView;
     
     UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
     cancelButton.backgroundColor = [UIColor lightGrayColor];
     cancelButton.frame = CGRectMake((CGRectGetMidX(toolsView.frame)-LFCamera_buttonHeight)/2, (CGRectGetHeight(toolsView.frame)-LFCamera_buttonHeight)/2, LFCamera_buttonHeight, LFCamera_buttonHeight);
     [cancelButton setImage:LFCamera_bundleImageNamed(@"LFCamera_cancel") forState:UIControlStateNormal];
     [cancelButton addTarget:self action:@selector(cancelAction) forControlEvents:UIControlEventTouchUpInside];
+    cancelButton.hidden = YES;
     [self cornerButton:cancelButton];
     [toolsView addSubview:cancelButton];
+    self.cancelButton = cancelButton;
     
     UIButton *finishButton = [UIButton buttonWithType:UIButtonTypeCustom];
     finishButton.backgroundColor = [UIColor whiteColor];
     finishButton.frame = CGRectMake((CGRectGetWidth(toolsView.frame)-LFCamera_buttonHeight)/2+CGRectGetWidth(toolsView.frame)/4, (CGRectGetHeight(toolsView.frame)-LFCamera_buttonHeight)/2, LFCamera_buttonHeight, LFCamera_buttonHeight);
     [finishButton setImage:LFCamera_bundleImageNamed(@"LFCamera_finish") forState:UIControlStateNormal];
     [finishButton addTarget:self action:@selector(finishAction) forControlEvents:UIControlEventTouchUpInside];
+    finishButton.hidden = YES;
     [self cornerButton:finishButton];
     [toolsView addSubview:finishButton];
-    
-    CGPoint center = CGPointMake(CGRectGetMidX(toolsView.bounds), CGRectGetMidY(toolsView.bounds));
-    
-    CGRect cancelFrame = cancelButton.frame;
-    cancelButton.center = center;
-    CGRect finishFrame = finishButton.frame;
-    finishButton.center = center;
-    
-    [UIView animateWithDuration:0.25 delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
-        cancelButton.frame = cancelFrame;
-        finishButton.frame = finishFrame;
-    } completion:nil];
+    self.finishButton = finishButton;
 }
 
 - (void)cornerButton:(UIButton *)button
@@ -230,6 +227,24 @@
     button.layer.shadowOffset = CGSizeMake(1, 1);
     button.layer.shadowOpacity = 0.5f;
     button.layer.shadowRadius = 2.f;
+}
+
+- (void)startAmination
+{
+    CGPoint center = CGPointMake(CGRectGetMidX(self.toolsView.bounds), CGRectGetMidY(self.toolsView.bounds));
+    
+    CGRect cancelFrame = self.cancelButton.frame;
+    self.cancelButton.center = center;
+    CGRect finishFrame = self.finishButton.frame;
+    self.finishButton.center = center;
+ 
+    self.cancelButton.hidden = NO;
+    self.finishButton.hidden = NO;
+    
+    [UIView animateWithDuration:0.25 delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
+        self.cancelButton.frame = cancelFrame;
+        self.finishButton.frame = finishFrame;
+    } completion:nil];
 }
 
 #pragma mark - 初始化播放控件
@@ -283,6 +298,7 @@
 - (void)player:(SCPlayer *__nonnull)player itemReadyToPlay:(AVPlayerItem *__nonnull)item
 {
     [self.imageView removeFromSuperview];
+    [self startAmination];
 }
 
 #pragma mark - LFPhotoEditingControllerDelegate
