@@ -41,16 +41,17 @@
     self.view.backgroundColor = [UIColor clearColor];
     
     /** 控制视图 */
-    [self initView];
+    [self initImageView];
+    [self initToolsView];
     
     /** 初始化控件 */
     if (self.recordSession == nil) {
-        [self initImageView];
         [self startAmination];
     } else {
-        [self initImageView];
         [self initPlayerView];
     }
+    
+    
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -187,7 +188,7 @@
 }
 
 #pragma mark - 初始化UI
-- (void)initView
+- (void)initToolsView
 {
     CGFloat width = CGRectGetWidth(self.view.frame);
     CGFloat height = CGRectGetHeight(self.view.frame);
@@ -257,7 +258,7 @@
     SCVideoPlayerView *playerView = [[SCVideoPlayerView alloc] initWithPlayer:_player];
     playerView.playerLayer.videoGravity = AVLayerVideoGravityResizeAspect;
     playerView.frame = self.view.bounds;
-    [self.view addSubview:playerView];
+    [self.view insertSubview:playerView aboveSubview:self.imageView];
     self.playerView = playerView;
 }
 

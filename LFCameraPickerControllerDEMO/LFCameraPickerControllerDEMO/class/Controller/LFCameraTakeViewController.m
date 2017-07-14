@@ -510,9 +510,20 @@
         self.flashButton = flashButton;
     }
     
+    
     /** 提示消息 */
     UILabel *tipsLabel = [[UILabel alloc] init];
-    tipsLabel.text = @"轻触拍照，按住摄像";
+    NSMutableString *text = [@"" mutableCopy];
+    if (cameraPicker.cameraType&LFCameraType_Photo) {
+        [text appendString:@"轻触拍照"];
+    }
+    if (cameraPicker.cameraType&LFCameraType_Video) {
+        if (text.length) {
+            [text appendString:@","];
+        }
+        [text appendString:@"按住摄像"];
+    }
+    tipsLabel.text = [text copy];
     tipsLabel.font = [UIFont boldSystemFontOfSize:13.f];
     tipsLabel.textColor = [UIColor whiteColor];
     tipsLabel.highlighted = YES;
