@@ -13,6 +13,8 @@
 		6F05EE321EC44B1C006FC1BF /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6F05EE301EC44B1C006FC1BF /* Main.storyboard */; };
 		6F05EE341EC44B1C006FC1BF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6F05EE331EC44B1C006FC1BF /* Assets.xcassets */; };
 		6F05EE371EC44B1C006FC1BF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6F05EE351EC44B1C006FC1BF /* LaunchScreen.storyboard */; };
+		6F359B061F1C4D8C009F2035 /* LFCameraWatermarkOverlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F359B051F1C4D8C009F2035 /* LFCameraWatermarkOverlayView.m */; };
+		6F359B091F1C51EF009F2035 /* UIImage+LFCamera_Common.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F359B081F1C51EF009F2035 /* UIImage+LFCamera_Common.m */; };
 		6FAA506B1ED2BB30002D88A2 /* UIImage+LFCamera_Orientation.m in Sources */ = {isa = PBXBuildFile; fileRef = 6FAA505D1ED2BB30002D88A2 /* UIImage+LFCamera_Orientation.m */; };
 		6FAA506C1ED2BB30002D88A2 /* LFCameraBaseController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6FAA50601ED2BB30002D88A2 /* LFCameraBaseController.m */; };
 		6FAA506D1ED2BB30002D88A2 /* LFCameraDisplayController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6FAA50621ED2BB30002D88A2 /* LFCameraDisplayController.m */; };
@@ -37,6 +39,10 @@
 		6F05EE331EC44B1C006FC1BF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		6F05EE361EC44B1C006FC1BF /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		6F05EE381EC44B1C006FC1BF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		6F359B041F1C4D8C009F2035 /* LFCameraWatermarkOverlayView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LFCameraWatermarkOverlayView.h; sourceTree = "<group>"; };
+		6F359B051F1C4D8C009F2035 /* LFCameraWatermarkOverlayView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LFCameraWatermarkOverlayView.m; sourceTree = "<group>"; };
+		6F359B071F1C51EF009F2035 /* UIImage+LFCamera_Common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+LFCamera_Common.h"; sourceTree = "<group>"; };
+		6F359B081F1C51EF009F2035 /* UIImage+LFCamera_Common.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+LFCamera_Common.m"; sourceTree = "<group>"; };
 		6FAA505C1ED2BB30002D88A2 /* UIImage+LFCamera_Orientation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+LFCamera_Orientation.h"; sourceTree = "<group>"; };
 		6FAA505D1ED2BB30002D88A2 /* UIImage+LFCamera_Orientation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+LFCamera_Orientation.m"; sourceTree = "<group>"; };
 		6FAA505F1ED2BB30002D88A2 /* LFCameraBaseController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LFCameraBaseController.h; sourceTree = "<group>"; };
@@ -120,11 +126,21 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
+		6F359B031F1C4D8C009F2035 /* view */ = {
+			isa = PBXGroup;
+			children = (
+				6F359B041F1C4D8C009F2035 /* LFCameraWatermarkOverlayView.h */,
+				6F359B051F1C4D8C009F2035 /* LFCameraWatermarkOverlayView.m */,
+			);
+			path = view;
+			sourceTree = "<group>";
+		};
 		6FAA50591ED2BB30002D88A2 /* class */ = {
 			isa = PBXGroup;
 			children = (
 				6FAA505A1ED2BB30002D88A2 /* Category */,
 				6FAA505E1ED2BB30002D88A2 /* Controller */,
+				6F359B031F1C4D8C009F2035 /* view */,
 				6FAA50651ED2BB30002D88A2 /* Header */,
 				6FAA50681ED2BB30002D88A2 /* LFCameraPickerController.bundle */,
 				6FAA50691ED2BB30002D88A2 /* LFCameraPickerController.h */,
@@ -146,6 +162,8 @@
 			children = (
 				6FAA505C1ED2BB30002D88A2 /* UIImage+LFCamera_Orientation.h */,
 				6FAA505D1ED2BB30002D88A2 /* UIImage+LFCamera_Orientation.m */,
+				6F359B071F1C51EF009F2035 /* UIImage+LFCamera_Common.h */,
+				6F359B081F1C51EF009F2035 /* UIImage+LFCamera_Common.m */,
 			);
 			path = UIImage;
 			sourceTree = "<group>";
@@ -325,12 +343,14 @@
 				6FAA50711ED2BB30002D88A2 /* LFCameraPickerController.m in Sources */,
 				6F05EE2F1EC44B1C006FC1BF /* ViewController.m in Sources */,
 				6FAA506E1ED2BB30002D88A2 /* LFCameraTakeViewController.m in Sources */,
+				6F359B061F1C4D8C009F2035 /* LFCameraWatermarkOverlayView.m in Sources */,
 				6FAA506F1ED2BB30002D88A2 /* LFCameraHeader.m in Sources */,
 				6FAA506B1ED2BB30002D88A2 /* UIImage+LFCamera_Orientation.m in Sources */,
 				6F05EE2C1EC44B1C006FC1BF /* AppDelegate.m in Sources */,
 				6FAA506C1ED2BB30002D88A2 /* LFCameraBaseController.m in Sources */,
 				6F05EE291EC44B1C006FC1BF /* main.m in Sources */,
 				6FAA506D1ED2BB30002D88A2 /* LFCameraDisplayController.m in Sources */,
+				6F359B091F1C51EF009F2035 /* UIImage+LFCamera_Common.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

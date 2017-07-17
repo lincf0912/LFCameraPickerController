@@ -10,6 +10,7 @@
 #import "LFCameraHeader.h"
 #import "LFCameraPickerController.h"
 #import "LFCameraDisplayController.h"
+#import "LFCameraWatermarkOverlayView.h"
 
 #import "UIImage+LFCamera_Orientation.h"
 
@@ -26,6 +27,8 @@
 @property (weak, nonatomic) UIView *previewView;
 /** 录制视图 */
 @property (strong, nonatomic) SCRecorderToolsView *focusView;
+/** 水印层 */
+@property (strong, nonatomic) LFCameraWatermarkOverlayView *overlayView;
 
 /** 闪光灯 */
 @property (weak, nonatomic) UIButton *flashButton;
@@ -127,6 +130,10 @@
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
+    LFCameraPickerController *cameraPicker = (LFCameraPickerController *)self.navigationController;
+    if (cameraPicker.overlayView) {
+        self.overlayView.overlayView = cameraPicker.overlayView;
+    }
     [self prepareSession];
 }
 
@@ -519,7 +526,7 @@
     }
     if (cameraPicker.cameraType&LFCameraType_Video) {
         if (text.length) {
-            [text appendString:@","];
+            [text appendString:@"，"];
         }
         [text appendString:@"按住摄像"];
     }
@@ -561,8 +568,15 @@
     //    _recorder.autoSetVideoOrientation = YES; //YES causes bad orientation for video from camera roll
     //    _recorder.videoConfiguration.size = CGSizeMake(640, 480);
     
+    
     UIView *previewView = self.previewView;
     _recorder.previewView = previewView;
+    if (cameraPicker.overlayView) {
+        self.overlayView = [[LFCameraWatermarkOverlayView alloc] initWithFrame:self.view.bounds];
+        self.overlayView.overlayView = cameraPicker.overlayView;
+        [previewView addSubview:self.overlayView];
+    }
+    
     
     self.focusView = [[SCRecorderToolsView alloc] initWithFrame:previewView.bounds];
     self.focusView.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth;

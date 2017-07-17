@@ -8,7 +8,9 @@
 
 #import "LFCameraDisplayController.h"
 #import "LFCameraPickerController.h"
+#import "LFCameraWatermarkOverlayView.h"
 #import "LFCameraHeader.h"
+#import "UIImage+LFCamera_Common.h"
 
 #import "SCRecorder.h"
 #import "LFPhotoEditingController.h"
@@ -20,6 +22,9 @@
 
 @property (weak, nonatomic) UIImageView *imageView;
 @property (weak, nonatomic) SCVideoPlayerView *playerView;
+
+@property (strong, nonatomic) LFCameraWatermarkOverlayView *overlayView;
+@property (strong, nonatomic) UIImageView *overlayImageView;
 
 /** 图片编辑对象 */
 @property (strong, nonatomic) LFPhotoEdit *photoEdit;
@@ -42,6 +47,7 @@
     
     /** 控制视图 */
     [self initImageView];
+    [self initOverlayView];
     [self initToolsView];
     
     /** 初始化控件 */
@@ -118,6 +124,9 @@
         exportSession.videoConfiguration.preset = preset;
         exportSession.audioConfiguration.preset = preset;
         exportSession.videoConfiguration.maxFrameRate = (CMTimeScale)cameraPicker.framerate;
+        if (self.overlayView) {
+            exportSession.videoConfiguration.overlay = self.overlayView;
+        }
         exportSession.outputUrl = videoUrl;
         exportSession.outputFileType = cameraPicker.videoType;
         //    exportSession.delegate = self;
@@ -139,17 +148,26 @@
                 [weakSelf cancelAction];
             } else if (error == nil) {
                 if (cameraPicker.autoSavePhotoAlbum) {
-                    [exportSession.outputUrl saveToCameraRollWithCompletion:^(NSString * _Nullable path, NSError * _Nullable error) {
-                        if (error) {
-                            NSLog(@"Failed to save %@", error.localizedDescription);
-                        }
-                    }];
+                    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                        [exportSession.outputUrl saveToCameraRollWithCompletion:^(NSString * _Nullable path, NSError * _Nullable error) {
+                            if (error) {
+                                NSLog(@"Failed to save %@", error.localizedDescription);
+                            }
+                        }];
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            [cameraPicker hideProgressHUD];
+                            if ([weakSelf.delegate respondsToSelector:@selector(lf_cameraDisplay:didFinishVideo:)]) {
+                                [weakSelf.delegate lf_cameraDisplay:weakSelf didFinishVideo:exportSession.outputUrl];
+                            }
+                        });
+                    });
+                } else {
+                    [cameraPicker hideProgressHUD];
+                    if ([weakSelf.delegate respondsToSelector:@selector(lf_cameraDisplay:didFinishVideo:)]) {
+                        [weakSelf.delegate lf_cameraDisplay:weakSelf didFinishVideo:exportSession.outputUrl];
+                    }
                 }
                 
-                [cameraPicker hideProgressHUD];
-                if ([weakSelf.delegate respondsToSelector:@selector(lf_cameraDisplay:didFinishVideo:)]) {
-                    [weakSelf.delegate lf_cameraDisplay:weakSelf didFinishVideo:exportSession.outputUrl];
-                }
             } else {
                 if (!exportSession.cancelled) {
                     [cameraPicker showProgressHUDText:error.localizedDescription];
@@ -164,24 +182,29 @@
             
         }];
     } else {
+        UIImage *image = self.imageView.image;
+        if (self.overlayView) {
+             image = [image LFCamera_imageWithWaterMask:self.overlayView.overlayImage];
+        }
+        
         if (cameraPicker.autoSavePhotoAlbum) {
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                [self.imageView.image saveToCameraRollWithCompletion:^(NSError * _Nullable error) {
+                [image saveToCameraRollWithCompletion:^(NSError * _Nullable error) {
                     if (error) {
                         NSLog(@"Failed to save %@", error.localizedDescription);
                     }
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [cameraPicker hideProgressHUD];
+                        if ([self.delegate respondsToSelector:@selector(lf_cameraDisplay:didFinishImage:)]) {
+                            [self.delegate lf_cameraDisplay:self didFinishImage:image];
+                        }
+                    });
                 }];
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [cameraPicker hideProgressHUD];
-                    if ([self.delegate respondsToSelector:@selector(lf_cameraDisplay:didFinishImage:)]) {
-                        [self.delegate lf_cameraDisplay:self didFinishImage:self.imageView.image];
-                    }
-                });
             });
         } else {
             [cameraPicker hideProgressHUD];
             if ([self.delegate respondsToSelector:@selector(lf_cameraDisplay:didFinishImage:)]) {
-                [self.delegate lf_cameraDisplay:self didFinishImage:self.imageView.image];
+                [self.delegate lf_cameraDisplay:self didFinishImage:image];
             }
         }
     }
@@ -217,6 +240,15 @@
     [self cornerButton:finishButton];
     [toolsView addSubview:finishButton];
     self.finishButton = finishButton;
+    
+    if (self.recordSession == nil) {
+        UIButton *editButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        CGFloat editWH = 40.f, editMargin = 20.f;
+        editButton.frame = CGRectMake(CGRectGetWidth(self.view.frame)-editWH-editMargin, editMargin, editWH, editWH);
+        [editButton setImage:LFCamera_bundleImageNamed(@"LFCamera_iconEdit") forState:UIControlStateNormal];
+        [editButton addTarget:self action:@selector(photoEditAction) forControlEvents:UIControlEventTouchUpInside];
+        [self.view addSubview:editButton];
+    }
 }
 
 - (void)cornerButton:(UIButton *)button
@@ -271,25 +303,30 @@
     imageView.image = self.photo;
     [self.view addSubview:imageView];
     self.imageView = imageView;
-    
-    if (self.recordSession == nil) {        
-        UIButton *editButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        CGFloat editWH = 40.f, editMargin = 20.f;
-        editButton.frame = CGRectMake(CGRectGetWidth(self.view.frame)-editWH-editMargin, editMargin, editWH, editWH);
-        [editButton setImage:LFCamera_bundleImageNamed(@"LFCamera_iconEdit") forState:UIControlStateNormal];
-        [editButton addTarget:self action:@selector(photoEditAction) forControlEvents:UIControlEventTouchUpInside];
-        [self.view addSubview:editButton];
+}
+
+- (void)initOverlayView
+{
+    LFCameraPickerController *cameraPicker = (LFCameraPickerController *)self.navigationController;
+    if (cameraPicker.overlayView) {
+        self.overlayView = [[LFCameraWatermarkOverlayView alloc] initWithFrame:self.view.bounds];
+        self.overlayView.overlayView = cameraPicker.overlayView;
+        UIImageView *imageView = [[UIImageView alloc] initWithImage:self.overlayView.overlayImage];
+        imageView.frame = self.view.bounds;
+        [self.view addSubview:imageView];
     }
 }
 
 - (void)photoEditAction
 {
+    UIImage *image = self.imageView.image;
+    
     LFPhotoEditingController *photoEdittingVC = [[LFPhotoEditingController alloc] init];
     /** 当前显示的图片 */
     if (self.photoEdit) {
         photoEdittingVC.photoEdit = self.photoEdit;
     } else {
-        photoEdittingVC.editImage = self.imageView.image;
+        photoEdittingVC.editImage = image;
     }
     photoEdittingVC.delegate = self;
     [self.navigationController pushViewController:photoEdittingVC animated:NO];

@@ -71,6 +71,9 @@ typedef NS_ENUM(NSUInteger, LFCameraPresetQuality) {
 /** 默认显示等待的文字 */
 @property (nonatomic, copy) NSString *processHintStr;
 
+/** 水印层 */
+@property (nonatomic, strong) UIView *overlayView;
+
 - (void)showProgressHUDText:(NSString *)text isTop:(BOOL)isTop;
 - (void)showProgressHUDText:(NSString *)text;
 - (void)showProgressHUD;

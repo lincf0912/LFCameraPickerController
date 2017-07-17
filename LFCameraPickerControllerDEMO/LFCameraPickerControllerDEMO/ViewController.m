@@ -60,6 +60,24 @@
     camera.canPause = self.pause_switch.isOn;
     
     
+    { /** 设置水印 */
+        
+        // 并把它设置成为当前正在使用的context
+        UIGraphicsBeginImageContextWithOptions(self.view.bounds.size, NO, 0);
+        [[UIColor clearColor] setFill];
+        [@"哈哈哈哈，测试用" drawInRect:CGRectMake(100, 100, 100, 100) withAttributes:@{NSFontAttributeName:[UIFont systemFontOfSize:15.f], NSForegroundColorAttributeName:[UIColor redColor]}];
+        
+        // 从当前context中创建一个改变大小后的图片
+        UIImage* image = UIGraphicsGetImageFromCurrentImageContext();
+        
+        // 使当前的context出堆栈
+        UIGraphicsEndImageContext();
+        
+        UIImageView *imageView = [[UIImageView alloc] initWithImage:image];
+        imageView.contentMode = UIViewContentModeScaleAspectFit;
+        camera.overlayView = imageView;
+    }
+    
     [self presentViewController:camera animated:YES completion:nil];
 }
 @end
