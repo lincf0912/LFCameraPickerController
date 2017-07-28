@@ -14,8 +14,9 @@
 
 #import "SCRecorder.h"
 #import "LFPhotoEditingController.h"
+#import "LFVideoEditingController.h"
 
-@interface LFCameraDisplayController () <SCPlayerDelegate, LFPhotoEditingControllerDelegate>
+@interface LFCameraDisplayController () <SCPlayerDelegate, LFPhotoEditingControllerDelegate, LFVideoEditingControllerDelegate>
 
 @property (strong, nonatomic) SCAssetExportSession *exportSession;
 @property (strong, nonatomic) SCPlayer *player;
@@ -28,6 +29,7 @@
 
 /** 图片编辑对象 */
 @property (strong, nonatomic) LFPhotoEdit *photoEdit;
+@property (strong, nonatomic) LFVideoEdit *videoEdit;
 
 /** 底部栏 */
 @property (weak, nonatomic) UIView *toolsView;
@@ -35,6 +37,8 @@
 @property (weak, nonatomic) UIButton *cancelButton;
 /** 完成 */
 @property (weak, nonatomic) UIButton *finishButton;
+
+@property (assign, nonatomic) BOOL isFirst;
 
 @end
 
@@ -44,6 +48,7 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     self.view.backgroundColor = [UIColor clearColor];
+    self.isFirst = YES;
     
     /** 控制视图 */
     [self initImageView];
@@ -62,17 +67,12 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    AVAsset *asset = _recordSession.assetRepresentingSegments;
-    if (asset) {
-        [_player setItemByAsset:asset];
-        [_player play];
-    }
+    
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     
-    [_player pause];
 }
 
 - (void)dealloc {
@@ -120,7 +120,8 @@
         
         NSURL *videoUrl = (cameraPicker.videoUrl == nil ? self.recordSession.outputUrl : cameraPicker.videoUrl);
         
-        SCAssetExportSession *exportSession = [[SCAssetExportSession alloc] initWithAsset:self.recordSession.assetRepresentingSegments];
+        AVAsset *avasset = self.videoEdit.editFinalURL ? [AVURLAsset assetWithURL:self.videoEdit.editFinalURL] : self.recordSession.assetRepresentingSegments;
+        SCAssetExportSession *exportSession = [[SCAssetExportSession alloc] initWithAsset:avasset];
         exportSession.videoConfiguration.preset = preset;
         exportSession.audioConfiguration.preset = preset;
         exportSession.videoConfiguration.maxFrameRate = (CMTimeScale)cameraPicker.framerate;
@@ -241,14 +242,12 @@
     [toolsView addSubview:finishButton];
     self.finishButton = finishButton;
     
-    if (self.recordSession == nil) {
-        UIButton *editButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        CGFloat editWH = 40.f, editMargin = 20.f;
-        editButton.frame = CGRectMake(CGRectGetWidth(self.view.frame)-editWH-editMargin, editMargin, editWH, editWH);
-        [editButton setImage:LFCamera_bundleImageNamed(@"LFCamera_iconEdit") forState:UIControlStateNormal];
-        [editButton addTarget:self action:@selector(photoEditAction) forControlEvents:UIControlEventTouchUpInside];
-        [self.view addSubview:editButton];
-    }
+    UIButton *editButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    CGFloat editWH = 40.f, editMargin = 20.f;
+    editButton.frame = CGRectMake(CGRectGetWidth(self.view.frame)-editWH-editMargin, editMargin, editWH, editWH);
+    [editButton setImage:LFCamera_bundleImageNamed(@"LFCamera_iconEdit") forState:UIControlStateNormal];
+    [editButton addTarget:self action:@selector(photoEditAction) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:editButton];
 }
 
 - (void)cornerButton:(UIButton *)button
@@ -292,6 +291,11 @@
     playerView.frame = self.view.bounds;
     [self.view insertSubview:playerView aboveSubview:self.imageView];
     self.playerView = playerView;
+    
+    AVAsset *asset = _recordSession.assetRepresentingSegments;
+    if (asset) {
+        [_player setItemByAsset:asset];
+    }
 }
 
 #pragma mark - 显示拍照图片
@@ -319,24 +323,41 @@
 
 - (void)photoEditAction
 {
-    UIImage *image = self.imageView.image;
-    
-    LFPhotoEditingController *photoEdittingVC = [[LFPhotoEditingController alloc] init];
-    /** 当前显示的图片 */
-    if (self.photoEdit) {
-        photoEdittingVC.photoEdit = self.photoEdit;
+    if (self.recordSession == nil) {
+        UIImage *image = self.imageView.image;
+        
+        LFPhotoEditingController *photoEditingVC = [[LFPhotoEditingController alloc] init];
+        /** 当前显示的图片 */
+        if (self.photoEdit) {
+            photoEditingVC.photoEdit = self.photoEdit;
+        } else {
+            photoEditingVC.editImage = image;
+        }
+        photoEditingVC.delegate = self;
+        [self.navigationController pushViewController:photoEditingVC animated:NO];
     } else {
-        photoEdittingVC.editImage = image;
+        LFVideoEditingController *videoEditingVC = [[LFVideoEditingController alloc] init];
+        videoEditingVC.minClippingDuration = 2;
+        if (self.videoEdit) {
+            videoEditingVC.videoEdit = self.videoEdit;
+        } else {
+            [videoEditingVC setVideoAsset:_recordSession.assetRepresentingSegments placeholderImage:self.photo];
+        }
+        videoEditingVC.delegate = self;
+        [self.navigationController pushViewController:videoEditingVC animated:NO];
+        [self.player pause];
     }
-    photoEdittingVC.delegate = self;
-    [self.navigationController pushViewController:photoEdittingVC animated:NO];
 }
 
 #pragma mark - SCPlayerDelegate
 - (void)player:(SCPlayer *__nonnull)player itemReadyToPlay:(AVPlayerItem *__nonnull)item
 {
-    [self.imageView removeFromSuperview];
-    [self startAmination];
+    [self.imageView setHidden:YES];
+    if (self.isFirst) {
+        [self startAmination];
+        self.isFirst = NO;
+    }
+    [_player play];
 }
 
 #pragma mark - LFPhotoEditingControllerDelegate
@@ -353,6 +374,27 @@
     }
     self.photoEdit = photoEdit;
     [self.navigationController popViewControllerAnimated:NO];
+}
+
+#pragma mark - LFVideoEditingControllerDelegate
+- (void)lf_VideoEditingController:(LFVideoEditingController *)videoEditingVC didCancelPhotoEdit:(LFVideoEdit *)videoEdit
+{
+    [self.navigationController popViewControllerAnimated:NO];
+    [self.player seekToTime:kCMTimeZero];
+    [self.player play];
+}
+- (void)lf_VideoEditingController:(LFVideoEditingController *)videoEditingVC didFinishPhotoEdit:(LFVideoEdit *)videoEdit
+{
+    [self.navigationController popViewControllerAnimated:NO];
+    [self.imageView setHidden:NO];
+    if (videoEdit && videoEdit.editFinalURL) {
+        self.imageView.image = videoEdit.editPreviewImage;
+        [_player setItemByUrl:videoEdit.editFinalURL];
+    } else {
+        self.imageView.image = self.photo;
+        [_player setItemByAsset:_recordSession.assetRepresentingSegments];
+    }
+    self.videoEdit = videoEdit;
 }
 
 @end
