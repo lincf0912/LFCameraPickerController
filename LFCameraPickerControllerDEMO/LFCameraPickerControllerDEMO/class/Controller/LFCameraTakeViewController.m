@@ -613,6 +613,8 @@
 #pragma mark - 显示录制视频
 - (void)showVideoView
 {
+    /** iOS11录制视频需要马上关闭录制，否则影响AVPlayer的播放 */
+    [_recorder stopRunning];
     LFCameraDisplayController *cameraDisplay = [[LFCameraDisplayController alloc] init];
     cameraDisplay.delegate = self;
     cameraDisplay.photo = ((SCRecordSessionSegment *)self.recorder.session.segments.lastObject).thumbnail;

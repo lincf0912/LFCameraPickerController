@@ -37,8 +37,6 @@
 /** 完成 */
 @property (weak, nonatomic) UIButton *finishButton;
 
-@property (assign, nonatomic) BOOL isFirst;
-
 @end
 
 @implementation LFCameraDisplayController
@@ -47,7 +45,6 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     self.view.backgroundColor = [UIColor clearColor];
-    self.isFirst = YES;
     
     /** 控制视图 */
     [self initImageView];
@@ -286,8 +283,8 @@
     AVAsset *asset = _recordSession.assetRepresentingSegments;
     if (asset) {
         AVPlayerItem *item = [AVPlayerItem playerItemWithAsset:asset];
-        [self addMonitorPlayerItem:item];
         _player = [AVPlayer playerWithPlayerItem:item];
+        [self addMonitorPlayerItem:item];
         [self.playerView setPlayer:self.player];
     }
 }
@@ -298,8 +295,8 @@
         [_player pause];
         [self removeMonitorPlayerItem:self.player.currentItem];
         AVPlayerItem *item = [AVPlayerItem playerItemWithAsset:asset];
-        [self addMonitorPlayerItem:item];
         [_player replaceCurrentItemWithPlayerItem:item];
+        [self addMonitorPlayerItem:item];
     }
 }
 
@@ -398,8 +395,8 @@
     {
         case AVPlayerItemStatusReadyToPlay:
         {
-            [_player seekToTime:kCMTimeZero];
-            [_player play];
+            [self.player seekToTime:kCMTimeZero];
+            [self.player play];
         }
             break;
         default:
