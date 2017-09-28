@@ -15,6 +15,7 @@
 		6F05EE371EC44B1C006FC1BF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6F05EE351EC44B1C006FC1BF /* LaunchScreen.storyboard */; };
 		6F359B061F1C4D8C009F2035 /* LFCameraWatermarkOverlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F359B051F1C4D8C009F2035 /* LFCameraWatermarkOverlayView.m */; };
 		6F359B091F1C51EF009F2035 /* UIImage+LFCamera_Common.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F359B081F1C51EF009F2035 /* UIImage+LFCamera_Common.m */; };
+		6F9F32A21F7CC1B3004B6438 /* LFCameraPlayerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F9F32A11F7CC1B3004B6438 /* LFCameraPlayerView.m */; };
 		6FAA506B1ED2BB30002D88A2 /* UIImage+LFCamera_Orientation.m in Sources */ = {isa = PBXBuildFile; fileRef = 6FAA505D1ED2BB30002D88A2 /* UIImage+LFCamera_Orientation.m */; };
 		6FAA506C1ED2BB30002D88A2 /* LFCameraBaseController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6FAA50601ED2BB30002D88A2 /* LFCameraBaseController.m */; };
 		6FAA506D1ED2BB30002D88A2 /* LFCameraDisplayController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6FAA50621ED2BB30002D88A2 /* LFCameraDisplayController.m */; };
@@ -43,6 +44,8 @@
 		6F359B051F1C4D8C009F2035 /* LFCameraWatermarkOverlayView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LFCameraWatermarkOverlayView.m; sourceTree = "<group>"; };
 		6F359B071F1C51EF009F2035 /* UIImage+LFCamera_Common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+LFCamera_Common.h"; sourceTree = "<group>"; };
 		6F359B081F1C51EF009F2035 /* UIImage+LFCamera_Common.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+LFCamera_Common.m"; sourceTree = "<group>"; };
+		6F9F32A01F7CC1B3004B6438 /* LFCameraPlayerView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LFCameraPlayerView.h; sourceTree = "<group>"; };
+		6F9F32A11F7CC1B3004B6438 /* LFCameraPlayerView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LFCameraPlayerView.m; sourceTree = "<group>"; };
 		6FAA505C1ED2BB30002D88A2 /* UIImage+LFCamera_Orientation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+LFCamera_Orientation.h"; sourceTree = "<group>"; };
 		6FAA505D1ED2BB30002D88A2 /* UIImage+LFCamera_Orientation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+LFCamera_Orientation.m"; sourceTree = "<group>"; };
 		6FAA505F1ED2BB30002D88A2 /* LFCameraBaseController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LFCameraBaseController.h; sourceTree = "<group>"; };
@@ -131,6 +134,8 @@
 			children = (
 				6F359B041F1C4D8C009F2035 /* LFCameraWatermarkOverlayView.h */,
 				6F359B051F1C4D8C009F2035 /* LFCameraWatermarkOverlayView.m */,
+				6F9F32A01F7CC1B3004B6438 /* LFCameraPlayerView.h */,
+				6F9F32A11F7CC1B3004B6438 /* LFCameraPlayerView.m */,
 			);
 			path = view;
 			sourceTree = "<group>";
@@ -293,13 +298,16 @@
 			files = (
 			);
 			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
 			);
 			name = "[CP] Check Pods Manifest.lock";
 			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-LFCameraPickerControllerDEMO-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
 		6571A2CE59540B92807006CD /* [CP] Copy Pods Resources */ = {
@@ -308,9 +316,12 @@
 			files = (
 			);
 			inputPaths = (
+				"${SRCROOT}/../Pods/Target Support Files/Pods-LFCameraPickerControllerDEMO/Pods-LFCameraPickerControllerDEMO-resources.sh",
+				"${PODS_ROOT}/LFMediaEditingController/LFMediaEditingController/class/common/LFMediaEditingController.bundle",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -342,6 +353,7 @@
 				6FAA50761ED2CC3F002D88A2 /* LFRecordButton.m in Sources */,
 				6FAA50711ED2BB30002D88A2 /* LFCameraPickerController.m in Sources */,
 				6F05EE2F1EC44B1C006FC1BF /* ViewController.m in Sources */,
+				6F9F32A21F7CC1B3004B6438 /* LFCameraPlayerView.m in Sources */,
 				6FAA506E1ED2BB30002D88A2 /* LFCameraTakeViewController.m in Sources */,
 				6F359B061F1C4D8C009F2035 /* LFCameraWatermarkOverlayView.m in Sources */,
 				6FAA506F1ED2BB30002D88A2 /* LFCameraHeader.m in Sources */,
