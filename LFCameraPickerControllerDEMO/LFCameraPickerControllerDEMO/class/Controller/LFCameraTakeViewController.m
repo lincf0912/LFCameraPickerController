@@ -23,6 +23,8 @@
 @property (strong, nonatomic) SCRecorder *recorder;
 /** 拍照图片 */
 @property (strong, nonatomic) UIImage *photo;
+/** 图片方向 */
+@property (assign, nonatomic) UIImageOrientation imageOrientation;
 /** 预览视图 */
 @property (weak, nonatomic) UIView *previewView;
 /** 录制视图 */
@@ -53,7 +55,7 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     self.view.backgroundColor = [UIColor blackColor];
-    
+
     /** 监听设备方向改变 */
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deviceOrientationDidChange:) name:UIDeviceOrientationDidChangeNotification object:nil];
     
@@ -75,6 +77,7 @@
     switch (orientation) {
         case UIDeviceOrientationPortrait:
         {
+            self.imageOrientation = UIImageOrientationUp;
             if (self.recorder.session.segments.count == 0 && self.recorder.isRecording == NO) {
                 self.recorder.videoConfiguration.affineTransform = CGAffineTransformIdentity;
                 [self retakeRecordSession];
@@ -87,6 +90,7 @@
             break;
         case UIDeviceOrientationLandscapeLeft:
         {
+            self.imageOrientation = UIImageOrientationLeft;
             if (self.recorder.session.segments.count == 0 && self.recorder.isRecording == NO) {
                 self.recorder.videoConfiguration.affineTransform = CGAffineTransformMakeRotation(-M_PI_2);
                 [self retakeRecordSession];
@@ -99,6 +103,7 @@
             break;
         case UIDeviceOrientationLandscapeRight:
         {
+            self.imageOrientation = UIImageOrientationRight;
             if (self.recorder.session.segments.count == 0 && self.recorder.isRecording == NO) {
                 self.recorder.videoConfiguration.affineTransform = CGAffineTransformMakeRotation(M_PI_2);
                 [self retakeRecordSession];
@@ -111,6 +116,7 @@
             break;
         case UIDeviceOrientationPortraitUpsideDown:
         {
+            self.imageOrientation = UIImageOrientationDown;
             if (self.recorder.session.segments.count == 0 && self.recorder.isRecording == NO) {
                 self.recorder.videoConfiguration.affineTransform = CGAffineTransformMakeRotation(M_PI);
                 [self retakeRecordSession];
@@ -134,6 +140,7 @@
     if (cameraPicker.overlayView) {
         self.overlayView.overlayView = cameraPicker.overlayView;
     }
+    [self deviceOrientationDidChange:nil];
     [self prepareSession];
 }
 
@@ -244,6 +251,7 @@
     [self.recorder capturePhoto:^(NSError *error, UIImage *image) {
         if (image != nil) {
             weakSelf.photo = [image easyFixDeviceOrientation];
+            weakSelf.photo = [weakSelf.photo easyRotateImageOrientation:self.imageOrientation];
             [weakSelf showImageView];
         } else {
             [weakSelf showAlertViewWithTitle:@"Failed to capture photo" message:error.localizedDescription];

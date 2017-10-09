@@ -12,4 +12,6 @@
 
 - (UIImage *)easyFixDeviceOrientation;
 
+- (UIImage *)easyRotateImageOrientation:(UIImageOrientation)orient;
+
 @end

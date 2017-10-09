@@ -351,6 +351,7 @@
         self.overlayView = [[LFCameraWatermarkOverlayView alloc] initWithFrame:self.view.bounds];
         self.overlayView.overlayView = cameraPicker.overlayView;
         UIImageView *imageView = [[UIImageView alloc] initWithImage:self.overlayView.overlayImage];
+        imageView.contentMode = UIViewContentModeScaleAspectFit;
         imageView.frame = self.view.bounds;
         [self.view addSubview:imageView];
     }
