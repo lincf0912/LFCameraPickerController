@@ -8,10 +8,10 @@
 
 #import "LFCameraDisplayController.h"
 #import "LFCameraPickerController.h"
-#import "LFCameraWatermarkOverlayView.h"
 #import "LFCameraPlayerView.h"
 #import "LFCameraHeader.h"
 #import "UIImage+LFCamera_Common.h"
+#import "LFCameraWatermarkOverlayView.h"
 
 #import "SCRecorder.h"
 #import "LFPhotoEditingController.h"
@@ -24,7 +24,8 @@
 @property (weak, nonatomic) LFCameraPlayerView *playerView;
 @property (strong, nonatomic) AVPlayer *player;
 
-@property (strong, nonatomic) LFCameraWatermarkOverlayView *overlayView;
+/** 水印 */
+@property (weak, nonatomic) LFCameraWatermarkOverlayView *overlayView;
 
 /** 图片编辑对象 */
 @property (strong, nonatomic) LFPhotoEdit *photoEdit;
@@ -182,8 +183,8 @@
         }];
     } else {
         UIImage *image = self.playerView.image;
-        if (self.overlayView) {
-             image = [image LFCamera_imageWithWaterMask:self.overlayView.overlayImage];
+        if (self.overlayImage) {
+             image = [image LFCamera_imageWithWaterMask:self.overlayImage];
         }
         
         if (cameraPicker.autoSavePhotoAlbum) {
@@ -346,14 +347,11 @@
 
 - (void)initOverlayView
 {
-    LFCameraPickerController *cameraPicker = (LFCameraPickerController *)self.navigationController;
-    if (cameraPicker.overlayView) {
-        self.overlayView = [[LFCameraWatermarkOverlayView alloc] initWithFrame:self.view.bounds];
-        self.overlayView.overlayView = cameraPicker.overlayView;
-        UIImageView *imageView = [[UIImageView alloc] initWithImage:self.overlayView.overlayImage];
-        imageView.contentMode = UIViewContentModeScaleAspectFit;
-        imageView.frame = self.view.bounds;
-        [self.view addSubview:imageView];
+    if (self.overlayImage) {
+        LFCameraWatermarkOverlayView *overlayView = [[LFCameraWatermarkOverlayView alloc] initWithFrame:self.view.bounds];
+        [overlayView setImage:self.overlayImage];
+        [self.view addSubview:overlayView];
+        _overlayView = overlayView;
     }
 }
 

@@ -101,7 +101,6 @@
     _presetQuality = LFCameraPresetQuality_Medium;
     
     _autoSavePhotoAlbum = YES;
-    _stopButtonTitle = @"stop";
     _processHintStr = @"正在处理...";
 }
 
@@ -179,7 +178,7 @@
     return YES;
 }
 
-//只支持正方向
+//支持多个方向
 -(UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
     return UIInterfaceOrientationMaskPortrait;

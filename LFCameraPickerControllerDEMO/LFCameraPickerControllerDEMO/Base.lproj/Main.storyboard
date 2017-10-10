@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12120" systemVersion="16F73" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13196" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12088"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13173"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -93,6 +93,12 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="YvB-kj-sI7">
+                                <rect key="frame" x="0.0" y="411" width="375" height="256"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="256" id="cCJ-31-DTe"/>
+                                </constraints>
+                            </imageView>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
@@ -104,6 +110,7 @@
                             <constraint firstItem="5li-as-YcX" firstAttribute="top" secondItem="4OP-nc-RLT" secondAttribute="bottom" constant="20" id="JJX-9r-dMi"/>
                             <constraint firstItem="4OP-nc-RLT" firstAttribute="leading" secondItem="1ff-TE-MBf" secondAttribute="trailing" constant="20" id="LrN-wy-vhd"/>
                             <constraint firstItem="Ybh-ah-4nx" firstAttribute="top" secondItem="h5R-HZ-dno" secondAttribute="bottom" constant="20" id="PMX-A5-7xD"/>
+                            <constraint firstItem="YvB-kj-sI7" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="ZOl-eF-Hjm"/>
                             <constraint firstItem="1ff-TE-MBf" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="8" id="aAg-1B-a85"/>
                             <constraint firstItem="bEt-Ye-4U3" firstAttribute="leading" secondItem="1ff-TE-MBf" secondAttribute="leading" id="b7b-67-p1e"/>
                             <constraint firstItem="Ybh-ah-4nx" firstAttribute="leading" secondItem="bEt-Ye-4U3" secondAttribute="leading" id="cnW-Kv-KU1"/>
@@ -114,12 +121,14 @@
                             <constraint firstItem="h5R-HZ-dno" firstAttribute="centerY" secondItem="bEt-Ye-4U3" secondAttribute="centerY" id="hCi-qG-rah"/>
                             <constraint firstItem="Q01-3M-dIF" firstAttribute="leading" secondItem="5li-as-YcX" secondAttribute="trailing" constant="20" id="hay-kK-gmc"/>
                             <constraint firstItem="bcj-0O-XPI" firstAttribute="top" secondItem="Ybh-ah-4nx" secondAttribute="bottom" constant="20" id="idU-6y-WIO"/>
+                            <constraint firstAttribute="trailing" secondItem="YvB-kj-sI7" secondAttribute="trailing" id="jPe-V3-JaG"/>
                             <constraint firstItem="4hv-9Y-W1F" firstAttribute="centerY" secondItem="bcj-0O-XPI" secondAttribute="centerY" id="jsd-dO-SBq"/>
                             <constraint firstItem="4gj-3g-7iG" firstAttribute="leading" secondItem="1ff-TE-MBf" secondAttribute="leading" id="k37-02-fy2"/>
                             <constraint firstItem="JdF-jl-ozT" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="qvt-qG-65q"/>
                             <constraint firstItem="bEt-Ye-4U3" firstAttribute="top" secondItem="4gj-3g-7iG" secondAttribute="bottom" constant="20" id="r0w-I1-ae7"/>
                             <constraint firstItem="bcj-0O-XPI" firstAttribute="leading" secondItem="bEt-Ye-4U3" secondAttribute="leading" id="rHb-ta-LX9"/>
                             <constraint firstItem="4OP-nc-RLT" firstAttribute="centerY" secondItem="1ff-TE-MBf" secondAttribute="centerY" id="u9x-DC-CYF"/>
+                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="YvB-kj-sI7" secondAttribute="bottom" id="wd4-2v-ZOj"/>
                             <constraint firstItem="4hv-9Y-W1F" firstAttribute="leading" secondItem="bcj-0O-XPI" secondAttribute="trailing" constant="20" id="x5g-Ov-0PA"/>
                             <constraint firstItem="5li-as-YcX" firstAttribute="leading" secondItem="1ff-TE-MBf" secondAttribute="leading" id="xZU-XS-3cy"/>
                             <constraint firstItem="4gj-3g-7iG" firstAttribute="top" secondItem="5li-as-YcX" secondAttribute="bottom" constant="20" id="ynp-WE-dpE"/>
@@ -130,11 +139,13 @@
                         <outlet property="flip_switch" destination="Q01-3M-dIF" id="S0K-e7-7HV"/>
                         <outlet property="front_segment" destination="Cb7-pl-nbX" id="LSe-d9-BgP"/>
                         <outlet property="pause_switch" destination="4hv-9Y-W1F" id="EOK-tV-cWi"/>
+                        <outlet property="showImageView" destination="YvB-kj-sI7" id="kAx-C6-k2H"/>
                         <outlet property="type_segment" destination="4OP-nc-RLT" id="xDc-AG-WHZ"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
+            <point key="canvasLocation" x="136.80000000000001" y="131.78410794602701"/>
         </scene>
     </scenes>
 </document>

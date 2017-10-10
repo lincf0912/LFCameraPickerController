@@ -81,6 +81,12 @@
             if (self.recorder.session.segments.count == 0 && self.recorder.isRecording == NO) {
                 self.recorder.videoConfiguration.affineTransform = CGAffineTransformIdentity;
                 [self retakeRecordSession];
+                [self getOverlayView];
+                [UIView animateWithDuration:0.25f animations:^{
+                    self.overlayView.transform = CGAffineTransformMakeRotation(0);
+                    self.overlayView.frame = self.view.bounds;
+                    self.overlayView.center = self.view.center;
+                }];
             }
             [UIView animateWithDuration:0.25f animations:^{
                 self.flashButton.transform = CGAffineTransformMakeRotation(0);
@@ -94,6 +100,16 @@
             if (self.recorder.session.segments.count == 0 && self.recorder.isRecording == NO) {
                 self.recorder.videoConfiguration.affineTransform = CGAffineTransformMakeRotation(-M_PI_2);
                 [self retakeRecordSession];
+                [self getOverlayView];
+                [UIView animateWithDuration:0.25f animations:^{
+                    self.overlayView.transform = CGAffineTransformMakeRotation(M_PI_2);
+                    self.overlayView.frame = self.view.bounds;
+                    self.overlayView.center = self.view.center;
+                } completion:^(BOOL finished) {
+                    /** 首次启动时，无法在动画中修改位置 */
+                    self.overlayView.frame = self.view.bounds;
+                    self.overlayView.center = self.view.center;
+                }];
             }
             [UIView animateWithDuration:0.25f animations:^{
                 self.flashButton.transform = CGAffineTransformMakeRotation(M_PI_2);
@@ -107,6 +123,16 @@
             if (self.recorder.session.segments.count == 0 && self.recorder.isRecording == NO) {
                 self.recorder.videoConfiguration.affineTransform = CGAffineTransformMakeRotation(M_PI_2);
                 [self retakeRecordSession];
+                [self getOverlayView];
+                [UIView animateWithDuration:0.25f animations:^{
+                    self.overlayView.transform = CGAffineTransformMakeRotation(-M_PI_2);
+                    self.overlayView.frame = self.view.bounds;
+                    self.overlayView.center = self.view.center;
+                } completion:^(BOOL finished) {
+                    /** 首次启动时，无法在动画中修改位置 */
+                    self.overlayView.frame = self.view.bounds;
+                    self.overlayView.center = self.view.center;
+                }];
             }
             [UIView animateWithDuration:0.25f animations:^{
                 self.flashButton.transform = CGAffineTransformMakeRotation(-M_PI_2);
@@ -120,6 +146,12 @@
             if (self.recorder.session.segments.count == 0 && self.recorder.isRecording == NO) {
                 self.recorder.videoConfiguration.affineTransform = CGAffineTransformMakeRotation(M_PI);
                 [self retakeRecordSession];
+                [self getOverlayView];
+                [UIView animateWithDuration:0.25f animations:^{
+                    self.overlayView.transform = CGAffineTransformMakeRotation(M_PI);
+                    self.overlayView.frame = self.view.bounds;
+                    self.overlayView.center = self.view.center;
+                }];
             }
             [UIView animateWithDuration:0.25f animations:^{
                 self.flashButton.transform = CGAffineTransformMakeRotation(M_PI);
@@ -135,12 +167,9 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    
-    LFCameraPickerController *cameraPicker = (LFCameraPickerController *)self.navigationController;
-    if (cameraPicker.overlayView) {
-        self.overlayView.overlayView = cameraPicker.overlayView;
-    }
+    /** 更正方向 */
     [self deviceOrientationDidChange:nil];
+    /** 激活摄像头 */
     [self prepareSession];
 }
 
@@ -579,9 +608,8 @@
     
     UIView *previewView = self.previewView;
     _recorder.previewView = previewView;
-    if (cameraPicker.overlayView) {
+    if (cameraPicker.activeOverlay) {
         self.overlayView = [[LFCameraWatermarkOverlayView alloc] initWithFrame:self.view.bounds];
-        self.overlayView.overlayView = cameraPicker.overlayView;
         [previewView addSubview:self.overlayView];
     }
     
@@ -615,6 +643,7 @@
     LFCameraDisplayController *cameraDisplay = [[LFCameraDisplayController alloc] init];
     cameraDisplay.delegate = self;
     cameraDisplay.photo = self.photo;
+    cameraDisplay.overlayImage = self.overlayView.image;
     [self.navigationController pushViewController:cameraDisplay animated:NO];
 }
 
@@ -627,7 +656,36 @@
     cameraDisplay.delegate = self;
     cameraDisplay.photo = ((SCRecordSessionSegment *)self.recorder.session.segments.lastObject).thumbnail;
     cameraDisplay.recordSession = self.recorder.session;
+    cameraDisplay.overlayImage = self.overlayView.image;
     [self.navigationController pushViewController:cameraDisplay animated:NO];
+}
+
+#pragma mark - 获取水印
+- (void)getOverlayView
+{
+    LFCameraPickerController *cameraPicker = (LFCameraPickerController *)self.navigationController;
+    
+    if (self.imageOrientation == UIImageOrientationLeft || self.imageOrientation == UIImageOrientationRight) {
+        if (self.overlayView.overlayImage_Hor) {
+            [self.overlayView setImage:self.overlayView.overlayImage_Hor];
+        } else {
+            if ([cameraPicker.pickerDelegate respondsToSelector:@selector(lf_cameraPickerOverlayView:)]) {
+                UIView *overlayView = [cameraPicker.pickerDelegate lf_cameraPickerOverlayView:LFCameraOverlayOrientation_Hor];
+                self.overlayView.overlayView_Hor = overlayView;
+                [self.overlayView setImage:self.overlayView.overlayImage_Hor];
+            }
+        }
+    } else {
+        if (self.overlayView.overlayImage_Ver) {
+            [self.overlayView setImage:self.overlayView.overlayImage_Ver];
+        } else {
+            if ([cameraPicker.pickerDelegate respondsToSelector:@selector(lf_cameraPickerOverlayView:)]) {
+                UIView *overlayView = [cameraPicker.pickerDelegate lf_cameraPickerOverlayView:LFCameraOverlayOrientation_Ver];
+                self.overlayView.overlayView_Ver = overlayView;
+                [self.overlayView setImage:self.overlayView.overlayImage_Ver];
+            }
+        }
+    }
 }
 
 @end

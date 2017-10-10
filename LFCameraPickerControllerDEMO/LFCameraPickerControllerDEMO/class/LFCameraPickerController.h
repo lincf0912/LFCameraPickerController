@@ -27,6 +27,13 @@ typedef NS_ENUM(NSUInteger, LFCameraPresetQuality) {
     LFCameraPresetQuality_Highest,
 };
 
+typedef NS_ENUM(NSUInteger, LFCameraOverlayOrientation) {
+    /** 竖屏 */
+    LFCameraOverlayOrientation_Ver,
+    /** 横屏 */
+    LFCameraOverlayOrientation_Hor,
+};
+
 @protocol LFCameraPickerDelegate;
 
 @interface LFCameraPickerController : UINavigationController
@@ -66,13 +73,11 @@ typedef NS_ENUM(NSUInteger, LFCameraPresetQuality) {
 
 /** 拍照与录制视频是否保存到系统相册，默认YES */
 @property (nonatomic, assign) BOOL autoSavePhotoAlbum;
-/** 停止录制按钮名称 it work when canPause is YES  */
-@property (nonatomic, copy) NSString *stopButtonTitle;
 /** 默认显示等待的文字 */
 @property (nonatomic, copy) NSString *processHintStr;
 
-/** 水印层 */
-@property (nonatomic, strong) UIView *overlayView;
+/** 水印层 默认NO 实现代理 lf_cameraPickerOverlayView: */
+@property (nonatomic, assign) BOOL activeOverlay;
 
 - (void)showProgressHUDText:(NSString *)text isTop:(BOOL)isTop;
 - (void)showProgressHUDText:(NSString *)text;
@@ -89,5 +94,8 @@ typedef NS_ENUM(NSUInteger, LFCameraPresetQuality) {
 - (void)lf_cameraPickerController:(LFCameraPickerController *)picker didFinishPickingVideo:(NSURL *)videoUrl duration:(NSTimeInterval)duration;
 /** 取消 */
 - (void)lf_cameraPickerDidCancel:(LFCameraPickerController *)picker;
+
+/** 水印视图(提供横屏与竖屏的水印图) activeOverlay = YES 有效 */
+- (UIView *)lf_cameraPickerOverlayView:(LFCameraOverlayOrientation)overlayOrientation;
 
 @end

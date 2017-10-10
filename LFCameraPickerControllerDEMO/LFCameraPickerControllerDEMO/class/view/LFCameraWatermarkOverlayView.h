@@ -9,10 +9,12 @@
 #import <UIKit/UIKit.h>
 #import "SCVideoConfiguration.h"
 
-@interface LFCameraWatermarkOverlayView : UIView <SCVideoOverlay>
+@interface LFCameraWatermarkOverlayView : UIImageView <SCVideoOverlay>
 
-@property (nonatomic, strong) UIView *overlayView;
+@property (nonatomic, strong) UIView *overlayView_Ver;
+@property (nonatomic, strong) UIView *overlayView_Hor;
 
-@property (nonatomic, readonly) UIImage *overlayImage;
+@property (nonatomic, readonly) UIImage *overlayImage_Ver;
+@property (nonatomic, readonly) UIImage *overlayImage_Hor;
 
 @end

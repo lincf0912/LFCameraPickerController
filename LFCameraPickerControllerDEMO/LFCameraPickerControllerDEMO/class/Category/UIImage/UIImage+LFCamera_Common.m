@@ -31,15 +31,21 @@
 
 + (UIImage *)LFCamera_imageWithView:(UIView *)view
 {
-    UIGraphicsBeginImageContextWithOptions(view.bounds.size, NO, 0.0);
+    if (view) {
+        
+        UIGraphicsBeginImageContextWithOptions(view.bounds.size, NO, 0.0);
+        
+        [view.layer renderInContext:UIGraphicsGetCurrentContext()];
+        
+        UIImage *maskImage = UIGraphicsGetImageFromCurrentImageContext();
+        
+        UIGraphicsEndImageContext();
+        
+        return maskImage;
+        
+    }
     
-    [view.layer renderInContext:UIGraphicsGetCurrentContext()];
-    
-    UIImage *maskImage = UIGraphicsGetImageFromCurrentImageContext();
-    
-    UIGraphicsEndImageContext();
-    
-    return maskImage;
+    return nil;
 }
 
 @end

@@ -19,23 +19,25 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
+        self.backgroundColor = [UIColor clearColor];
+        self.contentMode = UIViewContentModeScaleAspectFit;
     }
     return self;
 }
 
-- (void)layoutSubviews
+- (void)setOverlayView_Hor:(UIView *)overlayView_Hor
 {
-    [super layoutSubviews];
-    self.overlayView.frame = self.bounds;
+    _overlayView_Hor = overlayView_Hor;
+    
+    _overlayImage_Hor = [UIImage LFCamera_imageWithView:overlayView_Hor];
 }
 
-- (void)setOverlayView:(UIView *)overlayView
+- (void)setOverlayView_Ver:(UIView *)overlayView_Ver
 {
-    _overlayView = overlayView;
-    _overlayView.frame = self.bounds;
-    [self addSubview:overlayView];
+    _overlayView_Ver = overlayView_Ver;
     
-    _overlayImage = [UIImage LFCamera_imageWithView:overlayView];
+    _overlayImage_Ver = [UIImage LFCamera_imageWithView:overlayView_Ver];
 }
+
 
 @end
