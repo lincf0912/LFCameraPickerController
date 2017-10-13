@@ -178,7 +178,7 @@
     return YES;
 }
 
-//支持多个方向
+//支持正方向
 -(UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
     return UIInterfaceOrientationMaskPortrait;

@@ -17,6 +17,8 @@
 #import "LFRecordButton.h"
 #import "SCRecorder.h"
 
+#import <CoreMotion/CoreMotion.h>
+
 @interface LFCameraTakeViewController () <SCRecorderDelegate, LFCameraDisplayDelegate>
 
 /** 录制神器 */
@@ -47,6 +49,9 @@
 /** 录制按钮 */
 @property (weak, nonatomic) LFRecordButton *recordButton;
 
+/** 陀螺仪 */
+@property (strong, nonatomic) CMMotionManager *mManager;
+
 @end
 
 @implementation LFCameraTakeViewController
@@ -56,8 +61,11 @@
     // Do any additional setup after loading the view.
     self.view.backgroundColor = [UIColor blackColor];
 
-    /** 监听设备方向改变 */
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deviceOrientationDidChange:) name:UIDeviceOrientationDidChangeNotification object:nil];
+    /** 监听设备方向改变(这种方式受系统方向锁影响) */
+//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deviceOrientationDidChange) name:UIDeviceOrientationDidChangeNotification object:nil];
+    
+    /** 初始化陀螺仪 */
+    _mManager = [[CMMotionManager alloc] init];
     
     /** 初始化视图 */
     [self initView];
@@ -71,11 +79,11 @@
     // Dispose of any resources that can be recreated.
 }
 
-- (void)deviceOrientationDidChange:(NSNotification *)notify
+- (void)interfaceOrientationDidChange:(UIInterfaceOrientation)orientation
 {
-    UIDeviceOrientation orientation = [UIDevice currentDevice].orientation;
+//    UIDeviceOrientation orientation = [UIDevice currentDevice].orientation;
     switch (orientation) {
-        case UIDeviceOrientationPortrait:
+        case UIInterfaceOrientationPortrait:
         {
             self.imageOrientation = UIImageOrientationUp;
             if (self.recorder.session.segments.count == 0 && self.recorder.isRecording == NO) {
@@ -94,7 +102,7 @@
             }];
         }
             break;
-        case UIDeviceOrientationLandscapeLeft:
+        case UIInterfaceOrientationLandscapeLeft:
         {
             self.imageOrientation = UIImageOrientationLeft;
             if (self.recorder.session.segments.count == 0 && self.recorder.isRecording == NO) {
@@ -117,7 +125,7 @@
             }];
         }
             break;
-        case UIDeviceOrientationLandscapeRight:
+        case UIInterfaceOrientationLandscapeRight:
         {
             self.imageOrientation = UIImageOrientationRight;
             if (self.recorder.session.segments.count == 0 && self.recorder.isRecording == NO) {
@@ -140,7 +148,7 @@
             }];
         }
             break;
-        case UIDeviceOrientationPortraitUpsideDown:
+        case UIInterfaceOrientationPortraitUpsideDown:
         {
             self.imageOrientation = UIImageOrientationDown;
             if (self.recorder.session.segments.count == 0 && self.recorder.isRecording == NO) {
@@ -167,8 +175,10 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    /** 更正方向 */
-    [self deviceOrientationDidChange:nil];
+    
+    /** 开启陀螺仪 */
+    [self startUpdateAccelerometer];
+    
     /** 激活摄像头 */
     [self prepareSession];
 }
@@ -197,6 +207,7 @@
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     
+    [self stopUpdateAccelerometer];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -213,7 +224,8 @@
 }
 
 - (void)dealloc {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
+//    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    _mManager = nil;
     _recorder.previewView = nil;
     [_recorder.session removeAllSegments];
 }
@@ -455,10 +467,12 @@
     recordButton.special = (cameraPicker.cameraType&LFCameraType_Video && cameraPicker.canPause);
     /** 单击 */
     recordButton.didTouchSingle = ^{
+        [weakSelf stopUpdateAccelerometer];
         [weakSelf takePhoto];
     };
     /** 长按开始 */
     recordButton.didTouchLongBegan = ^{
+        [weakSelf stopUpdateAccelerometer];
         weakSelf.backToRecord.selected = NO;
         [weakSelf.recorder record];
     };
@@ -685,6 +699,50 @@
                 [self.overlayView setImage:self.overlayView.overlayImage_Ver];
             }
         }
+    }
+}
+
+#pragma mark - 陀螺仪
+- (void)startUpdateAccelerometer
+{
+    if ([self.mManager isAccelerometerAvailable] == YES) {
+        //回调会一直调用,建议获取到就调用下面的停止方法，需要再重新开始，当然如果需求是实时不间断的话可以等离开页面之后再stop
+        [self.mManager setAccelerometerUpdateInterval:.5f];
+        [self.mManager startAccelerometerUpdatesToQueue:[NSOperationQueue currentQueue] withHandler:^(CMAccelerometerData *accelerometerData, NSError *error)
+         {
+             double x = accelerometerData.acceleration.x;
+             double y = accelerometerData.acceleration.y;
+             if (fabs(y) >= fabs(x))
+             {
+                 if (y >= 0){
+                     //Down
+                     [self interfaceOrientationDidChange:UIInterfaceOrientationPortraitUpsideDown];
+                 }
+                 else{
+                     //Portrait
+                     [self interfaceOrientationDidChange:UIInterfaceOrientationPortrait];
+                 }
+             }
+             else
+             {
+                 if (x >= 0){
+                     //Right
+                     [self interfaceOrientationDidChange:UIInterfaceOrientationLandscapeRight];
+                 }
+                 else{
+                     //Left
+                     [self interfaceOrientationDidChange:UIInterfaceOrientationLandscapeLeft];
+                 }
+             }
+         }];
+    }
+}
+
+- (void)stopUpdateAccelerometer
+{
+    if ([self.mManager isAccelerometerActive] == YES)
+    {
+        [self.mManager stopAccelerometerUpdates];
     }
 }
 
