@@ -14,10 +14,17 @@
 #import "LFCameraWatermarkOverlayView.h"
 
 #import "SCRecorder.h"
+
+#ifdef LF_MEDIAEDIT
 #import "LFPhotoEditingController.h"
 #import "LFVideoEditingController.h"
+#endif
 
+#ifdef LF_MEDIAEDIT
 @interface LFCameraDisplayController () <SCPlayerDelegate, LFPhotoEditingControllerDelegate, LFVideoEditingControllerDelegate>
+#else
+@interface LFCameraDisplayController () <SCPlayerDelegate>
+#endif
 
 @property (strong, nonatomic) SCAssetExportSession *exportSession;
 
@@ -27,9 +34,11 @@
 /** 水印 */
 @property (weak, nonatomic) LFCameraWatermarkOverlayView *overlayView;
 
+#ifdef LF_MEDIAEDIT
 /** 图片编辑对象 */
 @property (strong, nonatomic) LFPhotoEdit *photoEdit;
 @property (strong, nonatomic) LFVideoEdit *videoEdit;
+#endif
 
 /** 底部栏 */
 @property (weak, nonatomic) UIView *toolsView;
@@ -118,8 +127,11 @@
         }
         
         NSURL *videoUrl = (cameraPicker.videoUrl == nil ? self.recordSession.outputUrl : cameraPicker.videoUrl);
-        
+#ifdef LF_MEDIAEDIT
         AVAsset *avasset = self.videoEdit.editFinalURL ? [AVURLAsset assetWithURL:self.videoEdit.editFinalURL] : self.recordSession.assetRepresentingSegments;
+#else
+        AVAsset *avasset = self.recordSession.assetRepresentingSegments;
+#endif
         SCAssetExportSession *exportSession = [[SCAssetExportSession alloc] initWithAsset:avasset];
         exportSession.videoConfiguration.preset = preset;
         exportSession.audioConfiguration.preset = preset;
@@ -241,12 +253,14 @@
     [toolsView addSubview:finishButton];
     self.finishButton = finishButton;
     
+#ifdef LF_MEDIAEDIT
     UIButton *editButton = [UIButton buttonWithType:UIButtonTypeCustom];
     CGFloat editWH = 40.f, editMargin = 20.f;
     editButton.frame = CGRectMake(CGRectGetWidth(self.view.frame)-editWH-editMargin, editMargin, editWH, editWH);
     [editButton setImage:LFCamera_bundleImageNamed(@"LFCamera_iconEdit") forState:UIControlStateNormal];
     [editButton addTarget:self action:@selector(photoEditAction) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:editButton];
+#endif
 }
 
 - (void)cornerButton:(UIButton *)button
@@ -354,7 +368,7 @@
         _overlayView = overlayView;
     }
 }
-
+#ifdef LF_MEDIAEDIT
 - (void)photoEditAction
 {
     if (self.recordSession == nil) {
@@ -382,6 +396,7 @@
         [self.player pause];
     }
 }
+#endif
 
 #pragma mark - KVO
 - (void)observeValueForKeyPath:(NSString*) path
@@ -403,6 +418,7 @@
     }
 }
 
+#ifdef LF_MEDIAEDIT
 #pragma mark - LFPhotoEditingControllerDelegate
 - (void)lf_PhotoEditingController:(LFPhotoEditingController *)photoEdittingVC didCancelPhotoEdit:(LFPhotoEdit *)photoEdit
 {
@@ -438,5 +454,6 @@
     }
     self.videoEdit = videoEdit;
 }
+#endif
 
 @end

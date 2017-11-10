@@ -2,13 +2,14 @@
 
 * 依赖SCRecorder库
 * 支持拍照、录制视频（断点录制）
-* 媒体编辑（依赖LFMediaEditingController）
+* 媒体编辑（依赖LFMediaEditingController库，默认没有编辑功能）
 * 详细使用见LFCameraPickerController.h 的初始化方法
 
 ## Installation 安装
 
 * CocoaPods：pod 'LFCameraPickerController'
 * 手动导入：将LFCameraPickerControllerDEMO\class文件夹拽入项目中，导入头文件：#import "LFCameraPickerController.h"
+* 开启编辑功能：pod 'LFMediaEditingController'
 
 ## 调用代码
 
