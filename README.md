@@ -9,7 +9,7 @@
 
 * CocoaPods：pod 'LFCameraPickerController'
 * 手动导入：将LFCameraPickerControllerDEMO\class文件夹拽入项目中，导入头文件：#import "LFCameraPickerController.h"
-* 开启编辑功能：pod 'LFMediaEditingController'
+* 开启编辑功能：pod 'LFCameraPickerController/LFMediaEdit'
 
 ## 调用代码
 
