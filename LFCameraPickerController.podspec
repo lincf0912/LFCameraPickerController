@@ -9,9 +9,15 @@ s.platform     = :ios
 s.ios.deployment_target = '7.0'
 s.source       = { :git => 'https://github.com/lincf0912/LFCameraPickerController.git', :tag => s.version, :submodules => true }
 s.requires_arc = true
-s.resources    = 'LFCameraPickerControllerDEMO/LFCameraPickerControllerDEMO/class/*.bundle'
-s.source_files = 'LFCameraPickerControllerDEMO/LFCameraPickerControllerDEMO/class/*.{h,m}','LFCameraPickerControllerDEMO/LFCameraPickerControllerDEMO/class/**/*.{h,m}'
-s.public_header_files = 'LFCameraPickerControllerDEMO/LFCameraPickerControllerDEMO/class/*.h'
+s.default_subspec = 'Core'
+
+s.subspec 'Core' do |ss|
+ss.resources    = 'LFCameraPickerControllerDEMO/LFCameraPickerControllerDEMO/class/*.bundle'
+ss.source_files = 'LFCameraPickerControllerDEMO/LFCameraPickerControllerDEMO/class/*.{h,m}','LFCameraPickerControllerDEMO/LFCameraPickerControllerDEMO/class/**/*.{h,m}'
+ss.public_header_files = 'LFCameraPickerControllerDEMO/LFCameraPickerControllerDEMO/class/*.h'
+ss.dependency 'LFCameraPickerController/LFRecordButton'
+s.dependency 'SCRecorder'
+end
 
 # LFRecordButton模块
 s.subspec 'LFRecordButton' do |ss|
@@ -19,7 +25,14 @@ ss.source_files = 'LFCameraPickerControllerDEMO/LFCameraPickerControllerDEMO/ven
 ss.public_header_files = 'LFCameraPickerControllerDEMO/LFCameraPickerControllerDEMO/vendors/LFRecordButton/LFRecordButton.h'
 end
 
-# 依赖库
-s.dependency 'SCRecorder'
+# LFMediaEdit模块
+s.subspec 'LFMediaEdit' do |ss|
+ss.xcconfig = {
+'GCC_PREPROCESSOR_DEFINITIONS' => '$(inherited) LF_MEDIAEDIT=1'
+}
+ss.dependency 'LFCameraPickerController/Core'
+ss.dependency 'LFMediaEditingController'
+end
+
 
 end
