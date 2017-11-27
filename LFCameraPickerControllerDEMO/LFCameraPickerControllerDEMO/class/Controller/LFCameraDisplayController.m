@@ -20,6 +20,8 @@
 #import "LFVideoEditingController.h"
 #endif
 
+#define kCameraDisplayEditMargin 20.f
+
 #ifdef LF_MEDIAEDIT
 @interface LFCameraDisplayController () <SCPlayerDelegate, LFPhotoEditingControllerDelegate, LFVideoEditingControllerDelegate>
 #else
@@ -46,6 +48,8 @@
 @property (weak, nonatomic) UIButton *cancelButton;
 /** 完成 */
 @property (weak, nonatomic) UIButton *finishButton;
+/* 编辑 */
+@property (weak, nonatomic) UIButton *editButton;
 
 @end
 
@@ -79,6 +83,23 @@
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     
+}
+
+- (void)viewWillLayoutSubviews
+{
+    [super viewWillLayoutSubviews];
+    CGFloat width = CGRectGetWidth(self.view.frame);
+    CGFloat height = CGRectGetHeight(self.view.frame);
+    CGFloat top = 0, bottom = 0;
+    if (@available(iOS 11.0, *)) {
+        top += self.view.safeAreaInsets.top;
+        bottom += self.view.safeAreaInsets.bottom;
+    }
+    _toolsView.frame = CGRectMake(0, height-bottom-LFCamera_bottomViewHeight-LFCamera_bottomMargin, width, LFCamera_bottomViewHeight);
+    CGRect tempEditRect = _editButton.frame;
+    tempEditRect.origin.x = width-CGRectGetWidth(tempEditRect)-kCameraDisplayEditMargin;
+    tempEditRect.origin.y = top+kCameraDisplayEditMargin;
+    _editButton.frame = tempEditRect;
 }
 
 - (void)dealloc {
@@ -193,7 +214,7 @@
             }
             
         }];
-    } else {
+    } else if (self.photo) {
         UIImage *image = self.playerView.image;
         if (self.overlayImage) {
              image = [image LFCamera_imageWithWaterMask:self.overlayImage];
@@ -219,6 +240,14 @@
                 [self.delegate lf_cameraDisplay:self didFinishImage:image];
             }
         }
+    } else {
+        [cameraPicker hideProgressHUD];
+        LFCameraPickerController *cameraPicker = (LFCameraPickerController *)self.navigationController;
+        /** 代理回调 */
+        if ([cameraPicker.pickerDelegate respondsToSelector:@selector(lf_cameraPickerDidCancel:)]) {
+            [cameraPicker.pickerDelegate lf_cameraPickerDidCancel:cameraPicker];
+        }
+        [cameraPicker dismissViewControllerAnimated:YES completion:nil];
     }
 }
 
@@ -229,7 +258,7 @@
     CGFloat height = CGRectGetHeight(self.view.frame);
     
     /** 工具栏 */
-    UIView *toolsView = [[UIView alloc] initWithFrame:CGRectMake(0, height-LFCamera_boomViewHeight-LFCamera_boomMargin, width, LFCamera_boomViewHeight)];
+    UIView *toolsView = [[UIView alloc] initWithFrame:CGRectMake(0, height-LFCamera_bottomViewHeight-LFCamera_bottomMargin, width, LFCamera_bottomViewHeight)];
     [self.view addSubview:toolsView];
     self.toolsView = toolsView;
     
@@ -255,11 +284,12 @@
     
 #ifdef LF_MEDIAEDIT
     UIButton *editButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    CGFloat editWH = 40.f, editMargin = 20.f;
-    editButton.frame = CGRectMake(CGRectGetWidth(self.view.frame)-editWH-editMargin, editMargin, editWH, editWH);
+    CGFloat editWH = 40.f;
+    editButton.frame = CGRectMake(width-editWH-kCameraDisplayEditMargin, kCameraDisplayEditMargin, editWH, editWH);
     [editButton setImage:LFCamera_bundleImageNamed(@"LFCamera_iconEdit") forState:UIControlStateNormal];
     [editButton addTarget:self action:@selector(photoEditAction) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:editButton];
+    self.editButton = editButton;
 #endif
 }
 

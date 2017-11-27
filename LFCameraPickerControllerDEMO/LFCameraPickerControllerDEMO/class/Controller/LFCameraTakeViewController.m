@@ -33,6 +33,11 @@
 @property (strong, nonatomic) SCRecorderToolsView *focusView;
 /** 水印层 */
 @property (strong, nonatomic) LFCameraWatermarkOverlayView *overlayView;
+/* 顶部栏 */
+@property (weak, nonatomic) UIView *topView;
+/* 底部栏 */
+@property (weak, nonatomic) UIView *bottomView;
+
 
 /** 闪光灯 */
 @property (weak, nonatomic) UIButton *flashButton;
@@ -183,6 +188,24 @@
     [self prepareSession];
 }
 
+- (void)viewWillLayoutSubviews
+{
+    [super viewWillLayoutSubviews];
+    CGFloat width = CGRectGetWidth(self.view.frame);
+    CGFloat height = CGRectGetHeight(self.view.frame);
+    CGFloat top = 0, bottom = 0;
+    if (@available(iOS 11.0, *)) {
+        top += self.view.safeAreaInsets.top;
+        bottom += self.view.safeAreaInsets.bottom;
+    }
+    _topView.frame = CGRectMake(0, top, width, LFCamera_topViewHeight);
+    _bottomView.frame = CGRectMake(0, height-bottom-LFCamera_bottomViewHeight-LFCamera_bottomMargin, width, LFCamera_bottomViewHeight);
+    CGRect tempTipsRect = _tipsLabel.frame;
+    tempTipsRect.origin.x = (width-CGRectGetWidth(tempTipsRect))/2;
+    tempTipsRect.origin.y = CGRectGetMinY(_bottomView.frame)-CGRectGetHeight(tempTipsRect)-5;
+    _tipsLabel.frame = tempTipsRect;
+}
+
 - (void)viewDidLayoutSubviews {
     [super viewDidLayoutSubviews];
     
@@ -288,6 +311,9 @@
 
 - (void)takePhoto
 {
+#if TARGET_OS_SIMULATOR
+    [self showImageView];
+#else
     __weak typeof(self) weakSelf = self;
     [self.recorder capturePhoto:^(NSError *error, UIImage *image) {
         if (image != nil) {
@@ -298,6 +324,7 @@
             [weakSelf showAlertViewWithTitle:@"Failed to capture photo" message:error.localizedDescription];
         }
     }];
+#endif
 }
 
 
@@ -457,11 +484,12 @@
     CGFloat height = CGRectGetHeight(self.view.frame);
     
     /** 底部工具栏 */
-    UIView *boomView = [[UIView alloc] initWithFrame:CGRectMake(0, height-LFCamera_boomViewHeight-LFCamera_boomMargin, width, LFCamera_boomViewHeight)];
-    [self.view addSubview:boomView];
+    UIView *bottomView = [[UIView alloc] initWithFrame:CGRectMake(0, height-LFCamera_bottomViewHeight-LFCamera_bottomMargin, width, LFCamera_bottomViewHeight)];
+    [self.view addSubview:bottomView];
+    _bottomView = bottomView;
     
     /** 底部工具栏 - 开始按钮 */
-    LFRecordButton *recordButton = [[LFRecordButton alloc] initWithFrame:CGRectMake((CGRectGetWidth(boomView.frame)-LFCamera_recordButtonHeight)/2, (CGRectGetHeight(boomView.frame)-LFCamera_recordButtonHeight)/2, LFCamera_recordButtonHeight, LFCamera_recordButtonHeight)];
+    LFRecordButton *recordButton = [[LFRecordButton alloc] initWithFrame:CGRectMake((CGRectGetWidth(bottomView.frame)-LFCamera_recordButtonHeight)/2, (CGRectGetHeight(bottomView.frame)-LFCamera_recordButtonHeight)/2, LFCamera_recordButtonHeight, LFCamera_recordButtonHeight)];
     recordButton.onlySingleTap = (cameraPicker.cameraType == LFCameraType_Photo);
     recordButton.onlyLongTap = (cameraPicker.cameraType == LFCameraType_Video);
     recordButton.special = (cameraPicker.cameraType&LFCameraType_Video && cameraPicker.canPause);
@@ -503,39 +531,40 @@
         z1 = (x1+y1)-z/(x+y)*(x1+y1);
         weakSelf.recorder.videoZoomFactor = MIN(MAX(z1, x1), y1);
     };
-    [boomView addSubview:recordButton];
+    [bottomView addSubview:recordButton];
     self.recordButton = recordButton;
     
     if (cameraPicker.cameraType&LFCameraType_Video && cameraPicker.canPause) {
         /** 底部工具栏 - 选择／删除按钮 */
         UIButton *backToRecord = [UIButton buttonWithType:UIButtonTypeCustom];
-        backToRecord.frame = CGRectMake((CGRectGetMinX(recordButton.frame)-LFCamera_buttonHeight)/2, (CGRectGetHeight(boomView.frame)-LFCamera_buttonHeight)/2, LFCamera_buttonHeight, LFCamera_buttonHeight);
+        backToRecord.frame = CGRectMake((CGRectGetMinX(recordButton.frame)-LFCamera_buttonHeight)/2, (CGRectGetHeight(bottomView.frame)-LFCamera_buttonHeight)/2, LFCamera_buttonHeight, LFCamera_buttonHeight);
         [backToRecord setImage:LFCamera_bundleImageNamed(@"LFCamera_backTo") forState:UIControlStateNormal];
         [backToRecord setImage:LFCamera_bundleImageNamed(@"LFCamera_DeleteBtn") forState:UIControlStateSelected];
         [backToRecord addTarget:self action:@selector(selectedOrDeleteLastProgress:) forControlEvents:UIControlEventTouchUpInside];
         backToRecord.enabled = NO;
-        [boomView addSubview:backToRecord];
+        [bottomView addSubview:backToRecord];
         self.backToRecord = backToRecord;
         /** 底部工具栏 - 完成按钮 */
         UIButton *stopButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        stopButton.frame = CGRectMake((CGRectGetWidth(boomView.frame)-CGRectGetMaxX(recordButton.frame)-LFCamera_buttonHeight)/2+CGRectGetMaxX(recordButton.frame), (CGRectGetHeight(boomView.frame)-LFCamera_buttonHeight)/2, LFCamera_buttonHeight, LFCamera_buttonHeight);
+        stopButton.frame = CGRectMake((CGRectGetWidth(bottomView.frame)-CGRectGetMaxX(recordButton.frame)-LFCamera_buttonHeight)/2+CGRectGetMaxX(recordButton.frame), (CGRectGetHeight(bottomView.frame)-LFCamera_buttonHeight)/2, LFCamera_buttonHeight, LFCamera_buttonHeight);
         [stopButton setImage:LFCamera_bundleImageNamed(@"LFCamera_stop") forState:UIControlStateNormal];
         [stopButton addTarget:self action:@selector(stopAction) forControlEvents:UIControlEventTouchUpInside];
         stopButton.enabled = NO;
-        [boomView addSubview:stopButton];
+        [bottomView addSubview:stopButton];
         self.stopButton = stopButton;
     } else {
         /** 底部工具栏 - 关闭按钮 */
         UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        closeButton.frame = CGRectMake((CGRectGetMinX(recordButton.frame)-LFCamera_buttonHeight)/2, (CGRectGetHeight(boomView.frame)-LFCamera_buttonHeight)/2, LFCamera_buttonHeight, LFCamera_buttonHeight);
+        closeButton.frame = CGRectMake((CGRectGetMinX(recordButton.frame)-LFCamera_buttonHeight)/2, (CGRectGetHeight(bottomView.frame)-LFCamera_buttonHeight)/2, LFCamera_buttonHeight, LFCamera_buttonHeight);
         [closeButton setImage:LFCamera_bundleImageNamed(@"LFCamera_back") forState:UIControlStateNormal];
         [closeButton addTarget:self action:@selector(closeAction) forControlEvents:UIControlEventTouchUpInside];
-        [boomView addSubview:closeButton];
+        [bottomView addSubview:closeButton];
     }
     
     /** 顶部栏 */
     UIView *topView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, width, LFCamera_topViewHeight)];
     [self.view addSubview:topView];
+    _topView = topView;
     
     /** 顶部栏 - 关闭按钮 */
     if (cameraPicker.cameraType&LFCameraType_Video && cameraPicker.canPause) {
@@ -591,9 +620,9 @@
     tipsLabel.layer.shadowOffset = CGSizeMake(0, 0);
     tipsLabel.layer.shadowRadius = 8;
     CGSize tipsTextSize = [tipsLabel.text sizeWithAttributes:@{NSFontAttributeName:tipsLabel.font, NSForegroundColorAttributeName:tipsLabel.textColor}];
-    tipsLabel.frame = CGRectMake((CGRectGetWidth(self.view.frame)-tipsTextSize.width)/2, CGRectGetMinY(boomView.frame)-tipsTextSize.height-5, tipsTextSize.width, tipsTextSize.height);
+    tipsLabel.frame = CGRectMake((width-tipsTextSize.width)/2, CGRectGetMinY(bottomView.frame)-tipsTextSize.height-5, tipsTextSize.width, tipsTextSize.height);
     tipsLabel.alpha = 0.f;
-    [self.view insertSubview:tipsLabel belowSubview:boomView];
+    [self.view insertSubview:tipsLabel belowSubview:bottomView];
     self.tipsLabel = tipsLabel;
 }
 
