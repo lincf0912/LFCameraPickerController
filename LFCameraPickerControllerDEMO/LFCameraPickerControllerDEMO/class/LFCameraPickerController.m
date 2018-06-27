@@ -181,13 +181,24 @@
 //支持正方向
 -(UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
-    return UIInterfaceOrientationMaskPortrait;
+    switch ([UIApplication sharedApplication].statusBarOrientation) {
+        case UIInterfaceOrientationPortrait:
+            return UIInterfaceOrientationMaskPortrait;
+        case UIInterfaceOrientationLandscapeLeft:
+            return UIInterfaceOrientationMaskLandscapeLeft;
+        case UIInterfaceOrientationLandscapeRight:
+            return UIInterfaceOrientationMaskLandscapeRight;
+        case UIInterfaceOrientationPortraitUpsideDown:
+            return UIInterfaceOrientationMaskPortraitUpsideDown;
+        default:
+            return UIInterfaceOrientationMaskPortrait;
+    }
 }
 
 /** present 后的首次显示方向 */
-- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation
-{
-    return UIInterfaceOrientationPortrait;
-}
+//- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation
+//{
+//    return UIInterfaceOrientationPortrait;
+//}
 
 @end

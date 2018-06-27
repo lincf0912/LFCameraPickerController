@@ -86,36 +86,85 @@
 
 - (void)interfaceOrientationDidChange:(UIInterfaceOrientation)orientation
 {
-//    UIDeviceOrientation orientation = [UIDevice currentDevice].orientation;
+    CGFloat angle = 0;
+    switch ([UIApplication sharedApplication].statusBarOrientation) {
+        case UIInterfaceOrientationPortrait:
+            break;
+        case UIInterfaceOrientationLandscapeLeft:
+            angle = M_PI_2;
+            break;
+        case UIInterfaceOrientationLandscapeRight:
+            angle = -M_PI_2;
+            break;
+        case UIInterfaceOrientationPortraitUpsideDown:
+            angle = M_PI;
+            break;
+        case UIInterfaceOrientationUnknown:
+            break;
+    }
+    //    UIDeviceOrientation orientation = [UIDevice currentDevice].orientation;
+    
     switch (orientation) {
         case UIInterfaceOrientationPortrait:
         {
             self.imageOrientation = UIImageOrientationUp;
+            switch ([UIApplication sharedApplication].statusBarOrientation) {
+                case UIInterfaceOrientationPortrait:
+                    self.imageOrientation = UIImageOrientationUp;
+                    break;
+                case UIInterfaceOrientationLandscapeLeft:
+                    self.imageOrientation = UIImageOrientationLeft;
+                    break;
+                case UIInterfaceOrientationLandscapeRight:
+                    self.imageOrientation = UIImageOrientationRight;
+                    break;
+                case UIInterfaceOrientationPortraitUpsideDown:
+                    self.imageOrientation = UIImageOrientationDown;
+                    break;
+                default:
+                    break;
+            }
             if (self.recorder.session.segments.count == 0 && self.recorder.isRecording == NO) {
-                self.recorder.videoConfiguration.affineTransform = CGAffineTransformIdentity;
+                self.recorder.videoConfiguration.affineTransform = CGAffineTransformMakeRotation(0-angle);
                 [self retakeRecordSession];
                 [self getOverlayView];
                 [UIView animateWithDuration:0.25f animations:^{
-                    self.overlayView.transform = CGAffineTransformMakeRotation(0);
+                    self.overlayView.transform = CGAffineTransformMakeRotation(0+angle);
                     self.overlayView.frame = self.view.bounds;
                     self.overlayView.center = self.view.center;
                 }];
             }
             [UIView animateWithDuration:0.25f animations:^{
-                self.flashButton.transform = CGAffineTransformMakeRotation(0);
-                self.flipCameraButton.transform = CGAffineTransformMakeRotation(0);
+                self.flashButton.transform = CGAffineTransformMakeRotation(0+angle);
+                self.flipCameraButton.transform = CGAffineTransformMakeRotation(0+angle);
             }];
         }
             break;
         case UIInterfaceOrientationLandscapeLeft:
         {
             self.imageOrientation = UIImageOrientationLeft;
+            switch ([UIApplication sharedApplication].statusBarOrientation) {
+                case UIInterfaceOrientationPortrait:
+                    self.imageOrientation = UIImageOrientationLeft;
+                    break;
+                case UIInterfaceOrientationLandscapeLeft:
+                    self.imageOrientation = UIImageOrientationDown;
+                    break;
+                case UIInterfaceOrientationLandscapeRight:
+                    self.imageOrientation = UIImageOrientationUp;
+                    break;
+                case UIInterfaceOrientationPortraitUpsideDown:
+                    self.imageOrientation = UIImageOrientationRight;
+                    break;
+                default:
+                    break;
+            }
             if (self.recorder.session.segments.count == 0 && self.recorder.isRecording == NO) {
-                self.recorder.videoConfiguration.affineTransform = CGAffineTransformMakeRotation(-M_PI_2);
+                self.recorder.videoConfiguration.affineTransform = CGAffineTransformMakeRotation(-M_PI_2-angle);
                 [self retakeRecordSession];
                 [self getOverlayView];
                 [UIView animateWithDuration:0.25f animations:^{
-                    self.overlayView.transform = CGAffineTransformMakeRotation(M_PI_2);
+                    self.overlayView.transform = CGAffineTransformMakeRotation(M_PI_2+angle);
                     self.overlayView.frame = self.view.bounds;
                     self.overlayView.center = self.view.center;
                 } completion:^(BOOL finished) {
@@ -125,20 +174,36 @@
                 }];
             }
             [UIView animateWithDuration:0.25f animations:^{
-                self.flashButton.transform = CGAffineTransformMakeRotation(M_PI_2);
-                self.flipCameraButton.transform = CGAffineTransformMakeRotation(M_PI_2);
+                self.flashButton.transform = CGAffineTransformMakeRotation(M_PI_2+angle);
+                self.flipCameraButton.transform = CGAffineTransformMakeRotation(M_PI_2+angle);
             }];
         }
             break;
         case UIInterfaceOrientationLandscapeRight:
         {
             self.imageOrientation = UIImageOrientationRight;
+            switch ([UIApplication sharedApplication].statusBarOrientation) {
+                case UIInterfaceOrientationPortrait:
+                    self.imageOrientation = UIImageOrientationRight;
+                    break;
+                case UIInterfaceOrientationLandscapeLeft:
+                    self.imageOrientation = UIImageOrientationUp;
+                    break;
+                case UIInterfaceOrientationLandscapeRight:
+                    self.imageOrientation = UIImageOrientationDown;
+                    break;
+                case UIInterfaceOrientationPortraitUpsideDown:
+                    self.imageOrientation = UIImageOrientationLeft;
+                    break;
+                default:
+                    break;
+            }
             if (self.recorder.session.segments.count == 0 && self.recorder.isRecording == NO) {
-                self.recorder.videoConfiguration.affineTransform = CGAffineTransformMakeRotation(M_PI_2);
+                self.recorder.videoConfiguration.affineTransform = CGAffineTransformMakeRotation(M_PI_2-angle);
                 [self retakeRecordSession];
                 [self getOverlayView];
                 [UIView animateWithDuration:0.25f animations:^{
-                    self.overlayView.transform = CGAffineTransformMakeRotation(-M_PI_2);
+                    self.overlayView.transform = CGAffineTransformMakeRotation(-M_PI_2+angle);
                     self.overlayView.frame = self.view.bounds;
                     self.overlayView.center = self.view.center;
                 } completion:^(BOOL finished) {
@@ -148,27 +213,43 @@
                 }];
             }
             [UIView animateWithDuration:0.25f animations:^{
-                self.flashButton.transform = CGAffineTransformMakeRotation(-M_PI_2);
-                self.flipCameraButton.transform = CGAffineTransformMakeRotation(-M_PI_2);
+                self.flashButton.transform = CGAffineTransformMakeRotation(-M_PI_2+angle);
+                self.flipCameraButton.transform = CGAffineTransformMakeRotation(-M_PI_2+angle);
             }];
         }
             break;
         case UIInterfaceOrientationPortraitUpsideDown:
         {
             self.imageOrientation = UIImageOrientationDown;
+            switch ([UIApplication sharedApplication].statusBarOrientation) {
+                case UIInterfaceOrientationPortrait:
+                    self.imageOrientation = UIImageOrientationDown;
+                    break;
+                case UIInterfaceOrientationLandscapeLeft:
+                    self.imageOrientation = UIImageOrientationRight;
+                    break;
+                case UIInterfaceOrientationLandscapeRight:
+                    self.imageOrientation = UIImageOrientationLeft;
+                    break;
+                case UIInterfaceOrientationPortraitUpsideDown:
+                    self.imageOrientation = UIImageOrientationUp;
+                    break;
+                default:
+                    break;
+            }
             if (self.recorder.session.segments.count == 0 && self.recorder.isRecording == NO) {
-                self.recorder.videoConfiguration.affineTransform = CGAffineTransformMakeRotation(M_PI);
+                self.recorder.videoConfiguration.affineTransform = CGAffineTransformMakeRotation(M_PI-angle);
                 [self retakeRecordSession];
                 [self getOverlayView];
                 [UIView animateWithDuration:0.25f animations:^{
-                    self.overlayView.transform = CGAffineTransformMakeRotation(M_PI);
+                    self.overlayView.transform = CGAffineTransformMakeRotation(M_PI+angle);
                     self.overlayView.frame = self.view.bounds;
                     self.overlayView.center = self.view.center;
                 }];
             }
             [UIView animateWithDuration:0.25f animations:^{
-                self.flashButton.transform = CGAffineTransformMakeRotation(M_PI);
-                self.flipCameraButton.transform = CGAffineTransformMakeRotation(M_PI);
+                self.flashButton.transform = CGAffineTransformMakeRotation(M_PI+angle);
+                self.flipCameraButton.transform = CGAffineTransformMakeRotation(M_PI+angle);
             }];
         }
             break;
@@ -319,8 +400,8 @@
     __weak typeof(self) weakSelf = self;
     [self.recorder capturePhoto:^(NSError *error, UIImage *image) {
         if (image != nil) {
-            weakSelf.photo = [image easyFixDeviceOrientation];
-            weakSelf.photo = [weakSelf.photo easyRotateImageOrientation:self.imageOrientation];
+            UIImage *fixImage = [image easyFixDeviceOrientation];
+            weakSelf.photo = [fixImage easyRotateImageOrientation:self.imageOrientation];
             [weakSelf showImageView];
         } else {
             [weakSelf showAlertViewWithTitle:@"Failed to capture photo" message:error.localizedDescription];
@@ -637,6 +718,22 @@
     _recorder = [SCRecorder recorder];
     _recorder.captureSessionPreset = [SCRecorderTools bestCaptureSessionPresetCompatibleWithAllDevices];
     _recorder.maxRecordDuration = CMTimeMake(cameraPicker.framerate * cameraPicker.maxRecordSeconds, (int32_t)cameraPicker.framerate);
+    switch ([UIApplication sharedApplication].statusBarOrientation) {
+        case UIInterfaceOrientationPortrait:
+            _recorder.videoOrientation = AVCaptureVideoOrientationPortrait;
+            break;
+        case UIInterfaceOrientationLandscapeLeft:
+            _recorder.videoOrientation = AVCaptureVideoOrientationLandscapeLeft;
+            break;
+        case UIInterfaceOrientationLandscapeRight:
+            _recorder.videoOrientation = AVCaptureVideoOrientationLandscapeRight;
+            break;
+        case UIInterfaceOrientationPortraitUpsideDown:
+            _recorder.videoOrientation = AVCaptureVideoOrientationPortraitUpsideDown;
+            break;
+        default:
+            break;
+    }
     
     //    _recorder.fastRecordMethodEnabled = YES;
     if (cameraPicker.frontCamera) {
@@ -709,25 +806,28 @@
 - (void)getOverlayView
 {
     LFCameraPickerController *cameraPicker = (LFCameraPickerController *)self.navigationController;
-    
-    if (self.imageOrientation == UIImageOrientationLeft || self.imageOrientation == UIImageOrientationRight) {
-        if (self.overlayView.overlayImage_Hor) {
-            [self.overlayView setImage:self.overlayView.overlayImage_Hor];
-        } else {
-            if ([cameraPicker.pickerDelegate respondsToSelector:@selector(lf_cameraPickerOverlayView:)]) {
-                UIView *overlayView = [cameraPicker.pickerDelegate lf_cameraPickerOverlayView:LFCameraOverlayOrientation_Hor];
-                self.overlayView.overlayView_Hor = overlayView;
+ 
+    if (cameraPicker.activeOverlay) {
+        UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+        if (orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight) {
+            if (self.overlayView.overlayImage_Hor) {
                 [self.overlayView setImage:self.overlayView.overlayImage_Hor];
+            } else {
+                if ([cameraPicker.pickerDelegate respondsToSelector:@selector(lf_cameraPickerOverlayView:)]) {
+                    UIView *overlayView = [cameraPicker.pickerDelegate lf_cameraPickerOverlayView:LFCameraOverlayOrientation_Hor];
+                    self.overlayView.overlayView_Hor = overlayView;
+                    [self.overlayView setImage:self.overlayView.overlayImage_Hor];
+                }
             }
-        }
-    } else {
-        if (self.overlayView.overlayImage_Ver) {
-            [self.overlayView setImage:self.overlayView.overlayImage_Ver];
         } else {
-            if ([cameraPicker.pickerDelegate respondsToSelector:@selector(lf_cameraPickerOverlayView:)]) {
-                UIView *overlayView = [cameraPicker.pickerDelegate lf_cameraPickerOverlayView:LFCameraOverlayOrientation_Ver];
-                self.overlayView.overlayView_Ver = overlayView;
+            if (self.overlayView.overlayImage_Ver) {
                 [self.overlayView setImage:self.overlayView.overlayImage_Ver];
+            } else {
+                if ([cameraPicker.pickerDelegate respondsToSelector:@selector(lf_cameraPickerOverlayView:)]) {
+                    UIView *overlayView = [cameraPicker.pickerDelegate lf_cameraPickerOverlayView:LFCameraOverlayOrientation_Ver];
+                    self.overlayView.overlayView_Ver = overlayView;
+                    [self.overlayView setImage:self.overlayView.overlayImage_Ver];
+                }
             }
         }
     }
