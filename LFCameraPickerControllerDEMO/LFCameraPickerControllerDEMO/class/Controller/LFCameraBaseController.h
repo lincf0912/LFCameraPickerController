@@ -10,5 +10,5 @@
 
 @interface LFCameraBaseController : UIViewController
 
-- (void)showAlertViewWithTitle:(NSString*)title message:(NSString*) message;
+- (void)showAlertViewWithTitle:(NSString*)title message:(NSString*)message complete:(void (^)(void))complete;
 @end

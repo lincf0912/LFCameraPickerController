@@ -7,6 +7,42 @@
 //
 
 #import "LFCameraBaseController.h"
+#import <objc/runtime.h>
+
+typedef void (^lf_camera_AlertViewBlock)(UIAlertView *alertView, NSInteger buttonIndex);
+
+static char lf_camera_overAlertViewKey;
+
+@interface UIAlertView (LF_Camera_Block)
+//需要自定义初始化方法，调用Block
+/** block回调代理 */
+- (id)lf_camera_initWithTitle:(NSString *)title
+                      message:(NSString *)message
+            cancelButtonTitle:(NSString *)cancelButtonTitle
+            otherButtonTitles:(NSString*)otherButtonTitles
+                        block:(lf_camera_AlertViewBlock)block;
+@end
+
+@implementation UIAlertView (LF_Camera_Block)
+
+/** block回调代理 */
+- (id)lf_camera_initWithTitle:(NSString *)title message:(NSString *)message cancelButtonTitle:(NSString *)cancelButtonTitle otherButtonTitles:(NSString*)otherButtonTitles block:(lf_camera_AlertViewBlock)block
+{
+    objc_setAssociatedObject(self, &lf_camera_overAlertViewKey, block, OBJC_ASSOCIATION_COPY_NONATOMIC);
+    return [self initWithTitle:title message:message delegate:self cancelButtonTitle:cancelButtonTitle otherButtonTitles:otherButtonTitles, nil];//注意这里初始化父类的
+}
+
+#pragma mark - AlertViewDelegate
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
+    //这里调用函数指针_block(要传进来的参数);
+    lf_camera_AlertViewBlock block = (lf_camera_AlertViewBlock)objc_getAssociatedObject(self, &lf_camera_overAlertViewKey);
+    if (block) {
+        block(alertView, buttonIndex);
+        objc_setAssociatedObject(self, &lf_camera_overAlertViewKey, nil, OBJC_ASSOCIATION_COPY_NONATOMIC);
+    }
+}
+
+@end
 
 @interface LFCameraBaseController ()
 
@@ -34,9 +70,22 @@
 
 
 
-- (void)showAlertViewWithTitle:(NSString*)title message:(NSString*) message {
-    UIAlertView * alertView = [[UIAlertView alloc] initWithTitle:title message:message delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-    [alertView show];
+- (void)showAlertViewWithTitle:(NSString*)title message:(NSString*)message complete:(void (^)(void))complete {
+    if (@available(iOS 8.0, *)){
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:title message:message preferredStyle:UIAlertControllerStyleAlert];
+        [alertController addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            if (complete) {
+                complete();
+            }
+        }]];
+        [self presentViewController:alertController animated:YES completion:nil];
+    } else {
+        [[[UIAlertView alloc] lf_camera_initWithTitle:title message:message cancelButtonTitle:@"OK" otherButtonTitles:nil block:^(UIAlertView *alertView, NSInteger buttonIndex) {
+            if (complete) {
+                complete();
+            }
+        }] show];
+    }
 }
 
 /*

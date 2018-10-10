@@ -69,6 +69,18 @@
     /** 监听设备方向改变(这种方式受系统方向锁影响) */
 //    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deviceOrientationDidChange) name:UIDeviceOrientationDidChangeNotification object:nil];
     
+    AVAuthorizationStatus authStatus = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
+    if (authStatus ==AVAuthorizationStatusRestricted || authStatus ==AVAuthorizationStatusDenied)
+    {
+        [self showAlertViewWithTitle:@"提示" message:@"请允许应用访问你的相机" complete:nil];
+    } else {
+        authStatus = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeAudio];
+        if (authStatus ==AVAuthorizationStatusRestricted || authStatus ==AVAuthorizationStatusDenied)
+        {
+            [self showAlertViewWithTitle:@"提示" message:@"请允许应用访问你的麦克风" complete:nil];
+        }
+    }
+    
     /** 初始化陀螺仪 */
     _mManager = [[CMMotionManager alloc] init];
     
@@ -404,7 +416,7 @@
             weakSelf.photo = [fixImage easyRotateImageOrientation:self.imageOrientation];
             [weakSelf showImageView];
         } else {
-            [weakSelf showAlertViewWithTitle:@"Failed to capture photo" message:error.localizedDescription];
+            [weakSelf showAlertViewWithTitle:@"Failed to capture photo" message:error.localizedDescription complete:nil];
         }
     }];
 #endif
