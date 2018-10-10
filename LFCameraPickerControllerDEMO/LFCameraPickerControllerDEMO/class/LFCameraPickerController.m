@@ -181,17 +181,21 @@
 //支持正方向
 -(UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
-    switch ([UIApplication sharedApplication].statusBarOrientation) {
-        case UIInterfaceOrientationPortrait:
-            return UIInterfaceOrientationMaskPortrait;
-        case UIInterfaceOrientationLandscapeLeft:
-            return UIInterfaceOrientationMaskLandscapeLeft;
-        case UIInterfaceOrientationLandscapeRight:
-            return UIInterfaceOrientationMaskLandscapeRight;
-        case UIInterfaceOrientationPortraitUpsideDown:
-            return UIInterfaceOrientationMaskPortraitUpsideDown;
-        default:
-            return UIInterfaceOrientationMaskPortrait;
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        return UIInterfaceOrientationMaskPortrait;
+    } else {
+        switch ([UIApplication sharedApplication].statusBarOrientation) {
+            case UIInterfaceOrientationPortrait:
+                return UIInterfaceOrientationMaskPortrait;
+            case UIInterfaceOrientationLandscapeLeft:
+                return UIInterfaceOrientationMaskLandscapeLeft;
+            case UIInterfaceOrientationLandscapeRight:
+                return UIInterfaceOrientationMaskLandscapeRight;
+            case UIInterfaceOrientationPortraitUpsideDown:
+                return UIInterfaceOrientationMaskPortraitUpsideDown;
+            default:
+                return UIInterfaceOrientationMaskPortrait;
+        }
     }
 }
 
