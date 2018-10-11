@@ -139,7 +139,7 @@
             if (self.recorder.session.segments.count == 0 && self.recorder.isRecording == NO) {
                 self.recorder.videoConfiguration.affineTransform = CGAffineTransformMakeRotation(0-angle);
                 [self retakeRecordSession];
-                [self getOverlayView];
+                [self getOverlayView:orientation];
                 [UIView animateWithDuration:0.25f animations:^{
                     self.overlayView.transform = CGAffineTransformMakeRotation(0+angle);
                     self.overlayView.frame = self.view.bounds;
@@ -174,7 +174,7 @@
             if (self.recorder.session.segments.count == 0 && self.recorder.isRecording == NO) {
                 self.recorder.videoConfiguration.affineTransform = CGAffineTransformMakeRotation(-M_PI_2-angle);
                 [self retakeRecordSession];
-                [self getOverlayView];
+                [self getOverlayView:orientation];
                 [UIView animateWithDuration:0.25f animations:^{
                     self.overlayView.transform = CGAffineTransformMakeRotation(M_PI_2+angle);
                     self.overlayView.frame = self.view.bounds;
@@ -213,7 +213,7 @@
             if (self.recorder.session.segments.count == 0 && self.recorder.isRecording == NO) {
                 self.recorder.videoConfiguration.affineTransform = CGAffineTransformMakeRotation(M_PI_2-angle);
                 [self retakeRecordSession];
-                [self getOverlayView];
+                [self getOverlayView:orientation];
                 [UIView animateWithDuration:0.25f animations:^{
                     self.overlayView.transform = CGAffineTransformMakeRotation(-M_PI_2+angle);
                     self.overlayView.frame = self.view.bounds;
@@ -252,7 +252,7 @@
             if (self.recorder.session.segments.count == 0 && self.recorder.isRecording == NO) {
                 self.recorder.videoConfiguration.affineTransform = CGAffineTransformMakeRotation(M_PI-angle);
                 [self retakeRecordSession];
-                [self getOverlayView];
+                [self getOverlayView:orientation];
                 [UIView animateWithDuration:0.25f animations:^{
                     self.overlayView.transform = CGAffineTransformMakeRotation(M_PI+angle);
                     self.overlayView.frame = self.view.bounds;
@@ -424,42 +424,42 @@
 
 
 #pragma mark - SCRecorderDelegate
-- (void)recorder:(SCRecorder *)recorder didSkipVideoSampleBufferInSession:(SCRecordSession *)recordSession {
-    NSLog(@"Skipped video buffer");
-}
-
-- (void)recorder:(SCRecorder *)recorder didReconfigureAudioInput:(NSError *)audioInputError {
-    NSLog(@"Reconfigured audio input: %@", audioInputError);
-}
-
-- (void)recorder:(SCRecorder *)recorder didReconfigureVideoInput:(NSError *)videoInputError {
-    NSLog(@"Reconfigured video input: %@", videoInputError);
-}
+//- (void)recorder:(SCRecorder *)recorder didSkipVideoSampleBufferInSession:(SCRecordSession *)recordSession {
+//    NSLog(@"Skipped video buffer");
+//}
+//
+//- (void)recorder:(SCRecorder *)recorder didReconfigureAudioInput:(NSError *)audioInputError {
+//    NSLog(@"Reconfigured audio input: %@", audioInputError);
+//}
+//
+//- (void)recorder:(SCRecorder *)recorder didReconfigureVideoInput:(NSError *)videoInputError {
+//    NSLog(@"Reconfigured video input: %@", videoInputError);
+//}
 
 - (void)recorder:(SCRecorder *)recorder didCompleteSession:(SCRecordSession *)recordSession {
     NSLog(@"didCompleteSession:");
     [self saveAndShowSession:recordSession];
 }
 
-- (void)recorder:(SCRecorder *)recorder didInitializeAudioInSession:(SCRecordSession *)recordSession error:(NSError *)error {
-    if (error == nil) {
-        NSLog(@"Initialized audio in record session");
-    } else {
-        NSLog(@"Failed to initialize audio in record session: %@", error.localizedDescription);
-    }
-}
-
-- (void)recorder:(SCRecorder *)recorder didInitializeVideoInSession:(SCRecordSession *)recordSession error:(NSError *)error {
-    if (error == nil) {
-        NSLog(@"Initialized video in record session");
-    } else {
-        NSLog(@"Failed to initialize video in record session: %@", error.localizedDescription);
-    }
-}
-
-- (void)recorder:(SCRecorder *)recorder didBeginSegmentInSession:(SCRecordSession *)recordSession error:(NSError *)error {
-    NSLog(@"Began record segment: %@", error);
-}
+//- (void)recorder:(SCRecorder *)recorder didInitializeAudioInSession:(SCRecordSession *)recordSession error:(NSError *)error {
+//    if (error == nil) {
+//        NSLog(@"Initialized audio in record session");
+//    } else {
+//        NSLog(@"Failed to initialize audio in record session: %@", error.localizedDescription);
+//    }
+//}
+//
+//- (void)recorder:(SCRecorder *)recorder didInitializeVideoInSession:(SCRecordSession *)recordSession error:(NSError *)error {
+//    if (error == nil) {
+//        NSLog(@"Initialized video in record session");
+//    } else {
+//        NSLog(@"Failed to initialize video in record session: %@", error.localizedDescription);
+//    }
+//}
+//
+//- (void)recorder:(SCRecorder *)recorder didBeginSegmentInSession:(SCRecordSession *)recordSession error:(NSError *)error {
+//    NSLog(@"Began record segment: %@", error);
+//}
 
 - (void)recorder:(SCRecorder *)recorder didCompleteSegment:(SCRecordSessionSegment *)segment inSession:(SCRecordSession *)recordSession error:(NSError *)error {
     NSLog(@"Completed record segment at %@: %@ (frameRate: %f)", segment.url, error, segment.frameRate);
@@ -815,12 +815,11 @@
 }
 
 #pragma mark - 获取水印
-- (void)getOverlayView
+- (void)getOverlayView:(UIInterfaceOrientation)orientation
 {
     LFCameraPickerController *cameraPicker = (LFCameraPickerController *)self.navigationController;
  
     if (cameraPicker.activeOverlay) {
-        UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
         if (orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight) {
             if (self.overlayView.overlayImage_Hor) {
                 [self.overlayView setImage:self.overlayView.overlayImage_Hor];
