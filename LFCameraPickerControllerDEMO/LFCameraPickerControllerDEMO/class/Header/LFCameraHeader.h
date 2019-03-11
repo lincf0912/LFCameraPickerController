@@ -7,11 +7,12 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "NSBundle+LFCamera.h"
 
 #ifndef LFCameraHeader_h
 #define LFCameraHeader_h
 
-#define LFCamera_bundleImageNamed(name) [UIImage imageNamed:[NSString stringWithFormat:@"LFCameraPickerController.bundle/%@", name]]
+#define LFCamera_bundleImageNamed(name) [NSBundle lf_camera_imageNamed:name]
 
 extern CGFloat const LFCamera_bottomViewHeight;
 extern CGFloat const LFCamera_bottomMargin;

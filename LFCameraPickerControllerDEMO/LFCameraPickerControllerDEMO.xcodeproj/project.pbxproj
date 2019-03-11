@@ -25,6 +25,7 @@
 		6FAA50711ED2BB30002D88A2 /* LFCameraPickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6FAA506A1ED2BB30002D88A2 /* LFCameraPickerController.m */; };
 		6FAA50761ED2CC3F002D88A2 /* LFRecordButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 6FAA50751ED2CC3F002D88A2 /* LFRecordButton.m */; };
 		A229248F3E5DC6DA40F9347F /* libPods-LFCameraPickerControllerDEMO.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A6A91C38ED318A2C9956E69 /* libPods-LFCameraPickerControllerDEMO.a */; };
+		C73F4CF322362FB200ED40B7 /* NSBundle+LFCamera.m in Sources */ = {isa = PBXBuildFile; fileRef = C73F4CF222362FB200ED40B7 /* NSBundle+LFCamera.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -61,6 +62,8 @@
 		6FAA506A1ED2BB30002D88A2 /* LFCameraPickerController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LFCameraPickerController.m; sourceTree = "<group>"; };
 		6FAA50741ED2CC3F002D88A2 /* LFRecordButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LFRecordButton.h; sourceTree = "<group>"; };
 		6FAA50751ED2CC3F002D88A2 /* LFRecordButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LFRecordButton.m; sourceTree = "<group>"; };
+		C73F4CF122362FB200ED40B7 /* NSBundle+LFCamera.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSBundle+LFCamera.h"; sourceTree = "<group>"; };
+		C73F4CF222362FB200ED40B7 /* NSBundle+LFCamera.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSBundle+LFCamera.m"; sourceTree = "<group>"; };
 		E97422819F266C96A19D894D /* Pods-LFCameraPickerControllerDEMO.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LFCameraPickerControllerDEMO.release.xcconfig"; path = "../Pods/Target Support Files/Pods-LFCameraPickerControllerDEMO/Pods-LFCameraPickerControllerDEMO.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -157,6 +160,7 @@
 		6FAA505A1ED2BB30002D88A2 /* Category */ = {
 			isa = PBXGroup;
 			children = (
+				C73F4CED22362F8000ED40B7 /* NSBundle */,
 				6FAA505B1ED2BB30002D88A2 /* UIImage */,
 			);
 			path = Category;
@@ -210,6 +214,15 @@
 				6FAA50751ED2CC3F002D88A2 /* LFRecordButton.m */,
 			);
 			path = LFRecordButton;
+			sourceTree = "<group>";
+		};
+		C73F4CED22362F8000ED40B7 /* NSBundle */ = {
+			isa = PBXGroup;
+			children = (
+				C73F4CF122362FB200ED40B7 /* NSBundle+LFCamera.h */,
+				C73F4CF222362FB200ED40B7 /* NSBundle+LFCamera.m */,
+			);
+			path = NSBundle;
 			sourceTree = "<group>";
 		};
 		EDFF8E57D503DF84E85D4D0D /* Frameworks */ = {
@@ -357,6 +370,7 @@
 				6FAA506E1ED2BB30002D88A2 /* LFCameraTakeViewController.m in Sources */,
 				6F359B061F1C4D8C009F2035 /* LFCameraWatermarkOverlayView.m in Sources */,
 				6FAA506F1ED2BB30002D88A2 /* LFCameraHeader.m in Sources */,
+				C73F4CF322362FB200ED40B7 /* NSBundle+LFCamera.m in Sources */,
 				6FAA506B1ED2BB30002D88A2 /* UIImage+LFCamera_Orientation.m in Sources */,
 				6F05EE2C1EC44B1C006FC1BF /* AppDelegate.m in Sources */,
 				6FAA506C1ED2BB30002D88A2 /* LFCameraBaseController.m in Sources */,
