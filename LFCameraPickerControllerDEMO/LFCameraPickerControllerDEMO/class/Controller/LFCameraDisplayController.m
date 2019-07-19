@@ -66,7 +66,7 @@
     [self initToolsView];
     
     /** 初始化控件 */
-    if (self.recordSession == nil) {
+    if (self.asset == nil) {
         [self startAmination];
     } else {
         [self initPlayer];
@@ -134,7 +134,7 @@
     
     [cameraPicker showProgressHUD];
     
-    if (self.recordSession) {
+    if (self.asset) {
         
         NSString *preset = SCPresetMediumQuality;
         switch (cameraPicker.presetQuality) {
@@ -147,11 +147,11 @@
                 break;
         }
         
-        NSURL *videoUrl = (cameraPicker.videoUrl == nil ? self.recordSession.outputUrl : cameraPicker.videoUrl);
+        NSURL *videoUrl = cameraPicker.videoUrl;
 #ifdef LF_MEDIAEDIT
-        AVAsset *avasset = self.videoEdit.editFinalURL ? [AVURLAsset assetWithURL:self.videoEdit.editFinalURL] : self.recordSession.assetRepresentingSegments;
+        AVAsset *avasset = self.videoEdit.editFinalURL ? [AVURLAsset assetWithURL:self.videoEdit.editFinalURL] : self.asset;
 #else
-        AVAsset *avasset = self.recordSession.assetRepresentingSegments;
+        AVAsset *avasset = self.asset;
 #endif
         SCAssetExportSession *exportSession = [[SCAssetExportSession alloc] initWithAsset:avasset];
         exportSession.videoConfiguration.preset = preset;
@@ -325,7 +325,7 @@
 #pragma mark - 初始化播放控件
 - (void)initPlayer
 {
-    AVAsset *asset = _recordSession.assetRepresentingSegments;
+    AVAsset *asset = self.asset;
     if (asset) {
         AVPlayerItem *item = [AVPlayerItem playerItemWithAsset:asset];
         _player = [AVPlayer playerWithPlayerItem:item];
@@ -401,7 +401,7 @@
 #ifdef LF_MEDIAEDIT
 - (void)photoEditAction
 {
-    if (self.recordSession == nil) {
+    if (self.asset == nil) {
         UIImage *image = self.playerView.image;
         
         LFPhotoEditingController *photoEditingVC = [[LFPhotoEditingController alloc] init];
@@ -419,7 +419,7 @@
         if (self.videoEdit) {
             videoEditingVC.videoEdit = self.videoEdit;
         } else {
-            [videoEditingVC setVideoAsset:_recordSession.assetRepresentingSegments placeholderImage:self.photo];
+            [videoEditingVC setVideoAsset:self.asset placeholderImage:self.photo];
         }
         videoEditingVC.delegate = self;
         [self.navigationController pushViewController:videoEditingVC animated:NO];
@@ -480,7 +480,7 @@
         [self replacePlayerItemWithAsset:[[AVURLAsset alloc] initWithURL:videoEdit.editFinalURL options:nil]];
     } else {
         self.playerView.image = self.photo;
-        [self replacePlayerItemWithAsset:_recordSession.assetRepresentingSegments];
+        [self replacePlayerItemWithAsset:self.asset];
     }
     self.videoEdit = videoEdit;
 }

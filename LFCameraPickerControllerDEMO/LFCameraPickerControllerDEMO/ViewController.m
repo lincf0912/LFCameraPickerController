@@ -15,7 +15,9 @@
 @property (weak, nonatomic) IBOutlet UISwitch *flip_switch;
 @property (weak, nonatomic) IBOutlet UISegmentedControl *front_segment;
 @property (weak, nonatomic) IBOutlet UISwitch *flash_switch;
+@property (weak, nonatomic) IBOutlet UISwitch *water_switch;
 @property (weak, nonatomic) IBOutlet UISwitch *pause_switch;
+@property (weak, nonatomic) IBOutlet UITextField *fpsTextField;
 @property (weak, nonatomic) IBOutlet UIImageView *showImageView;
 @end
 
@@ -61,7 +63,9 @@
     /** 暂停 */
     camera.canPause = self.pause_switch.isOn;
     /** 水印 */
-    camera.activeOverlay = YES;
+    camera.activeOverlay = self.water_switch.isOn;
+    /** fps */
+    camera.framerate = self.fpsTextField.text.integerValue;
     
     [self presentViewController:camera animated:YES completion:nil];
 }

@@ -56,6 +56,7 @@
 
 /** 陀螺仪 */
 @property (strong, nonatomic) CMMotionManager *mManager;
+@property (assign, nonatomic) UIInterfaceOrientation *myOrientation;
 
 @end
 
@@ -65,6 +66,7 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     self.view.backgroundColor = [UIColor blackColor];
+    _myOrientation = UIInterfaceOrientationUnknown;
 
     /** 监听设备方向改变(这种方式受系统方向锁影响) */
 //    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deviceOrientationDidChange) name:UIDeviceOrientationDidChangeNotification object:nil];
@@ -98,175 +100,178 @@
 
 - (void)interfaceOrientationDidChange:(UIInterfaceOrientation)orientation
 {
-    CGFloat angle = 0;
-    switch ([UIApplication sharedApplication].statusBarOrientation) {
-        case UIInterfaceOrientationPortrait:
-            break;
-        case UIInterfaceOrientationLandscapeLeft:
-            angle = M_PI_2;
-            break;
-        case UIInterfaceOrientationLandscapeRight:
-            angle = -M_PI_2;
-            break;
-        case UIInterfaceOrientationPortraitUpsideDown:
-            angle = M_PI;
-            break;
-        case UIInterfaceOrientationUnknown:
-            break;
-    }
-    //    UIDeviceOrientation orientation = [UIDevice currentDevice].orientation;
-    
-    switch (orientation) {
-        case UIInterfaceOrientationPortrait:
-        {
-            self.imageOrientation = UIImageOrientationUp;
-            switch ([UIApplication sharedApplication].statusBarOrientation) {
-                case UIInterfaceOrientationPortrait:
-                    self.imageOrientation = UIImageOrientationUp;
-                    break;
-                case UIInterfaceOrientationLandscapeLeft:
-                    self.imageOrientation = UIImageOrientationLeft;
-                    break;
-                case UIInterfaceOrientationLandscapeRight:
-                    self.imageOrientation = UIImageOrientationRight;
-                    break;
-                case UIInterfaceOrientationPortraitUpsideDown:
-                    self.imageOrientation = UIImageOrientationDown;
-                    break;
-                default:
-                    break;
-            }
-            if (self.recorder.session.segments.count == 0 && self.recorder.isRecording == NO) {
-                self.recorder.videoConfiguration.affineTransform = CGAffineTransformMakeRotation(0-angle);
-                [self retakeRecordSession];
-                [self getOverlayView:orientation];
+    if (self.myOrientation != orientation) {
+        self.myOrientation = orientation;
+        CGFloat angle = 0;
+        switch ([UIApplication sharedApplication].statusBarOrientation) {
+            case UIInterfaceOrientationPortrait:
+                break;
+            case UIInterfaceOrientationLandscapeLeft:
+                angle = M_PI_2;
+                break;
+            case UIInterfaceOrientationLandscapeRight:
+                angle = -M_PI_2;
+                break;
+            case UIInterfaceOrientationPortraitUpsideDown:
+                angle = M_PI;
+                break;
+            case UIInterfaceOrientationUnknown:
+                break;
+        }
+        //    UIDeviceOrientation orientation = [UIDevice currentDevice].orientation;
+        
+        switch (orientation) {
+            case UIInterfaceOrientationPortrait:
+            {
+                self.imageOrientation = UIImageOrientationUp;
+                switch ([UIApplication sharedApplication].statusBarOrientation) {
+                    case UIInterfaceOrientationPortrait:
+                        self.imageOrientation = UIImageOrientationUp;
+                        break;
+                    case UIInterfaceOrientationLandscapeLeft:
+                        self.imageOrientation = UIImageOrientationLeft;
+                        break;
+                    case UIInterfaceOrientationLandscapeRight:
+                        self.imageOrientation = UIImageOrientationRight;
+                        break;
+                    case UIInterfaceOrientationPortraitUpsideDown:
+                        self.imageOrientation = UIImageOrientationDown;
+                        break;
+                    default:
+                        break;
+                }
+                if (self.recorder.session.segments.count == 0 && self.recorder.isRecording == NO) {
+                    self.recorder.videoConfiguration.affineTransform = CGAffineTransformMakeRotation(0-angle);
+                    [self retakeRecordSession];
+                    [self getOverlayView:orientation];
+                    [UIView animateWithDuration:0.25f animations:^{
+                        self.overlayView.transform = CGAffineTransformMakeRotation(0+angle);
+                        self.overlayView.frame = self.view.bounds;
+                        self.overlayView.center = self.view.center;
+                    }];
+                }
                 [UIView animateWithDuration:0.25f animations:^{
-                    self.overlayView.transform = CGAffineTransformMakeRotation(0+angle);
-                    self.overlayView.frame = self.view.bounds;
-                    self.overlayView.center = self.view.center;
+                    self.flashButton.transform = CGAffineTransformMakeRotation(0+angle);
+                    self.flipCameraButton.transform = CGAffineTransformMakeRotation(0+angle);
                 }];
             }
-            [UIView animateWithDuration:0.25f animations:^{
-                self.flashButton.transform = CGAffineTransformMakeRotation(0+angle);
-                self.flipCameraButton.transform = CGAffineTransformMakeRotation(0+angle);
-            }];
-        }
-            break;
-        case UIInterfaceOrientationLandscapeLeft:
-        {
-            self.imageOrientation = UIImageOrientationLeft;
-            switch ([UIApplication sharedApplication].statusBarOrientation) {
-                case UIInterfaceOrientationPortrait:
-                    self.imageOrientation = UIImageOrientationLeft;
-                    break;
-                case UIInterfaceOrientationLandscapeLeft:
-                    self.imageOrientation = UIImageOrientationDown;
-                    break;
-                case UIInterfaceOrientationLandscapeRight:
-                    self.imageOrientation = UIImageOrientationUp;
-                    break;
-                case UIInterfaceOrientationPortraitUpsideDown:
-                    self.imageOrientation = UIImageOrientationRight;
-                    break;
-                default:
-                    break;
-            }
-            if (self.recorder.session.segments.count == 0 && self.recorder.isRecording == NO) {
-                self.recorder.videoConfiguration.affineTransform = CGAffineTransformMakeRotation(-M_PI_2-angle);
-                [self retakeRecordSession];
-                [self getOverlayView:orientation];
+                break;
+            case UIInterfaceOrientationLandscapeLeft:
+            {
+                self.imageOrientation = UIImageOrientationLeft;
+                switch ([UIApplication sharedApplication].statusBarOrientation) {
+                    case UIInterfaceOrientationPortrait:
+                        self.imageOrientation = UIImageOrientationLeft;
+                        break;
+                    case UIInterfaceOrientationLandscapeLeft:
+                        self.imageOrientation = UIImageOrientationDown;
+                        break;
+                    case UIInterfaceOrientationLandscapeRight:
+                        self.imageOrientation = UIImageOrientationUp;
+                        break;
+                    case UIInterfaceOrientationPortraitUpsideDown:
+                        self.imageOrientation = UIImageOrientationRight;
+                        break;
+                    default:
+                        break;
+                }
+                if (self.recorder.session.segments.count == 0 && self.recorder.isRecording == NO) {
+                    self.recorder.videoConfiguration.affineTransform = CGAffineTransformMakeRotation(-M_PI_2-angle);
+                    [self retakeRecordSession];
+                    [self getOverlayView:orientation];
+                    [UIView animateWithDuration:0.25f animations:^{
+                        self.overlayView.transform = CGAffineTransformMakeRotation(M_PI_2+angle);
+                        self.overlayView.frame = self.view.bounds;
+                        self.overlayView.center = self.view.center;
+                    } completion:^(BOOL finished) {
+                        /** 首次启动时，无法在动画中修改位置 */
+                        self.overlayView.frame = self.view.bounds;
+                        self.overlayView.center = self.view.center;
+                    }];
+                }
                 [UIView animateWithDuration:0.25f animations:^{
-                    self.overlayView.transform = CGAffineTransformMakeRotation(M_PI_2+angle);
-                    self.overlayView.frame = self.view.bounds;
-                    self.overlayView.center = self.view.center;
-                } completion:^(BOOL finished) {
-                    /** 首次启动时，无法在动画中修改位置 */
-                    self.overlayView.frame = self.view.bounds;
-                    self.overlayView.center = self.view.center;
+                    self.flashButton.transform = CGAffineTransformMakeRotation(M_PI_2+angle);
+                    self.flipCameraButton.transform = CGAffineTransformMakeRotation(M_PI_2+angle);
                 }];
             }
-            [UIView animateWithDuration:0.25f animations:^{
-                self.flashButton.transform = CGAffineTransformMakeRotation(M_PI_2+angle);
-                self.flipCameraButton.transform = CGAffineTransformMakeRotation(M_PI_2+angle);
-            }];
-        }
-            break;
-        case UIInterfaceOrientationLandscapeRight:
-        {
-            self.imageOrientation = UIImageOrientationRight;
-            switch ([UIApplication sharedApplication].statusBarOrientation) {
-                case UIInterfaceOrientationPortrait:
-                    self.imageOrientation = UIImageOrientationRight;
-                    break;
-                case UIInterfaceOrientationLandscapeLeft:
-                    self.imageOrientation = UIImageOrientationUp;
-                    break;
-                case UIInterfaceOrientationLandscapeRight:
-                    self.imageOrientation = UIImageOrientationDown;
-                    break;
-                case UIInterfaceOrientationPortraitUpsideDown:
-                    self.imageOrientation = UIImageOrientationLeft;
-                    break;
-                default:
-                    break;
-            }
-            if (self.recorder.session.segments.count == 0 && self.recorder.isRecording == NO) {
-                self.recorder.videoConfiguration.affineTransform = CGAffineTransformMakeRotation(M_PI_2-angle);
-                [self retakeRecordSession];
-                [self getOverlayView:orientation];
+                break;
+            case UIInterfaceOrientationLandscapeRight:
+            {
+                self.imageOrientation = UIImageOrientationRight;
+                switch ([UIApplication sharedApplication].statusBarOrientation) {
+                    case UIInterfaceOrientationPortrait:
+                        self.imageOrientation = UIImageOrientationRight;
+                        break;
+                    case UIInterfaceOrientationLandscapeLeft:
+                        self.imageOrientation = UIImageOrientationUp;
+                        break;
+                    case UIInterfaceOrientationLandscapeRight:
+                        self.imageOrientation = UIImageOrientationDown;
+                        break;
+                    case UIInterfaceOrientationPortraitUpsideDown:
+                        self.imageOrientation = UIImageOrientationLeft;
+                        break;
+                    default:
+                        break;
+                }
+                if (self.recorder.session.segments.count == 0 && self.recorder.isRecording == NO) {
+                    self.recorder.videoConfiguration.affineTransform = CGAffineTransformMakeRotation(M_PI_2-angle);
+                    [self retakeRecordSession];
+                    [self getOverlayView:orientation];
+                    [UIView animateWithDuration:0.25f animations:^{
+                        self.overlayView.transform = CGAffineTransformMakeRotation(-M_PI_2+angle);
+                        self.overlayView.frame = self.view.bounds;
+                        self.overlayView.center = self.view.center;
+                    } completion:^(BOOL finished) {
+                        /** 首次启动时，无法在动画中修改位置 */
+                        self.overlayView.frame = self.view.bounds;
+                        self.overlayView.center = self.view.center;
+                    }];
+                }
                 [UIView animateWithDuration:0.25f animations:^{
-                    self.overlayView.transform = CGAffineTransformMakeRotation(-M_PI_2+angle);
-                    self.overlayView.frame = self.view.bounds;
-                    self.overlayView.center = self.view.center;
-                } completion:^(BOOL finished) {
-                    /** 首次启动时，无法在动画中修改位置 */
-                    self.overlayView.frame = self.view.bounds;
-                    self.overlayView.center = self.view.center;
+                    self.flashButton.transform = CGAffineTransformMakeRotation(-M_PI_2+angle);
+                    self.flipCameraButton.transform = CGAffineTransformMakeRotation(-M_PI_2+angle);
                 }];
             }
-            [UIView animateWithDuration:0.25f animations:^{
-                self.flashButton.transform = CGAffineTransformMakeRotation(-M_PI_2+angle);
-                self.flipCameraButton.transform = CGAffineTransformMakeRotation(-M_PI_2+angle);
-            }];
-        }
-            break;
-        case UIInterfaceOrientationPortraitUpsideDown:
-        {
-            self.imageOrientation = UIImageOrientationDown;
-            switch ([UIApplication sharedApplication].statusBarOrientation) {
-                case UIInterfaceOrientationPortrait:
-                    self.imageOrientation = UIImageOrientationDown;
-                    break;
-                case UIInterfaceOrientationLandscapeLeft:
-                    self.imageOrientation = UIImageOrientationRight;
-                    break;
-                case UIInterfaceOrientationLandscapeRight:
-                    self.imageOrientation = UIImageOrientationLeft;
-                    break;
-                case UIInterfaceOrientationPortraitUpsideDown:
-                    self.imageOrientation = UIImageOrientationUp;
-                    break;
-                default:
-                    break;
-            }
-            if (self.recorder.session.segments.count == 0 && self.recorder.isRecording == NO) {
-                self.recorder.videoConfiguration.affineTransform = CGAffineTransformMakeRotation(M_PI-angle);
-                [self retakeRecordSession];
-                [self getOverlayView:orientation];
+                break;
+            case UIInterfaceOrientationPortraitUpsideDown:
+            {
+                self.imageOrientation = UIImageOrientationDown;
+                switch ([UIApplication sharedApplication].statusBarOrientation) {
+                    case UIInterfaceOrientationPortrait:
+                        self.imageOrientation = UIImageOrientationDown;
+                        break;
+                    case UIInterfaceOrientationLandscapeLeft:
+                        self.imageOrientation = UIImageOrientationRight;
+                        break;
+                    case UIInterfaceOrientationLandscapeRight:
+                        self.imageOrientation = UIImageOrientationLeft;
+                        break;
+                    case UIInterfaceOrientationPortraitUpsideDown:
+                        self.imageOrientation = UIImageOrientationUp;
+                        break;
+                    default:
+                        break;
+                }
+                if (self.recorder.session.segments.count == 0 && self.recorder.isRecording == NO) {
+                    self.recorder.videoConfiguration.affineTransform = CGAffineTransformMakeRotation(M_PI-angle);
+                    [self retakeRecordSession];
+                    [self getOverlayView:orientation];
+                    [UIView animateWithDuration:0.25f animations:^{
+                        self.overlayView.transform = CGAffineTransformMakeRotation(M_PI+angle);
+                        self.overlayView.frame = self.view.bounds;
+                        self.overlayView.center = self.view.center;
+                    }];
+                }
                 [UIView animateWithDuration:0.25f animations:^{
-                    self.overlayView.transform = CGAffineTransformMakeRotation(M_PI+angle);
-                    self.overlayView.frame = self.view.bounds;
-                    self.overlayView.center = self.view.center;
+                    self.flashButton.transform = CGAffineTransformMakeRotation(M_PI+angle);
+                    self.flipCameraButton.transform = CGAffineTransformMakeRotation(M_PI+angle);
                 }];
             }
-            [UIView animateWithDuration:0.25f animations:^{
-                self.flashButton.transform = CGAffineTransformMakeRotation(M_PI+angle);
-                self.flipCameraButton.transform = CGAffineTransformMakeRotation(M_PI+angle);
-            }];
+                break;
+            default:
+                break;
         }
-            break;
-        default:
-            break;
     }
     
 }
@@ -730,6 +735,7 @@
     _recorder = [SCRecorder recorder];
     _recorder.captureSessionPreset = [SCRecorderTools bestCaptureSessionPresetCompatibleWithAllDevices];
     _recorder.maxRecordDuration = CMTimeMake(cameraPicker.framerate * cameraPicker.maxRecordSeconds, (int32_t)cameraPicker.framerate);
+    
     switch ([UIApplication sharedApplication].statusBarOrientation) {
         case UIInterfaceOrientationPortrait:
             _recorder.videoOrientation = AVCaptureVideoOrientationPortrait;
@@ -779,6 +785,12 @@
     _recorder.initializeSessionLazily = NO;
     
     NSError *error;
+    
+    [_recorder setActiveFormatWithFrameRate:(CMTimeScale)cameraPicker.framerate error:&error];
+    if (error) {
+        NSLog(@"set frameRate error: %@", error.localizedDescription);
+    }
+    
     if (![_recorder prepare:&error]) {
         NSLog(@"Prepare error: %@", error.localizedDescription);
     }
@@ -808,8 +820,8 @@
     [_recorder stopRunning];
     LFCameraDisplayController *cameraDisplay = [[LFCameraDisplayController alloc] init];
     cameraDisplay.delegate = self;
-    cameraDisplay.photo = ((SCRecordSessionSegment *)self.recorder.session.segments.lastObject).thumbnail;
-    cameraDisplay.recordSession = self.recorder.session;
+    cameraDisplay.photo = ((SCRecordSessionSegment *)self.recorder.session.segments.firstObject).thumbnail;
+    cameraDisplay.asset = self.recorder.session.assetRepresentingSegments;
     cameraDisplay.overlayImage = self.overlayView.image;
     [self.navigationController pushViewController:cameraDisplay animated:NO];
 }

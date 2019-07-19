@@ -7,8 +7,7 @@
 //
 
 #import "LFCameraBaseController.h"
-
-@class SCRecordSession;
+#import <AVFoundation/AVFoundation.h>
 
 @protocol LFCameraDisplayDelegate;
 
@@ -17,9 +16,11 @@
 /** 图片预览 */
 @property (strong, nonatomic) UIImage *photo;
 /** 视频预览 */
-@property (strong, nonatomic) SCRecordSession *recordSession;
+@property (strong, nonatomic) AVAsset *asset;
 /** 水印图片 */
 @property (strong, nonatomic) UIImage *overlayImage;
+
+
 
 @property (weak, nonatomic) id<LFCameraDisplayDelegate> delegate;
 
