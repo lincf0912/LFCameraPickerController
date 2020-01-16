@@ -79,7 +79,8 @@
 /** 视频回调 */
 - (void)lf_cameraPickerController:(LFCameraPickerController *)picker didFinishPickingVideo:(NSURL *)videoUrl duration:(NSTimeInterval)duration
 {
-    NSLog(@"视频:%@", videoUrl);
+    [self.showImageView setImage:nil];
+    NSLog(@"视频:%@ 总时:%f", videoUrl, duration);
 }
 - (UIView *)lf_cameraPickerOverlayView:(LFCameraOverlayOrientation)overlayOrientation
 {

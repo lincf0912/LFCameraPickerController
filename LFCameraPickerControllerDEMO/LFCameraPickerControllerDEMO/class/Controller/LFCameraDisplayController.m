@@ -242,12 +242,9 @@
         }
     } else {
         [cameraPicker hideProgressHUD];
-        LFCameraPickerController *cameraPicker = (LFCameraPickerController *)self.navigationController;
-        /** 代理回调 */
-        if ([cameraPicker.pickerDelegate respondsToSelector:@selector(lf_cameraPickerDidCancel:)]) {
-            [cameraPicker.pickerDelegate lf_cameraPickerDidCancel:cameraPicker];
+        if ([self.delegate respondsToSelector:@selector(lf_cameraDisplayDidClose:)]) {
+            [self.delegate lf_cameraDisplayDidClose:self];
         }
-        [cameraPicker dismissViewControllerAnimated:YES completion:nil];
     }
 }
 

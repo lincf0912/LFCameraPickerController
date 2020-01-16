@@ -56,7 +56,7 @@
 
 /** 陀螺仪 */
 @property (strong, nonatomic) CMMotionManager *mManager;
-@property (assign, nonatomic) UIInterfaceOrientation *myOrientation;
+@property (assign, nonatomic) UIInterfaceOrientation myOrientation;
 
 @end
 
@@ -482,34 +482,42 @@
     [self retakeRecordSession];
     [self.navigationController popViewControllerAnimated:NO];
 }
+- (void)lf_cameraDisplayDidClose:(LFCameraDisplayController *)cameraDisplay
+{
+    [self closeAction];
+}
 - (void)lf_cameraDisplay:(LFCameraDisplayController *)cameraDisplay didFinishVideo:(NSURL *)videoURL
 {
     LFCameraPickerController *cameraPicker = (LFCameraPickerController *)self.navigationController;
-    /** 代理回调 */
-    if ([cameraPicker.pickerDelegate respondsToSelector:@selector(lf_cameraPickerController:didFinishPickingVideo:duration:)]) {
-        [cameraPicker.pickerDelegate lf_cameraPickerController:cameraPicker didFinishPickingVideo:videoURL duration:CMTimeGetSeconds(self.recorder.session.duration)];
-    }
-    [cameraPicker dismissViewControllerAnimated:YES completion:nil];
+    NSTimeInterval duration = CMTimeGetSeconds(self.recorder.session.duration);
+    [cameraPicker dismissViewControllerAnimated:YES completion:^{
+        /** 代理回调 */
+        if ([cameraPicker.pickerDelegate respondsToSelector:@selector(lf_cameraPickerController:didFinishPickingVideo:duration:)]) {
+            [cameraPicker.pickerDelegate lf_cameraPickerController:cameraPicker didFinishPickingVideo:videoURL duration:duration];
+        }
+    }];
 }
 - (void)lf_cameraDisplay:(LFCameraDisplayController *)cameraDisplay didFinishImage:(UIImage *)image
 {
     LFCameraPickerController *cameraPicker = (LFCameraPickerController *)self.navigationController;
-    /** 代理回调 */
-    if ([cameraPicker.pickerDelegate respondsToSelector:@selector(lf_cameraPickerController:didFinishPickingImage:)]) {
-        [cameraPicker.pickerDelegate lf_cameraPickerController:cameraPicker didFinishPickingImage:image];
-    }
-    [cameraPicker dismissViewControllerAnimated:YES completion:nil];
+    [cameraPicker dismissViewControllerAnimated:YES completion:^{
+        /** 代理回调 */
+        if ([cameraPicker.pickerDelegate respondsToSelector:@selector(lf_cameraPickerController:didFinishPickingImage:)]) {
+            [cameraPicker.pickerDelegate lf_cameraPickerController:cameraPicker didFinishPickingImage:image];
+        }
+    }];
 }
 
 #pragma mark - 点击事件操作
 - (void)closeAction
 {
     LFCameraPickerController *cameraPicker = (LFCameraPickerController *)self.navigationController;
-    /** 代理回调 */
-    if ([cameraPicker.pickerDelegate respondsToSelector:@selector(lf_cameraPickerDidCancel:)]) {
-        [cameraPicker.pickerDelegate lf_cameraPickerDidCancel:cameraPicker];
-    }
-    [cameraPicker dismissViewControllerAnimated:YES completion:nil];
+    [cameraPicker dismissViewControllerAnimated:YES completion:^{
+        /** 代理回调 */
+        if ([cameraPicker.pickerDelegate respondsToSelector:@selector(lf_cameraPickerDidCancel:)]) {
+            [cameraPicker.pickerDelegate lf_cameraPickerDidCancel:cameraPicker];
+        }
+    }];
 }
 
 - (void)stopAction

@@ -29,6 +29,7 @@
 @protocol LFCameraDisplayDelegate <NSObject>
 
 - (void)lf_cameraDisplayDidCancel:(LFCameraDisplayController *)cameraDisplay;
+- (void)lf_cameraDisplayDidClose:(LFCameraDisplayController *)cameraDisplay;
 - (void)lf_cameraDisplay:(LFCameraDisplayController *)cameraDisplay didFinishVideo:(NSURL *)videoURL;
 - (void)lf_cameraDisplay:(LFCameraDisplayController *)cameraDisplay didFinishImage:(UIImage *)image;
 
