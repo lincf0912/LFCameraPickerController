@@ -412,7 +412,7 @@
         [self.navigationController pushViewController:photoEditingVC animated:NO];
     } else {
         LFVideoEditingController *videoEditingVC = [[LFVideoEditingController alloc] init];
-        videoEditingVC.minClippingDuration = 2;
+        videoEditingVC.operationAttrs = @{LFVideoEditClipMinDurationAttributeName:@(2)};
         if (self.videoEdit) {
             videoEditingVC.videoEdit = self.videoEdit;
         } else {
@@ -447,7 +447,7 @@
 
 #ifdef LF_MEDIAEDIT
 #pragma mark - LFPhotoEditingControllerDelegate
-- (void)lf_PhotoEditingController:(LFPhotoEditingController *)photoEdittingVC didCancelPhotoEdit:(LFPhotoEdit *)photoEdit
+- (void)lf_PhotoEditingControllerDidCancel:(LFPhotoEditingController *)photoEditingVC
 {
     [self.navigationController popViewControllerAnimated:NO];
 }
@@ -463,7 +463,7 @@
 }
 
 #pragma mark - LFVideoEditingControllerDelegate
-- (void)lf_VideoEditingController:(LFVideoEditingController *)videoEditingVC didCancelPhotoEdit:(LFVideoEdit *)videoEdit
+- (void)lf_VideoEditingControllerDidCancel:(LFVideoEditingController *)videoEditingVC
 {
     [self.navigationController popViewControllerAnimated:NO];
     [self.player seekToTime:kCMTimeZero];
