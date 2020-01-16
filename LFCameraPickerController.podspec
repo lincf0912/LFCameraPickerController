@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
 s.name         = 'LFCameraPickerController'
-s.version      = '1.1.0.1'
+s.version      = '1.1.0.2'
 s.summary      = 'A clone of UIImagePickerController(UIImagePickerControllerSourceTypeCamera), support take photo and record video'
 s.homepage     = 'https://github.com/lincf0912/LFCameraPickerController'
 s.license      = 'MIT'
