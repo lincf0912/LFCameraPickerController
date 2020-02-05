@@ -82,7 +82,12 @@
 - (void)applicationWillEnterForeground:(NSNotification *)notify
 {
     if (self.presentingViewController) {
-        [self dismissViewControllerAnimated:YES completion:nil];
+        [self dismissViewControllerAnimated:YES completion:^{
+            /** 代理回调 */
+            if ([self.pickerDelegate respondsToSelector:@selector(lf_cameraPickerDidCancel:)]) {
+                [self.pickerDelegate lf_cameraPickerDidCancel:self];
+            }
+        }];
     }
 }
 
