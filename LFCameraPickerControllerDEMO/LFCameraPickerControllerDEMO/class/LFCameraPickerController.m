@@ -9,6 +9,8 @@
 #import "LFCameraPickerController.h"
 #import "LFCameraTakeViewController.h"
 
+AVCaptureSessionPreset const AVCaptureSessionPresetAuto = @"AVCaptureSessionPresetAuto";
+
 @interface LFCameraPickerController ()
 {
     UIButton *_progressHUD;
@@ -95,6 +97,7 @@
 - (void)defaultData
 {
     _cameraType = LFCameraType_Both;
+    _cameraPreset = AVCaptureSessionPresetAuto;
     _flipCamera = YES;
     _frontCamera = NO;
     _flash = NO;

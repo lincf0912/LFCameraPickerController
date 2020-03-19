@@ -53,6 +53,8 @@
     }
     
     camera.cameraType = type;
+//    camera.autoSavePhotoAlbum = NO;
+//    camera.cameraPreset = AVCaptureSessionPresetHigh;
     
     /** 翻转 */
     camera.flipCamera = self.flip_switch.isOn;
@@ -67,6 +69,7 @@
     /** fps */
     camera.framerate = self.fpsTextField.text.integerValue;
     
+    camera.modalPresentationStyle = UIModalPresentationFullScreen;
     [self presentViewController:camera animated:YES completion:nil];
 }
 
@@ -74,13 +77,14 @@
 /** 拍照回调 */
 - (void)lf_cameraPickerController:(LFCameraPickerController *)picker didFinishPickingImage:(UIImage *)image
 {
+    NSLog(@"didFinishPickingImage 图片:%@", image);
     [self.showImageView setImage:image];
 }
 /** 视频回调 */
 - (void)lf_cameraPickerController:(LFCameraPickerController *)picker didFinishPickingVideo:(NSURL *)videoUrl duration:(NSTimeInterval)duration
 {
     [self.showImageView setImage:nil];
-    NSLog(@"视频:%@ 总时:%f", videoUrl, duration);
+    NSLog(@"didFinishPickingVideo 视频:%@ 总时:%f", videoUrl, duration);
 }
 - (UIView *)lf_cameraPickerOverlayView:(LFCameraOverlayOrientation)overlayOrientation
 {

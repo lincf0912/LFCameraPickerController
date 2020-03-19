@@ -34,12 +34,16 @@ typedef NS_ENUM(NSUInteger, LFCameraOverlayOrientation) {
     LFCameraOverlayOrientation_Hor,
 };
 
+AVF_EXPORT AVCaptureSessionPreset const AVCaptureSessionPresetAuto;
+
 @protocol LFCameraPickerDelegate;
 
 @interface LFCameraPickerController : UINavigationController
 
 /** 代理 */
 @property (nonatomic, weak) id<LFCameraPickerDelegate> pickerDelegate;
+/** 相机预设质量 默认AVCaptureSessionPresetAuto */
+@property(nonatomic, copy) AVCaptureSessionPreset cameraPreset;
 
 /** 模式 默认LFCameraType_Both */
 @property (nonatomic, assign) LFCameraType cameraType;

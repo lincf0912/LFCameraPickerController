@@ -741,7 +741,11 @@
     LFCameraPickerController *cameraPicker = (LFCameraPickerController *)self.navigationController;
     
     _recorder = [SCRecorder recorder];
-    _recorder.captureSessionPreset = [SCRecorderTools bestCaptureSessionPresetCompatibleWithAllDevices];
+    if ([cameraPicker.cameraPreset isEqualToString:AVCaptureSessionPresetAuto]) {
+        _recorder.captureSessionPreset = [SCRecorderTools bestCaptureSessionPresetCompatibleWithAllDevices];
+    } else {
+        _recorder.captureSessionPreset = cameraPicker.cameraPreset;
+    }
     _recorder.maxRecordDuration = CMTimeMake(cameraPicker.framerate * cameraPicker.maxRecordSeconds, (int32_t)cameraPicker.framerate);
     
     switch ([UIApplication sharedApplication].statusBarOrientation) {
@@ -776,6 +780,11 @@
     
     UIView *previewView = self.previewView;
     _recorder.previewView = previewView;
+    {
+        // 改变内部适配方式
+        _recorder.previewLayer.videoGravity = AVLayerVideoGravityResizeAspect;
+    }
+    
     if (cameraPicker.activeOverlay) {
         self.overlayView = [[LFCameraWatermarkOverlayView alloc] initWithFrame:self.view.bounds];
         [previewView addSubview:self.overlayView];
