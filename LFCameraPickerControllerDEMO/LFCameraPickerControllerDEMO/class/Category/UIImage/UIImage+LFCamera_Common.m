@@ -17,7 +17,7 @@
 
 - (UIImage *)LFCamera_imageWithWaterMask:(UIImage *)mask inRect:(CGRect)rect
 {
-    UIGraphicsBeginImageContextWithOptions([self size], NO, 0.0); // 0.0 for scale means "scale for device's main screen".
+    UIGraphicsBeginImageContextWithOptions([self size], NO, self.scale); // 0.0 for scale means "scale for device's main screen".
     
     //原图
     [self drawInRect:CGRectMake(0, 0, self.size.width, self.size.height)];
