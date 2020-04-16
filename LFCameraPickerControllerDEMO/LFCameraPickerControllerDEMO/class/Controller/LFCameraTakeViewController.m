@@ -12,6 +12,8 @@
 #import "LFCameraDisplayController.h"
 #import "LFCameraWatermarkOverlayView.h"
 
+#import "LFCameraRecorderTools.h"
+
 #import "UIImage+LFCamera_Orientation.h"
 
 #import "LFRecordButton.h"
@@ -742,7 +744,7 @@
     
     _recorder = [SCRecorder recorder];
     if ([cameraPicker.cameraPreset isEqualToString:AVCaptureSessionPresetAuto]) {
-        _recorder.captureSessionPreset = [SCRecorderTools bestCaptureSessionPresetCompatibleWithAllDevices];
+        _recorder.captureSessionPreset = [LFCameraRecorderTools bestCaptureSessionPresetCompatibleWithAllDevices:(CMTimeScale)cameraPicker.framerate];
     } else {
         _recorder.captureSessionPreset = cameraPicker.cameraPreset;
     }
@@ -775,7 +777,8 @@
     
     _recorder.delegate = self;
     //    _recorder.autoSetVideoOrientation = YES; //YES causes bad orientation for video from camera roll
-    //    _recorder.videoConfiguration.size = CGSizeMake(640, 480);
+    _recorder.videoConfiguration.profileLevel = AVVideoProfileLevelH264HighAutoLevel;
+    _recorder.videoConfiguration.bitrate = [LFCameraRecorderTools bitrateWithCaptureSessionPreset:_recorder.captureSessionPreset];
     
     
     UIView *previewView = self.previewView;
@@ -803,7 +806,8 @@
     
     NSError *error;
     
-    [_recorder setActiveFormatWithFrameRate:(CMTimeScale)cameraPicker.framerate error:&error];
+    CMVideoDimensions videoDimensions = [LFCameraRecorderTools bestVideoDimensionsWithAllDevices:(CMTimeScale)cameraPicker.framerate];
+    [_recorder setActiveFormatWithFrameRate:(CMTimeScale)cameraPicker.framerate width:videoDimensions.width andHeight:videoDimensions.height error:&error];
     if (error) {
         NSLog(@"set frameRate error: %@", error.localizedDescription);
     }
