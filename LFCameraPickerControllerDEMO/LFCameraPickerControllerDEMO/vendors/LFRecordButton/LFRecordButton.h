@@ -8,10 +8,10 @@
 
 #import <UIKit/UIKit.h>
 
-typedef void(^didTouchSingle)();
-typedef void(^didTouchLongBegan)();
+typedef void(^didTouchSingle)(void);
+typedef void(^didTouchLongBegan)(void);
 typedef void(^didTouchLongMove)(CGPoint screenPoint);
-typedef void(^didTouchLongEnd)();
+typedef void(^didTouchLongEnd)(void);
 
 @interface LFRecordButton : UIView
 /** 前圆的颜色，default whiteColor */

@@ -327,7 +327,7 @@
     
     /** 在 session 完全停止下来之前会始终阻塞线程 */
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        [_recorder startRunning];
+        [self.recorder startRunning];
     });
 }
 
@@ -344,7 +344,7 @@
     _recorder.videoZoomFactor = 1;
     /** 在 session 完全停止下来之前会始终阻塞线程，拍照系统需要播放声音，马上关闭录制会导致声音卡顿 */
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        [_recorder stopRunning];
+        [self.recorder stopRunning];
     });
 }
 
