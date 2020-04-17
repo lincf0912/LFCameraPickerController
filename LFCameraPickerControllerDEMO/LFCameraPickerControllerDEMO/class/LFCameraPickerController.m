@@ -65,6 +65,15 @@ AVCaptureSessionPreset const AVCaptureSessionPresetAuto = @"AVCaptureSessionPres
     // Do any additional setup after loading the view.
     [self setNavigationBarHidden:YES];
     
+    NSError *error;
+    [[AVAudioSession sharedInstance] setActive:YES withOptions:AVAudioSessionSetActiveOptionNotifyOthersOnDeactivation error:&error];
+    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayAndRecord withOptions:AVAudioSessionCategoryOptionDuckOthers error:&error];
+    [[AVAudioSession sharedInstance] setMode:AVAudioSessionModeVideoRecording error:&error];
+
+    if (error) {
+        NSLog(@"AVAudioSession error:%@", error);
+    }
+    
     /** 监听应用回到前台通知 */
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationWillEnterForeground:) name:UIApplicationWillEnterForegroundNotification object:nil];
 }
@@ -76,9 +85,19 @@ AVCaptureSessionPreset const AVCaptureSessionPresetAuto = @"AVCaptureSessionPres
 
 - (void)dealloc
 {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-    /** 恢复原来的音频 */
-    [[AVAudioSession sharedInstance] setActive:NO withOptions:AVAudioSessionSetActiveOptionNotifyOthersOnDeactivation error:nil];
+    
+}
+
+- (void)dismissViewControllerAnimated:(BOOL)flag completion:(void (^)(void))completion
+{
+    [super dismissViewControllerAnimated:flag completion:^{
+        [[NSNotificationCenter defaultCenter] removeObserver:self];
+        /** 恢复原来的音频 */
+        [[AVAudioSession sharedInstance] setActive:NO withOptions:AVAudioSessionSetActiveOptionNotifyOthersOnDeactivation error:nil];
+        if (completion) {
+            completion();
+        }
+    }];
 }
 
 - (void)applicationWillEnterForeground:(NSNotification *)notify
