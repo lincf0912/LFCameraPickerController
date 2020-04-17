@@ -513,6 +513,7 @@
 #pragma mark - 点击事件操作
 - (void)closeAction
 {
+    [self.recorder stopRunning];
     LFCameraPickerController *cameraPicker = (LFCameraPickerController *)self.navigationController;
     [cameraPicker dismissViewControllerAnimated:YES completion:^{
         /** 代理回调 */

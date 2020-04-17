@@ -123,6 +123,7 @@
 #pragma mark - 点击事件操作
 - (void)cancelAction
 {
+    [self.player pause];
     if ([self.delegate respondsToSelector:@selector(lf_cameraDisplayDidCancel:)]) {
         [self.delegate lf_cameraDisplayDidCancel:self];
     }
@@ -189,6 +190,7 @@
                         }];
                         dispatch_async(dispatch_get_main_queue(), ^{
                             [cameraPicker hideProgressHUD];
+                            [weakSelf.player pause];
                             if ([weakSelf.delegate respondsToSelector:@selector(lf_cameraDisplay:didFinishVideo:)]) {
                                 [weakSelf.delegate lf_cameraDisplay:weakSelf didFinishVideo:exportSession.outputUrl];
                             }
@@ -196,6 +198,7 @@
                     });
                 } else {
                     [cameraPicker hideProgressHUD];
+                    [weakSelf.player pause];
                     if ([weakSelf.delegate respondsToSelector:@selector(lf_cameraDisplay:didFinishVideo:)]) {
                         [weakSelf.delegate lf_cameraDisplay:weakSelf didFinishVideo:exportSession.outputUrl];
                     }
@@ -206,6 +209,7 @@
                     [cameraPicker showProgressHUDText:error.localizedDescription];
                     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3.f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
                         [cameraPicker hideProgressHUD];
+                        [weakSelf.player pause];
                         if ([weakSelf.delegate respondsToSelector:@selector(lf_cameraDisplay:didFinishVideo:)]) {
                             [weakSelf.delegate lf_cameraDisplay:weakSelf didFinishVideo:nil];
                         }
