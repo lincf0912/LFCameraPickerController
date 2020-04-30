@@ -289,6 +289,24 @@
     
     /** 激活摄像头 */
     [self prepareSession];
+    
+    [UIView animateWithDuration:0.25f delay:.5f options:UIViewAnimationOptionCurveEaseIn animations:^{
+        self.tipsLabel.alpha = 1.f;
+    } completion:^(BOOL finished) {
+        [UIView animateWithDuration:0.25f delay:4.5f options:UIViewAnimationOptionCurveEaseOut animations:^{
+            self.tipsLabel.alpha = 0.f;
+        } completion:^(BOOL finished) {
+            
+        }];
+    }];
+    [self.recorder startRunning];
+    [self.recorder focusCenter];
+    // 记录相机的显示大小，正常来说它是全屏的。但刘海屏手机是不会全屏。
+    self.previewSize = [self.recorder.previewLayer rectForMetadataOutputRectOfInterest:CGRectMake(0, 0, 1, 1)].size;
+    // 重新调整水印层并获取水印
+    self.overlayView.frame = (CGRect){CGPointZero, self.previewSize};
+    self.overlayView.center = self.view.center;
+    [self getOverlayView:self.myOrientation];
 }
 
 - (void)viewWillLayoutSubviews
@@ -318,49 +336,23 @@
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     
-    [UIView animateWithDuration:0.25f delay:.5f options:UIViewAnimationOptionCurveEaseIn animations:^{
-        self.tipsLabel.alpha = 1.f;
-    } completion:^(BOOL finished) {
-        [UIView animateWithDuration:0.25f delay:4.5f options:UIViewAnimationOptionCurveEaseOut animations:^{
-            self.tipsLabel.alpha = 0.f;
-        } completion:^(BOOL finished) {
-            
-        }];
-    }];
-    
-    /** 在 session 完全停止下来之前会始终阻塞线程 */
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        [self.recorder startRunning];
-        
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            // 记录相机的显示大小，正常来说它是全屏的。但刘海屏手机是不会全屏。
-            self.previewSize = [self.recorder.previewLayer rectForMetadataOutputRectOfInterest:CGRectMake(0, 0, 1, 1)].size;
-            // 重新调整水印层并获取水印
-            self.overlayView.frame = (CGRect){CGPointZero, self.previewSize};
-            self.overlayView.center = self.view.center;
-            [self getOverlayView:self.myOrientation];
-        });
-        
-        
-    });
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     
     [self stopUpdateAccelerometer];
+    
+    self.tipsLabel.alpha = 0.f;
+    /** 还原缩放 */
+    _recorder.videoZoomFactor = 1;
+    /** 在 session 完全停止下来之前会始终阻塞线程，拍照系统需要播放声音 */
+    [self.recorder stopRunning];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
-    self.tipsLabel.alpha = 0.f;
-    /** 还原缩放 */
-    _recorder.videoZoomFactor = 1;
-    /** 在 session 完全停止下来之前会始终阻塞线程，拍照系统需要播放声音，马上关闭录制会导致声音卡顿 */
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        [self.recorder stopRunning];
-    });
+    
 }
 
 - (void)dealloc {
@@ -379,7 +371,6 @@
         session.fileType = AVFileTypeQuickTimeMovie;
         
         _recorder.session = session;
-        [_recorder focusCenter];
     }
     
     [self updateTimeRecorded];
