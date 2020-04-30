@@ -86,21 +86,21 @@
     [self.showImageView setImage:nil];
     NSLog(@"didFinishPickingVideo 视频:%@ 总时:%f", videoUrl, duration);
 }
-- (UIView *)lf_cameraPickerOverlayView:(LFCameraOverlayOrientation)overlayOrientation
+- (UIView *)lf_cameraPickerController:(LFCameraPickerController *)picker overlayViewSize:(CGSize)overlayViewSize overlayOrientation:(LFCameraOverlayOrientation)overlayOrientation
 {
     switch (overlayOrientation) {
         case LFCameraOverlayOrientation_Ver:
         { /** 设置竖屏水印 */
             
-            CGFloat width = self.view.bounds.size.width;
-            CGFloat height = self.view.bounds.size.height;
+            CGFloat width = overlayViewSize.width;
+            CGFloat height = overlayViewSize.height;
             
-            CGSize size = CGSizeMake(MIN(width, height), MAX(width, height));
+            CGSize size = CGSizeMake(width, height);
             
             // 并把它设置成为当前正在使用的context
             UIGraphicsBeginImageContextWithOptions(size, NO, 0);
             [[UIColor clearColor] setFill];
-            [@"哈哈哈哈，测试用" drawInRect:CGRectMake(100, 100, 200, 100) withAttributes:@{NSFontAttributeName:[UIFont systemFontOfSize:17.f], NSForegroundColorAttributeName:[UIColor redColor]}];
+            [@"哈哈哈哈，测试用" drawInRect:CGRectMake(0, 0, 200, 100) withAttributes:@{NSFontAttributeName:[UIFont systemFontOfSize:17.f], NSForegroundColorAttributeName:[UIColor redColor]}];
             
             // 从当前context中创建一个改变大小后的图片
             UIImage* image = UIGraphicsGetImageFromCurrentImageContext();
@@ -118,15 +118,15 @@
         case LFCameraOverlayOrientation_Hor:
         { /** 设置横屏水印 */
             
-            CGFloat width = self.view.bounds.size.width;
-            CGFloat height = self.view.bounds.size.height;
+            CGFloat width = overlayViewSize.width;
+            CGFloat height = overlayViewSize.height;
             
-            CGSize size = CGSizeMake(MAX(width, height), MIN(width, height));
+            CGSize size = CGSizeMake(height, width);
             
             // 并把它设置成为当前正在使用的context
             UIGraphicsBeginImageContextWithOptions(size, NO, 0);
             [[UIColor clearColor] setFill];
-            [@"哈哈哈哈，测试用" drawInRect:CGRectMake(30, 30, 200, 100) withAttributes:@{NSFontAttributeName:[UIFont systemFontOfSize:17.f], NSForegroundColorAttributeName:[UIColor redColor]}];
+            [@"哈哈哈哈，测试用" drawInRect:CGRectMake(0, 0, 200, 100) withAttributes:@{NSFontAttributeName:[UIFont systemFontOfSize:17.f], NSForegroundColorAttributeName:[UIColor redColor]}];
             
             // 从当前context中创建一个改变大小后的图片
             UIImage* image = UIGraphicsGetImageFromCurrentImageContext();
