@@ -13,5 +13,5 @@ CGFloat const LFCamera_bottomMargin = 30.f;
 CGFloat const LFCamera_recordButtonHeight = 75.f;
 CGFloat const LFCamera_buttonHeight = 75.f;
 
-CGFloat const LFCamera_topViewHeight = 50.f;
+CGFloat const LFCamera_topViewHeight = 44.f;
 

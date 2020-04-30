@@ -99,7 +99,9 @@ AVF_EXPORT AVCaptureSessionPreset const AVCaptureSessionPresetAuto;
 /** 取消 */
 - (void)lf_cameraPickerDidCancel:(LFCameraPickerController *)picker;
 
-/** 水印视图(提供横屏与竖屏的水印图) activeOverlay = YES 有效 */
-- (UIView *)lf_cameraPickerOverlayView:(LFCameraOverlayOrientation)overlayOrientation;
+/** 水印视图(提供横屏与竖屏的水印图) activeOverlay = YES 有效，根据overlayViewSize创建相同尺寸的UIView作为水印显示 */
+- (UIView *)lf_cameraPickerController:(LFCameraPickerController *)picker overlayViewSize:(CGSize)overlayViewSize overlayOrientation:(LFCameraOverlayOrientation)overlayOrientation;
+
+- (UIView *)lf_cameraPickerOverlayView:(LFCameraOverlayOrientation)overlayOrientation __deprecated_msg("Delegate deprecated. Use `lf_cameraPickerController:overlayViewSize:overlayOrientation:`");
 
 @end
