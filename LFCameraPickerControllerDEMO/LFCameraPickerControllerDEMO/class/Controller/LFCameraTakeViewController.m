@@ -367,7 +367,8 @@
 //    [[NSNotificationCenter defaultCenter] removeObserver:self];
     _mManager = nil;
     _recorder.previewView = nil;
-    [_recorder.session removeAllSegments];
+    [_recorder.session cancelSession:nil];
+    
 }
 
 #pragma mark - SCRecorder 操作
@@ -804,6 +805,7 @@
         _recorder.previewLayer.videoGravity = AVLayerVideoGravityResizeAspect;
     }
     
+    self.previewSize = previewView.bounds.size;
     if (cameraPicker.activeOverlay) {
         self.overlayView = [[LFCameraWatermarkOverlayView alloc] initWithFrame:previewView.bounds];
         [previewView addSubview:self.overlayView];
@@ -866,7 +868,7 @@
 #pragma mark - 获取水印
 - (void)getOverlayView:(UIInterfaceOrientation)orientation
 {
-    if (self.previewSize.width > 0 && self.previewSize.height > 0) {
+    if (self.recorder.captureSession.isRunning) {
         
         LFCameraPickerController *cameraPicker = (LFCameraPickerController *)self.navigationController;
         
