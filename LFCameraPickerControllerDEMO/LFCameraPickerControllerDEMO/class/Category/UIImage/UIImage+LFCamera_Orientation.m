@@ -10,6 +10,7 @@
 
 @implementation UIImage (LFCamera_Orientation)
 
+
 - (UIImage *)easyFixDeviceOrientation
 {
     // No-op if the orientation is already correct
@@ -90,113 +91,74 @@
     return img;
 }
 
-- (UIImage *)easyRotateImageOrientation:(UIImageOrientation)orient
+- (UIImage *)easyRotateImageOrientation:(UIImageOrientation)orient context:(CIContext *)context
 {
-    CGRect bnds = CGRectZero;
-    UIImage* copy = nil;
-    @autoreleasepool {
-        
-        CGImageRef imag = self.CGImage;
-        CGRect rect = CGRectZero;
-        CGAffineTransform tran = CGAffineTransformIdentity;
-        
-        rect.size.width = CGImageGetWidth(imag);
-        rect.size.height = CGImageGetHeight(imag);
-        
-        bnds = rect;
-        
-        switch (orient)
-        {
-            case UIImageOrientationUp:
-                return self;
-                
-            case UIImageOrientationUpMirrored:
-                tran = CGAffineTransformMakeTranslation(rect.size.width, 0.0);
-                tran = CGAffineTransformScale(tran, -1.0, 1.0);
-                break;
-                
+    if (orient == UIImageOrientationUp && self.imageOrientation == UIImageOrientationUp) return self;
+    
+    __block CGAffineTransform transform = CGAffineTransformIdentity;
+    
+    void (^changeTransform)(UIImageOrientation oriention) = ^(UIImageOrientation oriention) {
+        switch (oriention) {
             case UIImageOrientationDown:
-                tran = CGAffineTransformMakeTranslation(rect.size.width,
-                                                        rect.size.height);
-                tran = CGAffineTransformRotate(tran, M_PI);
-                break;
-                
             case UIImageOrientationDownMirrored:
-                tran = CGAffineTransformMakeTranslation(0.0, rect.size.height);
-                tran = CGAffineTransformScale(tran, 1.0, -1.0);
+                transform = CGAffineTransformTranslate(transform, self.size.width, self.size.height);
+                transform = CGAffineTransformRotate(transform, M_PI);
                 break;
                 
             case UIImageOrientationLeft:
-                bnds = easySwapWidthAndHeight(bnds);
-                tran = CGAffineTransformMakeTranslation(0.0, rect.size.width);
-                tran = CGAffineTransformRotate(tran, 3.0 * M_PI / 2.0);
-                break;
-                
             case UIImageOrientationLeftMirrored:
-                bnds = easySwapWidthAndHeight(bnds);
-                tran = CGAffineTransformMakeTranslation(rect.size.height,
-                                                        rect.size.width);
-                tran = CGAffineTransformScale(tran, -1.0, 1.0);
-                tran = CGAffineTransformRotate(tran, 3.0 * M_PI / 2.0);
+                transform = CGAffineTransformTranslate(transform, self.size.width, 0);
+                transform = CGAffineTransformRotate(transform, M_PI_2);
                 break;
                 
             case UIImageOrientationRight:
-                bnds = easySwapWidthAndHeight(bnds);
-                tran = CGAffineTransformMakeTranslation(rect.size.height, 0.0);
-                tran = CGAffineTransformRotate(tran, M_PI / 2.0);
-                break;
-                
             case UIImageOrientationRightMirrored:
-                bnds = easySwapWidthAndHeight(bnds);
-                tran = CGAffineTransformMakeScale(-1.0, 1.0);
-                tran = CGAffineTransformRotate(tran, M_PI / 2.0);
+                transform = CGAffineTransformTranslate(transform, 0, self.size.height);
+                transform = CGAffineTransformRotate(transform, -M_PI_2);
                 break;
-                
-            default:
-                return self;
+            case UIImageOrientationUp:
+            case UIImageOrientationUpMirrored:
+                break;
         }
         
-        UIGraphicsBeginImageContext(bnds.size);
-        
-        CGContextRef ctxt = UIGraphicsGetCurrentContext();
-        
-        switch (orient)
-        {
+        switch (oriention) {
+            case UIImageOrientationUpMirrored:
+            case UIImageOrientationDownMirrored:
+                transform = CGAffineTransformTranslate(transform, self.size.width, 0);
+                transform = CGAffineTransformScale(transform, -1, 1);
+                break;
+                
+            case UIImageOrientationLeftMirrored:
+            case UIImageOrientationRightMirrored:
+                transform = CGAffineTransformTranslate(transform, self.size.height, 0);
+                transform = CGAffineTransformScale(transform, -1, 1);
+                break;
+            case UIImageOrientationUp:
+            case UIImageOrientationDown:
             case UIImageOrientationLeft:
-            case UIImageOrientationLeftMirrored:
             case UIImageOrientationRight:
-            case UIImageOrientationRightMirrored:
-                CGContextScaleCTM(ctxt, -1.0, 1.0);
-                CGContextTranslateCTM(ctxt, -rect.size.height, 0.0);
-                break;
-                
-            default:
-                CGContextScaleCTM(ctxt, 1.0, -1.0);
-                CGContextTranslateCTM(ctxt, 0.0, -rect.size.height);
                 break;
         }
-        
-        CGContextConcatCTM(ctxt, tran);
-        CGContextDrawImage(UIGraphicsGetCurrentContext(), rect, imag);
-        CGContextRelease(ctxt);
-        copy = UIGraphicsGetImageFromCurrentImageContext();
-        
-        
-        UIGraphicsEndImageContext();
+    };
+    
+    changeTransform(self.imageOrientation);
+    changeTransform(orient);
+    
+    CIImage *ciImage = [[CIImage alloc] initWithImage:self];
+    //根据滤镜设置图片
+    CIContext *cicontext = context;
+    if (cicontext == nil) {
+        cicontext = [CIContext contextWithOptions:@{kCIContextUseSoftwareRenderer : @(NO)}];
     }
-    
-    return copy;
-}
+    CIImage *outputImage = [ciImage imageByApplyingTransform:transform];
+    CGImageRef cgImage = [cicontext createCGImage:outputImage fromRect:[outputImage extent]];
+    UIImage *result = nil;
+    if (cgImage) {
+        result = [UIImage imageWithCGImage:cgImage];
+        CGImageRelease(cgImage);
+    }
 
-/** 交换宽和高 */
-static CGRect easySwapWidthAndHeight(CGRect rect)
-{
-    CGFloat swap = rect.size.width;
-    
-    rect.size.width = rect.size.height;
-    rect.size.height = swap;
-    
-    return rect;
+    return result;
 }
 
 @end

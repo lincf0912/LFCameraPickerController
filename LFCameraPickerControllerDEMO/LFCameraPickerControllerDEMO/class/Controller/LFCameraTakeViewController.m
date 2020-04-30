@@ -59,6 +59,7 @@
 /** 陀螺仪 */
 @property (strong, nonatomic) CMMotionManager *mManager;
 @property (assign, nonatomic) UIInterfaceOrientation myOrientation;
+@property (strong, nonatomic) CIContext *cicontext;
 
 @end
 
@@ -363,6 +364,7 @@
         session.fileType = AVFileTypeQuickTimeMovie;
         
         _recorder.session = session;
+        [_recorder focusCenter];
     }
     
     [self updateTimeRecorded];
@@ -419,8 +421,7 @@
     __weak typeof(self) weakSelf = self;
     [self.recorder capturePhoto:^(NSError *error, UIImage *image) {
         if (image != nil) {
-            UIImage *fixImage = [image easyFixDeviceOrientation];
-            weakSelf.photo = [fixImage easyRotateImageOrientation:self.imageOrientation];
+            weakSelf.photo = [image easyRotateImageOrientation:self.imageOrientation context:weakSelf.cicontext];
             [weakSelf showImageView];
         } else {
             [weakSelf showAlertViewWithTitle:@"Failed to capture photo" message:error.localizedDescription complete:nil];
@@ -591,8 +592,8 @@
     [self.view addSubview:previewView];
     self.previewView = previewView;
     
-    CGFloat width = CGRectGetWidth(self.view.frame);
-    CGFloat height = CGRectGetHeight(self.view.frame);
+    CGFloat width = CGRectGetWidth(self.view.bounds);
+    CGFloat height = CGRectGetHeight(self.view.bounds);
     
     /** 底部工具栏 */
     UIView *bottomView = [[UIView alloc] initWithFrame:CGRectMake(0, height-LFCamera_bottomViewHeight-LFCamera_bottomMargin, width, LFCamera_bottomViewHeight)];
@@ -920,6 +921,14 @@
     {
         [self.mManager stopAccelerometerUpdates];
     }
+}
+
+- (CIContext *)cicontext
+{
+    if (_cicontext == nil) {
+        _cicontext = [CIContext contextWithOptions:@{kCIContextUseSoftwareRenderer : @(NO)}];
+    }
+    return _cicontext;
 }
 
 @end
