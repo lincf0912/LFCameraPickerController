@@ -11,6 +11,7 @@
 #import "LFCameraPlayerView.h"
 #import "LFCameraHeader.h"
 #import "UIImage+LFCamera_Common.h"
+#import "UIImage+LFCamera_Orientation.h"
 #import "LFCameraWatermarkOverlayView.h"
 
 #import "SCRecorder.h"
@@ -158,8 +159,10 @@
         exportSession.videoConfiguration.preset = preset;
         exportSession.audioConfiguration.preset = preset;
         exportSession.videoConfiguration.maxFrameRate = (CMTimeScale)cameraPicker.framerate;
-        if (self.overlayView) {
-            exportSession.videoConfiguration.overlay = self.overlayView;
+        if (self.overlayImage) {
+            UIImage *overlayImage = [self.overlayImage easyRotateImageOrientation:self.overlayOrientation context:self.cicontext];
+            LFCameraWatermarkOverlayView *overlayView = [[LFCameraWatermarkOverlayView alloc] initWithImage:overlayImage];
+            exportSession.videoConfiguration.overlay = overlayView;
         }
         exportSession.outputUrl = videoUrl;
         exportSession.outputFileType = cameraPicker.videoType;
@@ -393,8 +396,8 @@
 - (void)initOverlayView
 {
     if (self.overlayImage) {
-        LFCameraWatermarkOverlayView *overlayView = [[LFCameraWatermarkOverlayView alloc] initWithFrame:self.view.bounds];
-        [overlayView setImage:self.overlayImage];
+        LFCameraWatermarkOverlayView *overlayView = [[LFCameraWatermarkOverlayView alloc] initWithImage:self.overlayImage];
+        overlayView.frame = self.view.bounds;
         [self.view addSubview:overlayView];
         _overlayView = overlayView;
     }

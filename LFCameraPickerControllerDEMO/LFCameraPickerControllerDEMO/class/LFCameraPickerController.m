@@ -85,7 +85,7 @@ AVCaptureSessionPreset const AVCaptureSessionPresetAuto = @"AVCaptureSessionPres
 
 - (void)dealloc
 {
-    
+    [LFCameraBaseController freeCIContext];
 }
 
 - (void)dismissViewControllerAnimated:(BOOL)flag completion:(void (^)(void))completion

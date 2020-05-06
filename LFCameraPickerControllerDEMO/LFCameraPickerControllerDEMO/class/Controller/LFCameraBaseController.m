@@ -98,4 +98,24 @@ static char lf_camera_overAlertViewKey;
 }
 */
 
+#pragma mark - CIContext
+- (CIContext *)cicontext
+{
+    return [[self class] cicontext];
+}
+
+static CIContext *lfCamera_CIContext = nil;
++ (CIContext *)cicontext
+{
+    if (lfCamera_CIContext == nil) {
+        lfCamera_CIContext = [CIContext contextWithOptions:@{kCIContextUseSoftwareRenderer : @(NO)}];
+    }
+    return lfCamera_CIContext;
+}
+
++ (void)freeCIContext
+{
+    lfCamera_CIContext = nil;
+}
+
 @end

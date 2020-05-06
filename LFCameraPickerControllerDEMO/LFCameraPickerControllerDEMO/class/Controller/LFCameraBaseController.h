@@ -11,4 +11,12 @@
 @interface LFCameraBaseController : UIViewController
 
 - (void)showAlertViewWithTitle:(NSString*)title message:(NSString*)message complete:(void (^)(void))complete;
+
+@end
+
+@interface LFCameraBaseController (CIContext)
+
+@property (readonly, nonatomic) CIContext *cicontext;
++ (void)freeCIContext;
+
 @end

@@ -19,7 +19,8 @@
 @property (strong, nonatomic) AVAsset *asset;
 /** 水印图片 */
 @property (strong, nonatomic) UIImage *overlayImage;
-
+/** 水印方向 */
+@property (assign, nonatomic) UIImageOrientation overlayOrientation;
 
 
 @property (weak, nonatomic) id<LFCameraDisplayDelegate> delegate;

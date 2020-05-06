@@ -15,6 +15,16 @@
 
 @implementation LFCameraWatermarkOverlayView
 
+- (instancetype)initWithImage:(UIImage *)image
+{
+    self = [super initWithImage:image];
+    if (self) {
+        self.backgroundColor = [UIColor clearColor];
+        self.contentMode = UIViewContentModeScaleAspectFit;
+    }
+    return self;
+}
+
 - (instancetype)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];

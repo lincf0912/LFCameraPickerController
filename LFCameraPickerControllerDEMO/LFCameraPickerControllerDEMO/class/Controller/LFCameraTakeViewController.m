@@ -59,7 +59,7 @@
 /** 陀螺仪 */
 @property (strong, nonatomic) CMMotionManager *mManager;
 @property (assign, nonatomic) UIInterfaceOrientation myOrientation;
-@property (strong, nonatomic) CIContext *cicontext;
+
 /** 实际preview的尺寸 */
 @property (assign, nonatomic) CGSize previewSize;
 
@@ -147,7 +147,7 @@
                 }
                 if (self.recorder.session.segments.count == 0 && self.recorder.isRecording == NO) {
                     self.recorder.videoConfiguration.affineTransform = CGAffineTransformMakeRotation(0-angle);
-                    [self retakeRecordSession];
+                    [self.recorder.session deinitialize];
                     [self getOverlayView:orientation];
                     [UIView animateWithDuration:0.25f animations:^{
                         self.overlayView.transform = CGAffineTransformMakeRotation(0+angle);
@@ -182,7 +182,7 @@
                 }
                 if (self.recorder.session.segments.count == 0 && self.recorder.isRecording == NO) {
                     self.recorder.videoConfiguration.affineTransform = CGAffineTransformMakeRotation(-M_PI_2-angle);
-                    [self retakeRecordSession];
+                    [self.recorder.session deinitialize];
                     [self getOverlayView:orientation];
                     [UIView animateWithDuration:0.25f animations:^{
                         self.overlayView.transform = CGAffineTransformMakeRotation(M_PI_2+angle);
@@ -221,7 +221,7 @@
                 }
                 if (self.recorder.session.segments.count == 0 && self.recorder.isRecording == NO) {
                     self.recorder.videoConfiguration.affineTransform = CGAffineTransformMakeRotation(M_PI_2-angle);
-                    [self retakeRecordSession];
+                    [self.recorder.session deinitialize];
                     [self getOverlayView:orientation];
                     [UIView animateWithDuration:0.25f animations:^{
                         self.overlayView.transform = CGAffineTransformMakeRotation(-M_PI_2+angle);
@@ -260,7 +260,7 @@
                 }
                 if (self.recorder.session.segments.count == 0 && self.recorder.isRecording == NO) {
                     self.recorder.videoConfiguration.affineTransform = CGAffineTransformMakeRotation(M_PI-angle);
-                    [self retakeRecordSession];
+                    [self.recorder.session deinitialize];
                     [self getOverlayView:orientation];
                     [UIView animateWithDuration:0.25f animations:^{
                         self.overlayView.transform = CGAffineTransformMakeRotation(M_PI+angle);
@@ -409,13 +409,11 @@
     self.backToRecord.enabled = NO;
     self.stopButton.enabled = NO;
     
-//    SCRecordSession *recordSession = _recorder.session;
-//
-//    if (recordSession != nil) {
-//        _recorder.session = nil;
-//        [recordSession cancelSession:nil];
-//    }
-//
+    SCRecordSession *recordSession = _recorder.session;
+
+    if (recordSession != nil) {
+        [recordSession cancelSession:nil];
+    }
 //    [self prepareSession];
 }
 
@@ -427,7 +425,7 @@
     __weak typeof(self) weakSelf = self;
     [self.recorder capturePhoto:^(NSError *error, UIImage *image) {
         if (image != nil) {
-            weakSelf.photo = [image easyRotateImageOrientation:self.imageOrientation context:weakSelf.cicontext];
+            weakSelf.photo = image;
             [weakSelf showImageView];
         } else {
             [weakSelf showAlertViewWithTitle:@"Failed to capture photo" message:error.localizedDescription complete:nil];
@@ -488,7 +486,6 @@
 #pragma mark - LFCameraDisplayDelegate
 - (void)lf_cameraDisplayDidCancel:(LFCameraDisplayController *)cameraDisplay
 {
-    [self retakeRecordSession];
     [self.navigationController popViewControllerAnimated:NO];
 }
 - (void)lf_cameraDisplayDidClose:(LFCameraDisplayController *)cameraDisplay
@@ -520,7 +517,6 @@
 #pragma mark - 点击事件操作
 - (void)closeAction
 {
-    [self.recorder stopRunning];
     LFCameraPickerController *cameraPicker = (LFCameraPickerController *)self.navigationController;
     [cameraPicker dismissViewControllerAnimated:YES completion:^{
         /** 代理回调 */
@@ -838,7 +834,7 @@
 {
     LFCameraDisplayController *cameraDisplay = [[LFCameraDisplayController alloc] init];
     cameraDisplay.delegate = self;
-    cameraDisplay.photo = self.photo;
+    cameraDisplay.photo = [self.photo easyRotateImageOrientation:self.imageOrientation context:self.cicontext];
     cameraDisplay.overlayImage = self.overlayView.image;
     [self.navigationController pushViewController:cameraDisplay animated:NO];
 }
@@ -848,11 +844,33 @@
 {
     /** iOS11录制视频需要马上关闭录制，否则影响AVPlayer的播放 */
     [_recorder stopRunning];
+    AVAsset *asset = self.recorder.session.assetRepresentingSegments;
+    [self retakeRecordSession];
+    
     LFCameraDisplayController *cameraDisplay = [[LFCameraDisplayController alloc] init];
     cameraDisplay.delegate = self;
     cameraDisplay.photo = ((SCRecordSessionSegment *)self.recorder.session.segments.firstObject).thumbnail;
-    cameraDisplay.asset = self.recorder.session.assetRepresentingSegments;
+    cameraDisplay.asset = asset;
     cameraDisplay.overlayImage = self.overlayView.image;
+    // 因为视频是旋转的，需要调整水印层的方向与视频实际方向一致。
+    UIImageOrientation overlayOrientation = UIImageOrientationUp;
+    switch (self.imageOrientation) {
+        case UIImageOrientationLeft:
+            overlayOrientation = UIImageOrientationRight;
+            break;
+        case UIImageOrientationLeftMirrored:
+            overlayOrientation = UIImageOrientationRightMirrored;
+            break;
+        case UIImageOrientationRight:
+            overlayOrientation = UIImageOrientationLeft;
+            break;
+        case UIImageOrientationRightMirrored:
+            overlayOrientation = UIImageOrientationLeftMirrored;
+        break;
+        default:
+            break;
+    }
+    cameraDisplay.overlayOrientation = overlayOrientation;
     [self.navigationController pushViewController:cameraDisplay animated:NO];
 }
 
@@ -931,14 +949,6 @@
     {
         [self.mManager stopAccelerometerUpdates];
     }
-}
-
-- (CIContext *)cicontext
-{
-    if (_cicontext == nil) {
-        _cicontext = [CIContext contextWithOptions:@{kCIContextUseSoftwareRenderer : @(NO)}];
-    }
-    return _cicontext;
 }
 
 @end
