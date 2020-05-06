@@ -123,22 +123,17 @@
             
             CGSize size = CGSizeMake(height, width);
             
-            // 并把它设置成为当前正在使用的context
-            UIGraphicsBeginImageContextWithOptions(size, NO, 0);
-            [[UIColor clearColor] setFill];
-            [@"哈哈哈哈，测试用" drawInRect:CGRectMake(0, 0, 200, 100) withAttributes:@{NSFontAttributeName:[UIFont systemFontOfSize:17.f], NSForegroundColorAttributeName:[UIColor redColor]}];
             
-            // 从当前context中创建一个改变大小后的图片
-            UIImage* image = UIGraphicsGetImageFromCurrentImageContext();
+            UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 200, 100)];
+            label.textColor = [UIColor redColor];
+            label.font = [UIFont systemFontOfSize:17.f];
+            label.text = @"哈哈哈哈，测试用";
+            [label sizeToFit];
             
-            // 使当前的context出堆栈
-            UIGraphicsEndImageContext();
+            UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, size.width, size.height)];
+            [view addSubview:label];
             
-            UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, size.width, size.height)];
-            [imageView setImage:image];
-            imageView.contentMode = UIViewContentModeScaleAspectFit;
-            
-            return imageView;
+            return view;
         }
             break;
     }
