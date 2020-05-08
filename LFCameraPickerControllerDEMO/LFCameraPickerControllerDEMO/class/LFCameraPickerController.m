@@ -129,6 +129,8 @@ AVCaptureSessionPreset const AVCaptureSessionPresetAuto = @"AVCaptureSessionPres
     
     _autoSavePhotoAlbum = YES;
     _processHintStr = @"正在处理...";
+    
+    _allowEditing = YES;
 }
 
 - (void)setMinRecordSeconds:(float)minRecordSeconds

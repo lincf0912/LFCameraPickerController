@@ -287,13 +287,16 @@
     self.finishButton = finishButton;
     
 #ifdef LF_MEDIAEDIT
-    UIButton *editButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    CGFloat editWH = 40.f;
-    editButton.frame = CGRectMake(width-editWH-kCameraDisplayEditMargin, kCameraDisplayEditMargin, editWH, editWH);
-    [editButton setImage:LFCamera_bundleImageNamed(@"LFCamera_iconEdit") forState:UIControlStateNormal];
-    [editButton addTarget:self action:@selector(photoEditAction) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:editButton];
-    self.editButton = editButton;
+    LFCameraPickerController *cameraPicker = (LFCameraPickerController *)self.navigationController;
+    if (cameraPicker.allowEditing) {
+        UIButton *editButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        CGFloat editWH = 40.f;
+        editButton.frame = CGRectMake(width-editWH-kCameraDisplayEditMargin, kCameraDisplayEditMargin, editWH, editWH);
+        [editButton setImage:LFCamera_bundleImageNamed(@"LFCamera_iconEdit") forState:UIControlStateNormal];
+        [editButton addTarget:self action:@selector(photoEditAction) forControlEvents:UIControlEventTouchUpInside];
+        [self.view addSubview:editButton];
+        self.editButton = editButton;
+    }
 #endif
 }
 

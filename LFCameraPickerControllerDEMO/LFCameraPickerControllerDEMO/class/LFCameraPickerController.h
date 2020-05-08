@@ -83,6 +83,12 @@ AVF_EXPORT AVCaptureSessionPreset const AVCaptureSessionPresetAuto;
 /** 水印层 默认NO 实现代理 lf_cameraPickerOverlayView: */
 @property (nonatomic, assign) BOOL activeOverlay;
 
+#ifdef LF_MEDIAEDIT
+/// Default is YES,if set NO,user can't editing photo.
+/// 默认为YES,如果设置为NO,编辑按钮将隐藏,用户将不能去编辑照片
+@property (nonatomic,assign) BOOL allowEditing;
+#endif
+
 - (void)showProgressHUDText:(NSString *)text isTop:(BOOL)isTop;
 - (void)showProgressHUDText:(NSString *)text;
 - (void)showProgressHUD;
