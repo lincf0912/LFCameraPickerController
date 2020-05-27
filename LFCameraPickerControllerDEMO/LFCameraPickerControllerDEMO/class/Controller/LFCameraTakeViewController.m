@@ -372,7 +372,7 @@
         
         _recorder.session = session;
     }
-    
+    [self retakeRecordSession];
     [self updateTimeRecorded];
 }
 
@@ -412,9 +412,9 @@
     SCRecordSession *recordSession = _recorder.session;
 
     if (recordSession != nil) {
-        [recordSession cancelSession:nil];
+        [recordSession deinitialize];
+        [recordSession removeAllSegments:YES];
     }
-//    [self prepareSession];
 }
 
 - (void)takePhoto
@@ -845,7 +845,6 @@
     /** iOS11录制视频需要马上关闭录制，否则影响AVPlayer的播放 */
     [_recorder stopRunning];
     AVAsset *asset = self.recorder.session.assetRepresentingSegments;
-    [self retakeRecordSession];
     
     LFCameraDisplayController *cameraDisplay = [[LFCameraDisplayController alloc] init];
     cameraDisplay.delegate = self;
